@@ -1,0 +1,187 @@
+<div class="min-h-screen bg-page">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-20 site-header">
+    <div class="mx-auto max-w-[960px] px-6 py-3.5 flex items-center gap-4">
+      <a routerLink="/" class="wizard-home-link font-display">
+        ← Dragonbane
+      </a>
+    </div>
+  </header>
+
+  <!-- Fixed left-edge tab to open steps sidebar (mobile only) -->
+  <button (click)="toggleSidebar()" aria-label="Toggle steps"
+    class="md:hidden fixed z-40 flex items-center justify-center sidebar-tab">
+    <svg width="8" height="14" viewBox="0 0 8 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M1 1l6 6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <!-- Mobile sidebar overlay -->
+  @if (sidebarOpen()) {
+    <div class="fixed inset-0 z-30 md:hidden sidebar-backdrop" (click)="closeSidebar()">
+    </div>
+    <aside class="fixed top-0 left-0 z-40 h-full md:hidden wizard-sidebar-overlay sidebar-panel">
+      <div class="flex items-center justify-between mb-6">
+        <span class="font-display sidebar-header-label">Steps</span>
+        <button (click)="closeSidebar()" class="sidebar-close-btn">✕</button>
+      </div>
+      <nav>
+        @for (step of visibleSteps; track step.path; let i = $index) {
+          <div class="wizard-step-dot"
+            [style.cursor]="i < currentVisibleIndex ? 'pointer' : 'default'"
+            (click)="navigateToStep(step.path, i)">
+            @if (i < visibleSteps.length - 1) {
+              <div class="absolute step-connector"></div>
+            }
+            <div class="relative z-10 flex shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 step-dot-size"
+              [style.background]="step.path === currentPath ? 'oklch(0.74 0.13 72)' : (i < currentVisibleIndex ? 'oklch(0.20 0.008 68)' : 'oklch(0.17 0.007 68)')"
+              [style.color]="step.path === currentPath ? 'oklch(0.12 0.007 68)' : (i < currentVisibleIndex ? 'oklch(0.58 0.09 72)' : 'oklch(0.50 0.009 68)')"
+              [style.border]="step.path === currentPath ? 'none' : (i < currentVisibleIndex ? '1px solid oklch(0.28 0.010 72)' : '1px solid oklch(0.23 0.007 68)')">
+              @if (i < currentVisibleIndex) { ✓ } @else { {{ i + 1 }} }
+            </div>
+            <span class="font-display transition-all duration-200 step-label"
+              [style.color]="step.path === currentPath ? 'oklch(0.84 0.008 70)' : (i < currentVisibleIndex ? 'oklch(0.60 0.010 72)' : 'oklch(0.50 0.009 68)')">
+              {{ step.label }}
+            </span>
+          </div>
+        }
+      </nav>
+    </aside>
+  }
+
+  <!-- Full-bleed hero name banner -->
+  <div class="hero-name-banner">
+    <div class="hero-name-creature" aria-hidden="true">
+      <!-- Dragon, facing right -->
+      <svg viewBox="0 0 96 72" width="82" height="65" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <!-- Left wing: swept-back -->
+        <polygon points="28,37 4,5 10,20 2,32 14,34"/>
+        <!-- Upper wing secondary -->
+        <polygon points="40,28 34,2 44,26"/>
+        <!-- Body -->
+        <ellipse cx="38" cy="46" rx="22" ry="10" transform="rotate(-6 38 46)"/>
+        <!-- Neck -->
+        <polygon points="52,36 58,28 74,22 76,30 62,36"/>
+        <!-- Head, pointed snout -->
+        <polygon points="66,20 94,16 92,27 70,28"/>
+        <!-- Lower jaw -->
+        <polygon points="72,26 92,26 94,34 72,31"/>
+        <!-- Horn -->
+        <polygon points="66,20 63,10 70,18"/>
+        <!-- Nostril -->
+        <circle cx="89" cy="20" r="1.5" fill="oklch(0.14 0.007 68)"/>
+        <!-- Eye -->
+        <circle cx="70" cy="22" r="2.8" fill="oklch(0.14 0.007 68)"/>
+        <circle cx="70" cy="22" r="1.4" fill="oklch(0.82 0.14 72)"/>
+        <!-- Tail curling left -->
+        <path d="M16,52 Q4,60 8,68 Q13,74 18,68" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Foreleg -->
+        <path d="M30,54 Q26,65 22,67 M26,65 Q23,70 27,71" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <!-- Hindleg -->
+        <path d="M48,53 Q44,64 40,66 M44,64 Q41,69 45,70" stroke="currentColor" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+
+    <input
+      type="text"
+      [value]="draft().name"
+      (input)="updateName($any($event.target).value)"
+      placeholder="Name your hero…"
+      class="hero-name-input"
+    />
+
+    <div class="hero-name-creature" aria-hidden="true">
+      <!-- Demon, facing left -->
+      <svg viewBox="-12 0 92 90" width="70" height="70" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style="transform: scaleX(-1)">
+        <!-- Left horn (leans left toward the name) -->
+        <path d="M30,18 C26,10 24,2 28,0 C33,2 35,11 36,18 Z"/>
+        <!-- Right horn -->
+        <path d="M48,16 C46,8 46,0 50,0 C54,2 53,11 52,18 Z"/>
+        <!-- Ear points -->
+        <polygon points="22,24 14,30 22,38"/>
+        <polygon points="58,24 66,30 58,38"/>
+        <!-- Head -->
+        <ellipse cx="40" cy="30" rx="18" ry="15"/>
+        <!-- Glowing eyes (amber) -->
+        <ellipse cx="33" cy="28" rx="5" ry="6" fill="oklch(0.82 0.14 72)"/>
+        <ellipse cx="47" cy="28" rx="5" ry="6" fill="oklch(0.82 0.14 72)"/>
+        <!-- Slit pupils -->
+        <ellipse cx="33" cy="29" rx="2" ry="3.5" fill="oklch(0.10 0.005 68)"/>
+        <ellipse cx="47" cy="29" rx="2" ry="3.5" fill="oklch(0.10 0.005 68)"/>
+        <!-- Fanged mouth -->
+        <path d="M29,40 L32,45 L36,40 L40,45 L44,40 L48,45 L51,40"
+              stroke="oklch(0.10 0.005 68)" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Body -->
+        <path d="M22,43 C18,56 20,68 26,76 L54,76 C60,68 62,56 58,43 Q40,50 22,43Z"/>
+        <!-- Left wing (facing viewer, extending left) -->
+        <path d="M22,48 L-4,24 L-10,52 L10,60 L-10,72 L20,72 L28,58 Z"/>
+        <!-- Wing membrane lines -->
+        <path d="M22,48 L-10,24 M20,52 L-10,52 M22,60 L-10,72" stroke="oklch(0.20 0.006 68)" stroke-width="0.8" fill="none"/>
+        <!-- Right wing (receding, partial) -->
+        <path d="M58,48 L74,34 L80,52 L68,60 L80,70 L62,72 L56,58 Z" opacity="0.5"/>
+        <!-- Tail -->
+        <path d="M40,76 Q46,86 52,83 Q56,80 53,76" stroke="currentColor" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <!-- Tail barb -->
+        <polygon points="51,83 57,78 56,87"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="mx-auto max-w-[960px] px-6">
+
+    <!-- Two-column layout -->
+    <div class="flex gap-12 pt-3 pb-24">
+
+      <!-- Sidebar: step list -->
+      <aside class="hidden md:block shrink-0 wizard-desktop-aside">
+        <nav>
+          @for (step of visibleSteps; track step.path; let i = $index) {
+            <div class="wizard-step-dot"
+              [style.cursor]="i < currentVisibleIndex ? 'pointer' : 'default'"
+              (click)="navigateToStep(step.path, i)">
+              <!-- Connector to next step -->
+              @if (i < visibleSteps.length - 1) {
+                <div class="absolute step-connector"></div>
+              }
+              <!-- Step dot -->
+              <div class="relative z-10 flex shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 step-dot-size"
+                [style.background]="step.path === currentPath ? 'oklch(0.74 0.13 72)' : (i < currentVisibleIndex ? 'oklch(0.20 0.008 68)' : 'oklch(0.17 0.007 68)')"
+                [style.color]="step.path === currentPath ? 'oklch(0.12 0.007 68)' : (i < currentVisibleIndex ? 'oklch(0.58 0.09 72)' : 'oklch(0.50 0.009 68)')"
+                [style.border]="step.path === currentPath ? 'none' : (i < currentVisibleIndex ? '1px solid oklch(0.28 0.010 72)' : '1px solid oklch(0.23 0.007 68)')">
+                @if (i < currentVisibleIndex) { ✓ } @else { {{ i + 1 }} }
+              </div>
+              <!-- Step label -->
+              <span class="font-display transition-all duration-200 step-label"
+                [style.color]="step.path === currentPath ? 'oklch(0.84 0.008 70)' : (i < currentVisibleIndex ? 'oklch(0.60 0.010 72)' : 'oklch(0.50 0.009 68)')">
+                {{ step.label }}
+              </span>
+            </div>
+          }
+        </nav>
+      </aside>
+
+      <!-- Main content -->
+      <main class="min-w-0 flex-1">
+        <router-outlet />
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Sticky navigation footer -->
+  <footer class="wizard-nav-footer">
+    <div class="mx-auto max-w-[960px] px-6 flex items-center justify-between">
+      @if (wizardNav.backPath()) {
+        <button (click)="onBack()" class="btn-back-link">← Back</button>
+      }
+      <button
+        (click)="onContinue()"
+        [disabled]="!wizardNav.canContinue()"
+        class="btn-continue ml-auto">
+        {{ wizardNav.nextLabel() }}
+      </button>
+    </div>
+  </footer>
+
+</div>

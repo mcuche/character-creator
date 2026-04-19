@@ -1,0 +1,81 @@
+import { Component, inject, computed, signal } from '@angular/core';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { filter } from 'rxjs/operators';
+import { CharacterDraftService } from '../../services/character-draft.service';
+import { WizardNavService } from '../../services/wizard-nav.service';
+import { WIZARD_STEPS } from '../../shared/wizard-steps';
+
+const STEPS = WIZARD_STEPS.filter(s => s.path !== 'mage-school');
+
+@Component({
+  selector: 'app-wizard',
+  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule],
+  templateUrl: './wizard.component.html',
+})
+export class WizardComponent {
+  draftService = inject(CharacterDraftService);
+  readonly wizardNav = inject(WizardNavService);
+  private router = inject(Router);
+
+  readonly draft = this.draftService.draft;
+  readonly steps = STEPS;
+
+  currentPath = '';
+
+  constructor() {
+    this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
+      const segments = e.urlAfterRedirects.split('/');
+      this.currentPath = segments[segments.length - 1] ?? '';
+    });
+    // Set initial path
+    const segments = this.router.url.split('/');
+    this.currentPath = segments[segments.length - 1] ?? '';
+  }
+
+  get currentStepIndex(): number {
+    return this.steps.findIndex(s => s.path === this.currentPath);
+  }
+
+  get visibleSteps() {
+    const draft = this.draft();
+    if (draft.profession === 'Mage') {
+      // Insert mage-school between profession and age
+      const idx = STEPS.findIndex(s => s.path === 'profession');
+      const result = [...STEPS];
+      result.splice(idx + 1, 0, { path: 'mage-school', label: 'Magic School' });
+      return result;
+    }
+    return STEPS;
+  }
+
+  get currentVisibleIndex(): number {
+    return this.visibleSteps.findIndex(s => s.path === this.currentPath);
+  }
+
+  sidebarOpen = signal(false);
+
+  toggleSidebar(): void { this.sidebarOpen.update(v => !v); }
+  closeSidebar(): void { this.sidebarOpen.set(false); }
+
+  updateName(name: string): void {
+    this.draftService.setName(name);
+  }
+
+  onBack(): void {
+    const back = this.wizardNav.backPath();
+    if (back) this.router.navigate(['/create', back]);
+  }
+
+  onContinue(): void {
+    this.wizardNav.nextTrigger$.next();
+  }
+
+  navigateToStep(path: string, index: number): void {
+    if (index < this.currentVisibleIndex) {
+      this.router.navigate(['/create', path]);
+      this.closeSidebar();
+    }
+  }
+}

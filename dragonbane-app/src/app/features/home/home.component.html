@@ -1,0 +1,217 @@
+<div class="min-h-screen bg-page">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-10 px-6 py-4 site-header">
+    <div class="mx-auto flex max-w-2xl items-baseline justify-between">
+      <div>
+        <h1 class="font-display font-bold site-title">
+          DRAGONBANE
+        </h1>
+        <p class="site-subtitle">
+          Character Registry
+        </p>
+      </div>
+      @if (characters().length > 0) {
+        <button (click)="createNew()" class="new-char-link text-sm">
+          + New Character
+        </button>
+      }
+    </div>
+  </header>
+
+  <main class="mx-auto max-w-2xl px-6">
+
+    <!-- ── Empty state ── -->
+    @if (characters().length === 0) {
+      <div class="flex flex-col items-center py-28 text-center">
+
+        <!-- Ornamental runic wheel -->
+        <svg width="116" height="116" viewBox="0 0 116 116" fill="none" xmlns="http://www.w3.org/2000/svg"
+          class="ornament-dim" aria-hidden="true">
+          <!-- Outer ring -->
+          <circle cx="58" cy="58" r="52" stroke="currentColor" stroke-width="1.25"/>
+          <!-- Mid ring -->
+          <circle cx="58" cy="58" r="36" stroke="currentColor" stroke-width="1.25"/>
+          <!-- Inner ring -->
+          <circle cx="58" cy="58" r="18" stroke="currentColor" stroke-width="1"/>
+          <!-- Center -->
+          <circle cx="58" cy="58" r="3.5" fill="currentColor"/>
+          <!-- Cardinal spokes (long, N/S/E/W) -->
+          <line x1="58" y1="6" x2="58" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="58" y1="94" x2="58" y2="110" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="6" y1="58" x2="22" y2="58" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <line x1="94" y1="58" x2="110" y2="58" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Ordinal marks (diagonal, shorter) -->
+          <line x1="95.4" y1="20.6" x2="84.8" y2="31.2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <line x1="20.6" y1="20.6" x2="31.2" y2="31.2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <line x1="95.4" y1="95.4" x2="84.8" y2="84.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <line x1="20.6" y1="95.4" x2="31.2" y2="84.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+          <!-- Inner radial ticks at cardinals -->
+          <line x1="58" y1="22" x2="58" y2="40" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
+          <line x1="58" y1="76" x2="58" y2="94" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
+          <line x1="22" y1="58" x2="40" y2="58" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
+          <line x1="76" y1="58" x2="94" y2="58" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
+        </svg>
+
+        <p class="mt-10 font-display empty-heading">
+          Your roster is empty.
+        </p>
+        <p class="mt-2 empty-subtext">
+          Begin with a name.
+        </p>
+
+        <button (click)="createNew()" class="btn-amber mt-10 px-8 py-3 rounded font-semibold text-sm tracking-widest uppercase">
+          Create a Character
+        </button>
+      </div>
+    }
+
+    <!-- ── Character roster ── -->
+    @if (characters().length > 0) {
+      <div class="pt-10 pb-24">
+
+        <p class="mb-6 font-display section-label">
+          Roster
+        </p>
+
+        <div>
+          @for (char of characters(); track char.id) {
+            <div class="character-entry entry-row group relative flex items-center" [class.opacity-60]="isDraft(char)">
+
+              <!-- Delete confirm overlay -->
+              @if (deleteConfirmId === char.id) {
+                <div class="absolute inset-0 z-10 flex items-center justify-center gap-4 rounded confirm-overlay-bg">
+                  <p class="confirm-text">
+                    Delete
+                    <span class="font-semibold text-gold">{{ char.name || 'Unnamed' }}</span>?
+                  </p>
+                  <div class="flex gap-2">
+                    <button (click)="deleteCharacter(char.id)"
+                      class="confirm-delete-btn px-4 py-1.5 rounded font-semibold">
+                      Delete character
+                    </button>
+                    <button (click)="cancelDelete()"
+                      class="confirm-cancel-btn px-4 py-1.5 rounded font-semibold">
+                      Keep
+                    </button>
+                  </div>
+                </div>
+              }
+
+              <!-- Entry link -->
+              <a [routerLink]="['/character', char.id]" class="flex flex-1 items-center gap-5 py-5 min-w-0">
+
+                <!-- Kin sigil -->
+                <div class="kin-sigil kin-sigil-sm flex-shrink-0">
+                  @switch (char.kin) {
+                    @case ('Human') {
+                      <!-- Circle + cardinal marks + center dot: humanity at the crossroads -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Human" role="img">
+                        <circle cx="50" cy="50" r="28" stroke="currentColor" stroke-width="2.5"/>
+                        <line x1="50" y1="18" x2="50" y2="8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="82" x2="50" y2="92" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="82" y1="50" x2="92" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="18" y1="50" x2="8" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="50" cy="50" r="4" fill="currentColor"/>
+                      </svg>
+                    }
+                    @case ('Halfling') {
+                      <!-- Concentric rings + center: small within the whole, evasive -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Halfling" role="img">
+                        <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="50" cy="50" r="22" stroke="currentColor" stroke-width="2.5"/>
+                        <circle cx="50" cy="50" r="4" fill="currentColor"/>
+                      </svg>
+                    }
+                    @case ('Dwarf') {
+                      <!-- Tiwaz-style rune: vertical staff, downward wings, crossbar -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Dwarf" role="img">
+                        <line x1="50" y1="14" x2="50" y2="80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="38" x2="22" y2="58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="38" x2="78" y2="58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="33" y1="84" x2="67" y2="84" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                      </svg>
+                    }
+                    @case ('Elf') {
+                      <!-- Triangle with interior vertical and horizontal markers: otherworldly precision -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Elf" role="img">
+                        <polygon points="50,11 85,80 15,80" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                        <line x1="50" y1="18" x2="50" y2="72" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="27" y1="59" x2="73" y2="59" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                    }
+                    @case ('Mallard') {
+                      <!-- Three wave lines: water-kin, fluid motion -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mallard" role="img">
+                        <path d="M16,32 C27,24 38,40 50,32 C62,24 73,40 84,32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M16,50 C27,42 38,58 50,50 C62,42 73,58 84,50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M16,68 C27,60 38,76 50,68 C62,60 73,76 84,68" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                      </svg>
+                    }
+                    @case ('Wolfkin') {
+                      <!-- Three lines from apex diverging downward: claw, hunt, pack -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wolfkin" role="img">
+                        <line x1="50" y1="12" x2="22" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="12" x2="50" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="12" x2="78" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                      </svg>
+                    }
+                    @default {
+                      <!-- Generic dashed ring for characters with no kin set -->
+                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="50" cy="50" r="34" stroke="currentColor" stroke-width="2" stroke-dasharray="5 5"/>
+                        <circle cx="50" cy="50" r="4" fill="currentColor"/>
+                      </svg>
+                    }
+                  }
+                </div>
+
+                <!-- Character info -->
+                <div class="flex-1 min-w-0">
+                  <h3 class="char-name char-list-name leading-snug">
+                    {{ char.name || 'Unnamed Hero' }}
+                  </h3>
+                  <p class="mt-1.5 char-list-meta">
+                    @if (char.kin && char.profession) {
+                      {{ char.kin }}&thinsp;·&thinsp;{{ char.profession }}
+                    } @else if (char.kin) {
+                      {{ char.kin }}
+                    } @else if (char.profession) {
+                      {{ char.profession }}
+                    } @else {
+                      <span class="text-muted-stone">No kin or profession set</span>
+                    }
+                  </p>
+                  @if (isDraft(char)) {
+                    <span class="font-display inline-block mt-2.5 badge-incomplete">
+                      Incomplete
+                    </span>
+                  }
+                </div>
+
+              </a>
+
+              <!-- Action buttons — hidden until hover -->
+              <div class="flex items-center gap-0.5 px-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button (click)="exportJson(char)"
+                  class="entry-action-btn"
+                  title="Export as JSON"
+                  aria-label="Export {{ char.name || 'character' }} as JSON">
+                  ↓
+                </button>
+                <button (click)="confirmDelete(char.id)"
+                  class="entry-action-btn danger"
+                  title="Delete character"
+                  aria-label="Delete {{ char.name || 'character' }}">
+                  ✕
+                </button>
+              </div>
+
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  </main>
+</div>

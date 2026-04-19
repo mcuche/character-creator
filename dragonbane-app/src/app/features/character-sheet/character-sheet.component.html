@@ -1,0 +1,337 @@
+@if (character(); as char) {
+<div class="min-h-screen bg-stone-900 text-stone-100">
+  <!-- Header -->
+  <header class="sticky top-0 z-20 border-b border-amber-800/40 bg-stone-950/95 px-6 py-4 backdrop-blur">
+    <div class="mx-auto flex max-w-4xl items-center gap-4">
+      <a routerLink="/" class="font-display text-lg font-bold text-amber-400 hover:text-amber-300">Dragonbane</a>
+      <span class="text-stone-300">/</span>
+      <input
+        type="text"
+        [ngModel]="char.name"
+        (ngModelChange)="updateField('name', $event)"
+        placeholder="Character name…"
+        class="char-name-input flex-1 text-xl text-stone-200 placeholder-stone-500 focus:text-white"
+      />
+      <div class="flex gap-2">
+        <button (click)="exportJson()" class="rounded-lg border border-stone-700 px-3 py-1 text-xs text-stone-300 hover:text-stone-300">↓ JSON</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Identity bar -->
+  <div class="border-b border-stone-800 bg-stone-950/50 px-6 py-3">
+    <div class="mx-auto flex max-w-4xl flex-wrap items-center gap-4 text-sm">
+      @if (char.kin) { <span class="rounded bg-stone-800 px-2 py-1 text-stone-300">{{ char.kin }}</span> }
+      @if (char.profession) { <span class="rounded bg-stone-800 px-2 py-1 text-stone-300">{{ char.profession }}</span> }
+      @if (char.age) { <span class="rounded bg-stone-800 px-2 py-1 text-stone-300">{{ char.age }}</span> }
+
+      <div class="ml-auto flex items-center gap-6">
+        <!-- HP -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-stone-300">HP</span>
+          <button (click)="updateCurrentHP(-1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">−</button>
+          <span class="font-mono font-bold text-red-400">{{ char.currentHP }}</span>
+          <span class="text-stone-300">/</span>
+          <span class="text-stone-300">{{ char.derivedStats?.hp }}</span>
+          <button (click)="updateCurrentHP(1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">+</button>
+        </div>
+        <!-- WP -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-stone-300">WP</span>
+          <button (click)="updateCurrentWP(-1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">−</button>
+          <span class="font-mono font-bold text-blue-400">{{ char.currentWP }}</span>
+          <span class="text-stone-300">/</span>
+          <span class="text-stone-300">{{ char.derivedStats?.wp }}</span>
+          <button (click)="updateCurrentWP(1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab navigation -->
+  <div class="border-b border-stone-800 px-6">
+    <div class="mx-auto flex max-w-4xl gap-1">
+      @for (tab of [['core','Core Stats'],['skills','Skills'],['abilities','Abilities'],['gear','Gear']]; track tab[0]) {
+        <button
+          (click)="activeTab.set($any(tab[0]))"
+          class="border-b-2 px-4 py-3 text-sm font-medium transition"
+          [class.border-amber-500]="activeTab() === tab[0]"
+          [class.text-amber-300]="activeTab() === tab[0]"
+          [class.border-transparent]="activeTab() !== tab[0]"
+          [class.text-stone-300]="activeTab() !== tab[0]"
+          [class.hover:text-stone-300]="activeTab() !== tab[0]">
+          {{ tab[1] }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <main class="mx-auto max-w-4xl px-6 py-8">
+
+    <!-- CORE STATS TAB -->
+    @if (activeTab() === 'core') {
+      <!-- Attributes -->
+      <section class="mb-8">
+        <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Attributes</h3>
+        <div class="grid grid-cols-3 gap-3 sm:grid-cols-6">
+          @for (attr of attrKeys; track attr) {
+            <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+              <div class="mb-1 text-xs text-stone-300">{{ attr }}</div>
+              <input
+                type="number"
+                [ngModel]="char.attributes?.[attr]"
+                (ngModelChange)="updateAttributeValue(attr, +$event)"
+                min="1" max="18"
+                class="w-full bg-transparent text-center font-mono text-2xl font-bold text-amber-400 outline-none"
+              />
+            </div>
+          }
+        </div>
+      </section>
+
+      <!-- Derived stats -->
+      @if (char.derivedStats) {
+        <section class="mb-8">
+          <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Derived Stats</h3>
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+              <div class="text-xs text-stone-300">Move</div>
+              <div class="font-mono text-xl font-bold text-green-400">{{ char.derivedStats.movement }}m</div>
+            </div>
+            <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+              <div class="text-xs text-stone-300">STR Dmg</div>
+              <div class="font-mono text-xl font-bold text-amber-400">{{ char.derivedStats.strDamageBonus }}</div>
+            </div>
+            <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+              <div class="text-xs text-stone-300">AGL Dmg</div>
+              <div class="font-mono text-xl font-bold text-amber-400">{{ char.derivedStats.aglDamageBonus }}</div>
+            </div>
+            <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+              <div class="text-xs text-stone-300">Carry</div>
+              <div class="font-mono text-xl font-bold text-stone-300">{{ Math.ceil((char.attributes?.STR ?? 10) / 2) }}</div>
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- Conditions -->
+      <section class="mb-8">
+        <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Conditions</h3>
+        <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          @for (cond of conditions; track cond) {
+            <button
+              (click)="toggleCondition(cond)"
+              class="flex items-center gap-3 rounded-lg border p-3 text-left transition"
+              [class.border-red-700]="hasCondition(cond)"
+              [class.bg-red-900/20]="hasCondition(cond)"
+              [class.border-stone-700]="!hasCondition(cond)"
+              [class.bg-stone-800/40]="!hasCondition(cond)"
+              [class.hover:border-stone-600]="!hasCondition(cond)">
+              <span class="h-4 w-4 rounded border flex items-center justify-center text-xs"
+                [class.border-red-500]="hasCondition(cond)"
+                [class.bg-red-600]="hasCondition(cond)"
+                [class.border-stone-600]="!hasCondition(cond)">
+                @if (hasCondition(cond)) { ✓ }
+              </span>
+              <div>
+                <div class="text-sm font-medium" [class.text-red-300]="hasCondition(cond)" [class.text-stone-300]="!hasCondition(cond)">{{ cond }}</div>
+                <div class="text-xs text-stone-300">Bane on {{ conditionAttrs[cond] }}</div>
+              </div>
+            </button>
+          }
+        </div>
+      </section>
+
+      @if (char.weakness) {
+        <section class="mb-8 rounded-xl border border-amber-800/30 bg-amber-900/10 p-4">
+          <span class="text-xs text-stone-300">Weakness</span>
+          <p class="font-semibold text-amber-300">{{ char.weakness }}</p>
+        </section>
+      }
+    }
+
+    <!-- SKILLS TAB -->
+    @if (activeTab() === 'skills') {
+      <section class="mb-6">
+        <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Trained Skills</h3>
+        <div class="space-y-1">
+          @for (skill of trainedSkills; track skill.name) {
+            <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/40 px-3 py-2">
+              <div class="flex-1">
+                <span class="font-medium text-stone-100">{{ skill.name }}</span>
+                <span class="ml-2 text-xs text-stone-300">{{ getSkillAttr(skill.name) }}</span>
+              </div>
+              <input
+                type="number"
+                [ngModel]="skill.level"
+                (ngModelChange)="updateSkillLevel(skill.name, +$event)"
+                min="1" max="18"
+                class="w-12 rounded bg-stone-900 text-center font-mono font-bold text-amber-400 outline-none focus:ring-1 focus:ring-amber-500"
+              />
+              <!-- Advancement marks -->
+              <button
+                (click)="toggleAdvancementMark(skill.name)"
+                class="flex gap-0.5"
+                title="Advancement marks (click to cycle)">
+                @for (i of [0,1]; track i) {
+                  <span class="h-3 w-3 rounded-sm border"
+                    [class.border-amber-500]="skill.advancementMarks > i"
+                    [class.bg-amber-500]="skill.advancementMarks > i"
+                    [class.border-stone-600]="skill.advancementMarks <= i">
+                  </span>
+                }
+              </button>
+            </div>
+          }
+        </div>
+      </section>
+
+      <section>
+        <h3 class="font-display mb-4 text-lg font-semibold text-stone-300">Untrained Skills</h3>
+        <div class="space-y-1 opacity-60">
+          @for (skill of untrainedSkills; track skill.name) {
+            <div class="flex items-center gap-3 rounded-lg border border-stone-800 px-3 py-2">
+              <div class="flex-1">
+                <span class="text-stone-300">{{ skill.name }}</span>
+                <span class="ml-2 text-xs text-stone-300">{{ getSkillAttr(skill.name) }}</span>
+              </div>
+              <span class="font-mono text-stone-300">{{ skill.level }}</span>
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- ABILITIES TAB -->
+    @if (activeTab() === 'abilities') {
+      @if (char.heroicAbilities.length > 0) {
+        <section class="mb-6">
+          <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Heroic Abilities</h3>
+          <div class="space-y-2">
+            @for (ability of char.heroicAbilities; track ability) {
+              <div class="rounded-lg border border-amber-800/40 bg-amber-900/10 p-3">
+                <span class="font-semibold text-amber-300">★ {{ ability }}</span>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      @if (kinData) {
+        <section class="mb-6">
+          <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Innate Ability</h3>
+          <div class="rounded-lg border border-stone-700 bg-stone-800/60 p-4">
+            <div class="mb-1 flex items-center justify-between">
+              <span class="font-semibold text-stone-200">{{ kinData.innateAbilityName }}</span>
+              <span class="text-xs text-stone-300">{{ kinData.innateAbilityWP === 'free' ? 'Free' : kinData.innateAbilityWP + ' WP' }}</span>
+            </div>
+            <p class="text-sm text-stone-300">{{ kinData.innateAbilityDescription }}</p>
+          </div>
+        </section>
+      }
+
+      @if (char.magicSchool) {
+        <section class="mb-6">
+          <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Magic</h3>
+          <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4">
+            <div class="mb-3 font-semibold text-blue-300">{{ char.magicSchool }}</div>
+            @if (char.preparedSpells.length > 0) {
+              <div class="mb-2">
+                <p class="mb-1 text-xs text-stone-300">Spells</p>
+                <div class="flex flex-wrap gap-2">
+                  @for (spell of char.preparedSpells; track spell) {
+                    <span class="rounded bg-blue-900/30 px-2 py-1 text-sm text-blue-300">{{ spell }}</span>
+                  }
+                </div>
+              </div>
+            }
+            @if (char.magicTricks.length > 0) {
+              <div>
+                <p class="mb-1 text-xs text-stone-300">Magic Tricks</p>
+                <div class="flex flex-wrap gap-2">
+                  @for (trick of char.magicTricks; track trick) {
+                    <span class="rounded bg-stone-700 px-2 py-1 text-sm text-stone-300">{{ trick }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+    }
+
+    <!-- GEAR TAB -->
+    @if (activeTab() === 'gear') {
+      <section>
+        <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Inventory</h3>
+        @if (char.attributes) {
+          <p class="mb-4 text-sm text-stone-300">
+            Carrying capacity: <span class="font-bold text-stone-300">{{ Math.ceil(char.attributes.STR / 2) }}</span> slots
+            (STR {{ char.attributes.STR }} ÷ 2)
+          </p>
+        }
+        <div class="space-y-2">
+          @for (item of char.gear; track item.id) {
+            <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/40 p-3">
+              <span class="flex-1 text-stone-200">{{ item.name }}</span>
+              @if (item.quantity > 1) {
+                <span class="text-sm text-stone-300">×{{ item.quantity }}</span>
+              }
+            </div>
+          }
+          @if (char.gear.length === 0) {
+            <p class="text-stone-300 italic">No gear.</p>
+          }
+        </div>
+      </section>
+
+      <!-- Currency -->
+      <section class="mt-8">
+        <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Coin</h3>
+        <div class="grid grid-cols-3 gap-3">
+          <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+            <div class="mb-1 text-xs text-yellow-400">Gold</div>
+            <div class="flex items-center justify-center gap-2">
+              <button (click)="updateCurrency('gold', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+              <input type="number" min="0" [ngModel]="char.gold" (ngModelChange)="updateField('gold', +$event)"
+                class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
+              <button (click)="updateCurrency('gold', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+            </div>
+          </div>
+          <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+            <div class="mb-1 text-xs text-slate-300">Silver</div>
+            <div class="flex items-center justify-center gap-2">
+              <button (click)="updateCurrency('silver', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+              <input type="number" min="0" [ngModel]="char.silver" (ngModelChange)="updateField('silver', +$event)"
+                class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
+              <button (click)="updateCurrency('silver', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+            </div>
+          </div>
+          <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+            <div class="mb-1 text-xs text-orange-400">Copper</div>
+            <div class="flex items-center justify-center gap-2">
+              <button (click)="updateCurrency('copper', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+              <input type="number" min="0" [ngModel]="char.copper" (ngModelChange)="updateField('copper', +$event)"
+                class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
+              <button (click)="updateCurrency('copper', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      @if (char.memento) {
+        <section class="mt-8">
+          <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Memento</h3>
+          <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4">
+            <p class="font-semibold text-stone-200">{{ char.memento.name }}</p>
+            @if (char.memento.significance) {
+              <p class="mt-1 text-sm text-stone-300">{{ char.memento.significance }}</p>
+            }
+          </div>
+        </section>
+      }
+    }
+
+  </main>
+</div>
+}

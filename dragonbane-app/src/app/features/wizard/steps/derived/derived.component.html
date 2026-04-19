@@ -1,0 +1,65 @@
+<div>
+  <app-step-nav
+    backPath="attributes"
+    [canContinue]="!!derivedStats"
+    (next)="continue()" />
+
+  <div class="mb-8">
+    <h2 class="font-display text-2xl font-bold text-amber-300">Derived Stats</h2>
+    <p class="mt-1 text-stone-300">These values are calculated automatically from your attributes.</p>
+  </div>
+
+  @if (derivedStats && modifiedAttributes) {
+    <!-- Core derived stats -->
+    <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4 text-center">
+        <div class="mb-1 text-xs text-stone-300">Hit Points</div>
+        <div class="font-display text-3xl font-bold text-red-400">{{ derivedStats.hp }}</div>
+        <div class="mt-1 text-xs text-stone-300">= CON ({{ modifiedAttributes.CON }})</div>
+      </div>
+      <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4 text-center">
+        <div class="mb-1 text-xs text-stone-300">Willpower Points</div>
+        <div class="font-display text-3xl font-bold text-blue-400">{{ derivedStats.wp }}</div>
+        <div class="mt-1 text-xs text-stone-300">= WIL ({{ modifiedAttributes.WIL }})</div>
+      </div>
+      <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4 text-center">
+        <div class="mb-1 text-xs text-stone-300">Movement</div>
+        <div class="font-display text-3xl font-bold text-green-400">{{ derivedStats.movement }}m</div>
+        <div class="mt-1 text-xs text-stone-300">Kin base ± AGL mod</div>
+      </div>
+      <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4 text-center">
+        <div class="mb-1 text-xs text-stone-300">Damage Bonus</div>
+        <div class="font-display text-xl font-bold text-amber-400">{{ derivedStats.strDamageBonus }}</div>
+        <div class="mt-1 text-xs text-stone-300">STR / AGL: {{ derivedStats.aglDamageBonus }}</div>
+      </div>
+    </div>
+
+    <!-- Attribute base chances -->
+    <div class="mb-6">
+      <h3 class="font-display mb-3 text-lg font-semibold text-stone-200">Attribute Base Chances & Skill Levels</h3>
+      <p class="mb-3 text-xs text-stone-300">Base chance = skill default. Trained level = base chance × 2.</p>
+      <div class="grid gap-2 sm:grid-cols-2">
+        @for (attr of attrKeys; track attr) {
+          @let bc = getBaseChanceDisplay(attr);
+          @if (bc) {
+            <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/40 p-3">
+              <span class="w-10 font-semibold text-stone-200">{{ attr }}</span>
+              <span class="font-mono text-lg font-bold text-amber-400">{{ bc.score }}</span>
+              <span class="text-xs text-stone-300">→</span>
+              <span class="text-sm text-stone-300">Base <span class="font-semibold text-stone-300">{{ bc.base }}</span></span>
+              <span class="text-xs text-stone-300">·</span>
+              <span class="text-sm text-stone-300">Trained <span class="font-semibold text-stone-300">{{ bc.base * 2 }}</span></span>
+            </div>
+          }
+        }
+      </div>
+    </div>
+
+    <div class="rounded-lg border border-amber-800/30 bg-amber-900/10 p-4 text-sm text-stone-300">
+      <span class="font-semibold text-amber-300">Note:</span> Encumbrance limit = STR ÷ 2 (rounded up) = <span class="font-bold text-stone-200">{{ Math.ceil(modifiedAttributes.STR / 2) }}</span> inventory slots.
+    </div>
+  } @else {
+    <p class="text-stone-300">No attributes set — go back and set your attributes first.</p>
+  }
+
+</div>

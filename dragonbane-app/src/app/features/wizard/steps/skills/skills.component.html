@@ -1,0 +1,72 @@
+<div>
+  <app-step-nav
+    backPath="derived"
+    [canContinue]="canContinue"
+    (next)="continue()" />
+
+  <div class="mb-8">
+    <h2 class="font-display text-2xl font-bold text-amber-300">Trained Skills</h2>
+    <p class="mt-1 text-stone-300">
+      Choose {{ profSkillSlots }} profession skills and {{ freeSkillSlots }} free picks. Total: {{ totalSkills }} trained skills.
+    </p>
+  </div>
+
+  <!-- Profession skills -->
+  <div class="mb-8">
+    <h3 class="font-display mb-1 text-lg font-semibold text-stone-200">
+      Profession Skills
+      <span class="ml-2 text-sm font-normal text-stone-300">{{ selectedProfSkills().size }}/{{ profSkillSlots }}</span>
+    </h3>
+    <p class="mb-3 text-xs text-stone-300">Select exactly {{ profSkillSlots }} skills from your {{ profession }} list.</p>
+    <div class="grid gap-2 sm:grid-cols-2">
+      @for (name of professionSkills; track name) {
+        <button
+          (click)="toggleProfSkill(name)"
+          [disabled]="!selectedProfSkills().has(name) && selectedProfSkills().size >= profSkillSlots"
+          class="flex items-center justify-between rounded-lg border p-3 text-left transition"
+          [class.border-amber-500]="selectedProfSkills().has(name)"
+          [class.bg-amber-900/20]="selectedProfSkills().has(name)"
+          [class.border-stone-700]="!selectedProfSkills().has(name)"
+          [class.bg-stone-800/40]="!selectedProfSkills().has(name)"
+          [class.opacity-40]="!selectedProfSkills().has(name) && selectedProfSkills().size >= profSkillSlots"
+          [class.hover:border-stone-500]="!selectedProfSkills().has(name) && selectedProfSkills().size < profSkillSlots">
+          <div>
+            <span class="font-medium text-stone-100">{{ name }}</span>
+            <span class="ml-2 text-xs text-stone-300">{{ getSkillAttr(name) }}</span>
+          </div>
+          <span class="text-sm font-bold text-amber-400">{{ getSkillLevel(name) }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Free picks -->
+  <div class="mb-6">
+    <h3 class="font-display mb-1 text-lg font-semibold text-stone-200">
+      Free Picks
+      <span class="ml-2 text-sm font-normal text-stone-300">{{ selectedFreeSkills().size }}/{{ freeSkillSlots }}</span>
+    </h3>
+    <p class="mb-3 text-xs text-stone-300">Choose any {{ freeSkillSlots }} skills from the full list. Skills already selected above are excluded.</p>
+    <div class="grid gap-2 sm:grid-cols-2">
+      @for (name of freeSkillOptions; track name) {
+        <button
+          (click)="toggleFreeSkill(name)"
+          [disabled]="!selectedFreeSkills().has(name) && selectedFreeSkills().size >= freeSkillSlots"
+          class="flex items-center justify-between rounded-lg border p-3 text-left transition"
+          [class.border-amber-500]="selectedFreeSkills().has(name)"
+          [class.bg-amber-900/20]="selectedFreeSkills().has(name)"
+          [class.border-stone-700]="!selectedFreeSkills().has(name)"
+          [class.bg-stone-800/40]="!selectedFreeSkills().has(name)"
+          [class.opacity-40]="!selectedFreeSkills().has(name) && selectedFreeSkills().size >= freeSkillSlots"
+          [class.hover:border-stone-500]="!selectedFreeSkills().has(name) && selectedFreeSkills().size < freeSkillSlots">
+          <div>
+            <span class="font-medium text-stone-100">{{ name }}</span>
+            <span class="ml-2 text-xs text-stone-300">{{ getSkillAttr(name) }}</span>
+          </div>
+          <span class="text-sm font-bold text-amber-400">{{ getSkillLevel(name) }}</span>
+        </button>
+      }
+    </div>
+  </div>
+
+</div>

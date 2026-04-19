@@ -1,0 +1,50 @@
+<div>
+  <app-step-nav
+    backPath="gear"
+    [canContinue]="true"
+    (next)="continue()" />
+
+  <div class="mb-8">
+    <h2 class="font-display text-2xl font-bold text-amber-300">Memento</h2>
+    <p class="mt-1 text-stone-300">An optional meaningful object your character carries. No mechanical effect — purely for roleplay.</p>
+  </div>
+
+  @if (!expanded()) {
+    <button
+      (click)="toggle()"
+      class="rounded-lg border border-dashed border-stone-600 px-6 py-4 text-stone-300 transition hover:border-stone-500 hover:text-stone-300">
+      + Add a Memento
+    </button>
+  } @else {
+    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-6">
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="font-semibold text-stone-200">Your memento</h3>
+        <button (click)="toggle()" class="text-sm text-stone-300 hover:text-stone-300">Remove ✕</button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="mb-1 block text-sm text-stone-300">Name</label>
+          <input
+            type="text"
+            [ngModel]="name()"
+            (ngModelChange)="name.set($event)"
+            placeholder="e.g. My father's ring"
+            class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500"
+          />
+        </div>
+        <div>
+          <label class="mb-1 block text-sm text-stone-300">Significance</label>
+          <textarea
+            [ngModel]="significance()"
+            (ngModelChange)="significance.set($event)"
+            placeholder="e.g. A reminder of home; I carry it to stay grounded"
+            rows="3"
+            class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500 resize-none"
+          ></textarea>
+        </div>
+      </div>
+    </div>
+  }
+
+</div>

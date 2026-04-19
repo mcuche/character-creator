@@ -1,0 +1,609 @@
+@import url('https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&family=Vollkorn:ital,wght@0,400;0,600;0,700;1,400&family=Fondamento:ital@0;1&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-gold-300: #fcd34d;
+  --color-gold-400: #fbbf24;
+  --color-gold-500: #f59e0b;
+  --color-gold-600: #d97706;
+  --color-stone-850: #1c1917;
+  --font-display: 'Skranji', Georgia, serif;
+  --font-body: 'Vollkorn', Georgia, serif;
+  --font-name: 'Fondamento', cursive;
+}
+
+body {
+  background-color: oklch(0.13 0.008 68);
+  color: oklch(0.88 0.008 70);
+  font-family: var(--font-body);
+}
+
+/* Grain overlay — prevents flat-dark SaaS look */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+button:not(:disabled), a {
+  cursor: pointer;
+}
+
+/* ── Home screen ── */
+
+/* Kin sigil color transitions */
+.kin-sigil {
+  color: oklch(0.30 0.012 68);
+  transition: color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.character-entry:hover .kin-sigil {
+  color: oklch(0.74 0.13 72);
+}
+
+/* Entry row separators */
+.entry-row {
+  border-bottom: 1px solid oklch(0.20 0.007 68 / 0.7);
+}
+
+.entry-row:first-child {
+  border-top: 1px solid oklch(0.20 0.007 68 / 0.7);
+}
+
+/* Entry hover background */
+.character-entry {
+  transition: background 180ms ease;
+}
+
+.character-entry:hover {
+  background: oklch(0.155 0.008 68);
+}
+
+/* Action buttons (revealed on hover) */
+.entry-action-btn {
+  color: oklch(0.55 0.009 68);
+  background: transparent;
+  transition: color 180ms ease, background 180ms ease;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  font-size: 0.875rem;
+}
+
+.entry-action-btn:hover {
+  color: oklch(0.74 0.13 72);
+  background: oklch(0.19 0.008 68);
+}
+
+.entry-action-btn.danger:hover {
+  color: oklch(0.60 0.13 22);
+  background: oklch(0.19 0.008 68);
+}
+
+/* Primary CTA button */
+.btn-amber {
+  background: oklch(0.74 0.13 72);
+  color: oklch(0.12 0.007 68);
+  transition: background 180ms ease;
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+}
+
+.btn-amber:hover {
+  background: oklch(0.79 0.14 72);
+}
+
+/* New character link in header */
+.new-char-link {
+  color: oklch(0.63 0.01 68);
+  transition: color 180ms ease;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+}
+
+.new-char-link:hover {
+  color: oklch(0.74 0.13 72);
+}
+
+/* Confirm overlay buttons */
+.confirm-delete-btn {
+  background: oklch(0.34 0.09 22);
+  color: oklch(0.88 0.008 70);
+  transition: background 180ms ease;
+  font-size: 0.8125rem;
+}
+
+.confirm-delete-btn:hover {
+  background: oklch(0.42 0.12 22);
+}
+
+.confirm-cancel-btn {
+  background: oklch(0.21 0.008 68);
+  color: oklch(0.74 0.01 68);
+  transition: background 180ms ease;
+  font-size: 0.8125rem;
+}
+
+.confirm-cancel-btn:hover {
+  background: oklch(0.26 0.008 68);
+}
+
+/* Focus ring — keyboard accessibility */
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid oklch(0.74 0.13 72);
+  outline-offset: 2px;
+}
+
+a:focus {
+  outline: none;
+}
+
+button:focus {
+  outline: none;
+}
+
+/* ── Wizard ── */
+
+@keyframes step-enter {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.step-animate-in {
+  animation: step-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step-animate-in { animation: none; }
+}
+
+.wizard-steps-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background: transparent;
+  border: none;
+  color: oklch(0.58 0.009 68);
+  cursor: pointer;
+  padding: 0;
+  transition: color 180ms ease;
+}
+
+.wizard-steps-toggle:hover {
+  color: oklch(0.74 0.13 72);
+}
+
+@keyframes sidebar-slide-in {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+
+.wizard-sidebar-overlay {
+  animation: sidebar-slide-in 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wizard-home-link {
+  color: oklch(0.58 0.009 68);
+  transition: color 180ms ease;
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.wizard-home-link:hover {
+  color: oklch(0.74 0.13 72);
+}
+
+.hero-name-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 1.25rem 2rem;
+  border-bottom: 1px solid oklch(0.22 0.008 68);
+  width: 100%;
+}
+
+.hero-name-creature {
+  flex-shrink: 0;
+  color: oklch(0.60 0.09 72);
+  display: flex;
+  align-items: center;
+}
+
+.hero-name-input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid oklch(0.24 0.008 68);
+  outline: none;
+  flex: 0 1 480px;
+  min-width: 0;
+  font-family: var(--font-name);
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: oklch(0.84 0.008 70);
+  padding: 0 0 0.625rem 0;
+  text-align: center;
+  transition: border-color 200ms ease;
+}
+
+/* Character name — calligraphic treatment across all views */
+.char-name {
+  font-family: var(--font-name);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.char-name-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-name);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.hero-name-input::placeholder {
+  color: oklch(0.40 0.007 68);
+}
+
+.hero-name-input:focus {
+  border-bottom-color: oklch(0.74 0.13 72);
+}
+
+@media (max-width: 540px) {
+  .hero-name-creature {
+    display: none;
+  }
+  .hero-name-input {
+    flex: 1;
+    width: 100%;
+  }
+}
+
+.wizard-step-dot {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.4rem 0;
+  position: relative;
+}
+
+/* Selection cards (kin / profession) */
+.select-card {
+  background: oklch(0.155 0.008 68);
+  border: 1px solid oklch(0.21 0.008 68);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+  transition: border-color 200ms ease, background 200ms ease;
+  width: 100%;
+}
+
+.select-card:hover {
+  border-color: oklch(0.34 0.010 68);
+  background: oklch(0.17 0.008 68);
+}
+
+.select-card.selected {
+  border-color: oklch(0.74 0.13 72);
+  background: oklch(0.17 0.010 72);
+}
+
+.card-sigil {
+  flex-shrink: 0;
+  color: oklch(0.30 0.010 68);
+  transition: color 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.select-card.selected .card-sigil,
+.select-card:hover .card-sigil {
+  color: oklch(0.74 0.13 72);
+}
+
+.rolled-badge {
+  font-family: var(--font-display);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  background: oklch(0.74 0.13 72);
+  color: oklch(0.12 0.007 68);
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.2rem;
+}
+
+.btn-roll {
+  color: oklch(0.58 0.009 68);
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  padding: 0;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.btn-roll:hover {
+  color: oklch(0.74 0.13 72);
+}
+
+.btn-back-link {
+  color: oklch(0.58 0.009 68);
+  background: transparent;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  padding: 0;
+  cursor: pointer;
+  transition: color 180ms ease;
+}
+
+.btn-back-link:hover {
+  color: oklch(0.65 0.010 68);
+}
+
+.btn-continue {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.625rem 2.5rem;
+  border-radius: 0.25rem;
+  border: none;
+  transition: background 180ms ease;
+}
+
+.btn-continue:not(:disabled) {
+  background: oklch(0.74 0.13 72);
+  color: oklch(0.12 0.007 68);
+  cursor: pointer;
+}
+
+.btn-continue:not(:disabled):hover {
+  background: oklch(0.79 0.14 72);
+}
+
+.btn-continue:disabled {
+  background: oklch(0.19 0.008 68);
+  color: oklch(0.34 0.007 68);
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* ── Wizard navigation footer ── */
+.wizard-nav-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: oklch(0.10 0.007 68 / 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid oklch(0.20 0.008 68);
+  padding: 14px 0;
+}
+
+/* ── Page scaffold ── */
+.bg-page { background: oklch(0.13 0.008 68); }
+
+.site-header {
+  background: oklch(0.10 0.007 68 / 0.94);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid oklch(0.20 0.007 68 / 0.5);
+}
+
+/* ── Typography roles ── */
+.site-title {
+  font-size: 1.25rem;
+  letter-spacing: 0.14em;
+  color: oklch(0.74 0.13 72);
+}
+
+.site-subtitle {
+  font-size: 0.6rem;
+  letter-spacing: 0.20em;
+  color: oklch(0.55 0.009 68);
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+  font-family: var(--font-body);
+}
+
+.text-gold { color: oklch(0.74 0.13 72); }
+.text-muted-stone { color: oklch(0.52 0.008 68); }
+
+.section-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: oklch(0.52 0.009 68);
+}
+
+.ornament-dim { color: oklch(0.27 0.011 68); }
+
+/* ── Empty state ── */
+.empty-heading {
+  font-size: 1.0625rem;
+  letter-spacing: 0.05em;
+  color: oklch(0.74 0.010 68);
+}
+
+.empty-subtext {
+  font-size: 0.875rem;
+  color: oklch(0.65 0.010 68);
+  line-height: 1.6;
+}
+
+/* ── Character list ── */
+.char-list-name {
+  font-size: 1.25rem;
+  color: oklch(0.84 0.008 70);
+}
+
+.char-list-meta {
+  font-size: 0.875rem;
+  color: oklch(0.70 0.010 68);
+  line-height: 1.55;
+}
+
+.confirm-overlay-bg { background: oklch(0.13 0.008 68 / 0.97); }
+
+.confirm-text {
+  font-size: 0.875rem;
+  color: oklch(0.65 0.01 68);
+}
+
+.badge-incomplete {
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  background: oklch(0.19 0.008 68);
+  color: oklch(0.58 0.009 68);
+}
+
+.kin-sigil-sm {
+  width: 52px;
+  height: 52px;
+}
+
+/* ── Wizard sidebar ── */
+.sidebar-tab {
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 3.5rem;
+  background: oklch(0.20 0.008 68);
+  border: 1px solid oklch(0.28 0.010 72);
+  border-left: none;
+  border-radius: 0 0.25rem 0.25rem 0;
+  color: oklch(0.58 0.09 72);
+}
+
+.sidebar-backdrop {
+  background: oklch(0.08 0.007 68 / 0.7);
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-panel {
+  width: 14rem;
+  background: oklch(0.115 0.008 68);
+  border-right: 1px solid oklch(0.21 0.008 68);
+  padding: 1.5rem 1.25rem;
+  overflow-y: auto;
+}
+
+.sidebar-header-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: oklch(0.55 0.009 68);
+}
+
+.sidebar-close-btn {
+  color: oklch(0.55 0.009 68);
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+  font-size: 1.125rem;
+}
+
+/* ── Wizard step list ── */
+.step-connector {
+  left: 10px;
+  top: 24px;
+  width: 1px;
+  height: 20px;
+  background: oklch(0.22 0.007 68);
+}
+
+.step-dot-size {
+  width: 22px;
+  height: 22px;
+}
+
+.step-label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.border-b-subtle { border-bottom: 1px solid oklch(0.20 0.007 68 / 0.5); }
+
+.wizard-desktop-aside {
+  width: 9rem;
+  padding-top: 0.25rem;
+  position: sticky;
+  top: 4.5rem;
+  align-self: flex-start;
+}
+
+/* ── Step content ── */
+.step-heading {
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
+  color: oklch(0.84 0.008 70);
+}
+
+.step-intro {
+  font-size: 0.875rem;
+  color: oklch(0.65 0.010 68);
+  line-height: 1.5;
+}
+
+.card-title {
+  font-size: 1.0625rem;
+  color: oklch(0.84 0.008 70);
+}
+
+.card-meta {
+  font-size: 0.8125rem;
+  color: oklch(0.63 0.010 68);
+}
+
+.card-ability-name {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: oklch(0.74 0.13 72);
+}
+
+.card-ability-cost {
+  color: oklch(0.58 0.009 68);
+  letter-spacing: 0;
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+.card-ability-desc {
+  font-size: 0.8125rem;
+  color: oklch(0.67 0.010 68);
+  line-height: 1.5;
+}
+
+.skill-tag {
+  font-size: 0.75rem;
+  color: oklch(0.65 0.009 68);
+  background: oklch(0.19 0.007 68);
+  padding: 0.1rem 0.375rem;
+  border-radius: 0.2rem;
+}

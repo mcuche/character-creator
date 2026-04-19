@@ -1,0 +1,49 @@
+<div>
+  <app-step-nav
+    backPath="weakness"
+    [canContinue]="true"
+    (next)="continue()" />
+
+  <div class="mb-8">
+    <h2 class="font-display text-2xl font-bold text-amber-300">Starting Gear</h2>
+    <p class="mt-1 text-stone-300">Your suggested loadout is pre-filled. Add or remove items as you like.</p>
+  </div>
+
+  <!-- Gear list -->
+  <div class="mb-6 space-y-2">
+    @for (item of gear(); track item.id) {
+      <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/60 p-3">
+        <span class="flex-1 text-stone-200">{{ item.name }}</span>
+        <div class="flex items-center gap-2">
+          <button (click)="updateQuantity(item.id, -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+          <span class="w-6 text-center text-sm text-stone-300">{{ item.quantity }}</span>
+          <button (click)="updateQuantity(item.id, 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+        </div>
+        <button (click)="removeItem(item.id)" class="text-stone-300 hover:text-red-400">✕</button>
+      </div>
+    }
+
+    @if (gear().length === 0) {
+      <p class="text-stone-300 italic">No items yet. Add some below.</p>
+    }
+  </div>
+
+  <!-- Add item -->
+  <div class="flex gap-2">
+    <input
+      type="text"
+      [ngModel]="newItemName()"
+      (ngModelChange)="newItemName.set($event)"
+      (keydown.enter)="addItem()"
+      placeholder="Add an item…"
+      class="flex-1 rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500"
+    />
+    <button
+      (click)="addItem()"
+      [disabled]="!newItemName().trim()"
+      class="rounded-lg bg-stone-700 px-4 py-2 text-sm font-medium text-stone-200 transition hover:bg-stone-600 disabled:opacity-40">
+      Add
+    </button>
+  </div>
+
+</div>

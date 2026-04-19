@@ -1,0 +1,89 @@
+<div>
+  <app-step-nav
+    backPath="profession"
+    [canContinue]="canContinue"
+    (next)="continue()" />
+
+  <div class="mb-8">
+    <h2 class="font-display text-2xl font-bold text-amber-300">Choose Your Magic</h2>
+    <p class="mt-1 text-stone-300">Select a school of magic, then choose 3 rank 1 spells and 3 magic tricks.</p>
+  </div>
+
+  <!-- School selection -->
+  <div class="mb-8 grid gap-3 sm:grid-cols-3">
+    @for (school of schools; track school.name) {
+      <button
+        (click)="selectSchool(school.name)"
+        class="rounded-xl border p-4 text-left transition"
+        [class.border-amber-500]="selectedSchool() === school.name"
+        [class.bg-amber-900/20]="selectedSchool() === school.name"
+        [class.border-stone-700]="selectedSchool() !== school.name"
+        [class.bg-stone-800/40]="selectedSchool() !== school.name"
+        [class.hover:border-stone-500]="selectedSchool() !== school.name">
+        <div class="font-display mb-1 font-semibold text-stone-100">{{ school.name }}</div>
+        <div class="mb-1 text-xs font-medium text-amber-400">{{ school.theme }}</div>
+        <p class="text-xs leading-relaxed text-stone-300">{{ school.description }}</p>
+      </button>
+    }
+  </div>
+
+  @if (selectedSchool()) {
+    <!-- Spells -->
+    <div class="mb-6">
+      <h3 class="font-display mb-3 text-lg font-semibold text-stone-200">
+        Starting Spells
+        <span class="ml-2 text-sm font-normal text-stone-300">{{ selectedSpells().size }}/3 chosen</span>
+      </h3>
+      <div class="grid gap-2 sm:grid-cols-2">
+        @for (spell of availableSpells(); track spell.name) {
+          <button
+            (click)="toggleSpell(spell.name)"
+            [disabled]="!selectedSpells().has(spell.name) && selectedSpells().size >= 3"
+            class="rounded-lg border p-3 text-left transition"
+            [class.border-amber-500]="selectedSpells().has(spell.name)"
+            [class.bg-amber-900/20]="selectedSpells().has(spell.name)"
+            [class.border-stone-700]="!selectedSpells().has(spell.name)"
+            [class.bg-stone-800/40]="!selectedSpells().has(spell.name)"
+            [class.opacity-40]="!selectedSpells().has(spell.name) && selectedSpells().size >= 3"
+            [class.hover:border-stone-500]="!selectedSpells().has(spell.name) && selectedSpells().size < 3">
+            <div class="mb-1 flex items-center justify-between">
+              <span class="text-sm font-semibold text-stone-100">{{ spell.name }}</span>
+              <span class="text-xs text-stone-300">{{ spell.school }}</span>
+            </div>
+            <p class="text-xs leading-relaxed text-stone-300">{{ spell.description }}</p>
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Tricks -->
+    <div class="mb-6">
+      <h3 class="font-display mb-3 text-lg font-semibold text-stone-200">
+        Magic Tricks
+        <span class="ml-2 text-sm font-normal text-stone-300">{{ selectedTricks().size }}/3 chosen</span>
+      </h3>
+      <p class="mb-3 text-xs text-stone-300">Tricks always succeed and cost 1 WP.</p>
+      <div class="grid gap-2 sm:grid-cols-2">
+        @for (trick of availableTricks(); track trick.name) {
+          <button
+            (click)="toggleTrick(trick.name)"
+            [disabled]="!selectedTricks().has(trick.name) && selectedTricks().size >= 3"
+            class="rounded-lg border p-3 text-left transition"
+            [class.border-amber-500]="selectedTricks().has(trick.name)"
+            [class.bg-amber-900/20]="selectedTricks().has(trick.name)"
+            [class.border-stone-700]="!selectedTricks().has(trick.name)"
+            [class.bg-stone-800/40]="!selectedTricks().has(trick.name)"
+            [class.opacity-40]="!selectedTricks().has(trick.name) && selectedTricks().size >= 3"
+            [class.hover:border-stone-500]="!selectedTricks().has(trick.name) && selectedTricks().size < 3">
+            <div class="mb-1 flex items-center justify-between">
+              <span class="text-sm font-semibold text-stone-100">{{ trick.name }}</span>
+              <span class="text-xs text-stone-300">{{ trick.school }}</span>
+            </div>
+            <p class="text-xs leading-relaxed text-stone-300">{{ trick.description }}</p>
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+</div>

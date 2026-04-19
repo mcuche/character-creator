@@ -1,0 +1,60 @@
+<div>
+  @if (pendingAge()) {
+    <app-confirm-modal
+      title="Change Age?"
+      [message]="'Changing to ' + pendingAge() + ' will reset your attribute scores and all trained skill selections, since age modifiers affect attribute values.'"
+      confirmLabel="Change Age"
+      (confirm)="confirmChange()"
+      (cancel)="cancelChange()" />
+  }
+  <app-step-nav
+    [backPath]="backPath"
+    [canContinue]="!!selected"
+    (next)="continue()" />
+
+  <div class="mb-8 flex items-start justify-between">
+    <div>
+      <h2 class="font-display text-2xl font-bold text-amber-300">Choose Your Age</h2>
+      <p class="mt-1 text-stone-300">Age affects your attribute modifiers and the number of trained skills you start with.</p>
+    </div>
+    <button
+      (click)="rollRandom()"
+      class="flex items-center gap-2 rounded-lg border border-amber-700/50 bg-amber-900/20 px-4 py-2 text-sm font-medium text-amber-300 transition hover:bg-amber-900/40">
+      🎲 Roll D6
+    </button>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-3">
+    @for (age of ageOptions; track age.name; let i = $index) {
+      <button
+        (click)="select(age.name)"
+        class="relative rounded-xl border p-5 text-left transition"
+        [class.border-amber-500]="selected === age.name"
+        [class.bg-amber-900/20]="selected === age.name"
+        [class.border-stone-700]="selected !== age.name"
+        [class.bg-stone-800/40]="selected !== age.name"
+        [class.hover:border-stone-500]="selected !== age.name"
+        [class.ring-2]="rolledIndex() === i"
+        [class.ring-amber-400]="rolledIndex() === i">
+
+        @if (rolledIndex() === i) {
+          <span class="absolute right-3 top-3 rounded bg-amber-500 px-1.5 py-0.5 text-xs font-bold text-stone-950">Rolled!</span>
+        }
+
+        <div class="font-display mb-1 text-xl font-bold text-stone-100">{{ age.name }}</div>
+        <div class="mb-3 text-xs text-stone-300">D6: {{ age.diceRange }}</div>
+
+        <div class="space-y-2">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-stone-300">Skills</span>
+            <span class="font-semibold text-amber-400">{{ age.skills }}</span>
+          </div>
+          <div class="rounded-lg bg-stone-900/60 p-2">
+            <span class="text-xs leading-relaxed text-stone-300">{{ age.modifier }}</span>
+          </div>
+        </div>
+      </button>
+    }
+  </div>
+
+</div>
