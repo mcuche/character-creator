@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@700&amp;display=swap');
+    </style>
+  </defs>
+  <circle cx="32" cy="32" r="32" fill="#d97706"/>
+  <text
+    x="32"
+    y="50"
+    text-anchor="middle"
+    font-family="Cinzel, 'Times New Roman', serif"
+    font-weight="700"
+    font-size="58"
+    fill="#1c1917"
+    letter-spacing="-1"
+  >D</text>
+</svg>
