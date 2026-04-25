@@ -61,9 +61,9 @@
             }
             @case ('Wolfkin') {
               <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wolfkin" role="img">
-                <line x1="50" y1="12" x2="22" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="50" y1="12" x2="50" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="50" y1="12" x2="78" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="18" y1="24" x2="82" y2="24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M26,24 L42,24 L34,78 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <path d="M58,24 L74,24 L66,78 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
               </svg>
             }
           }
@@ -81,15 +81,29 @@
           </div>
           <p class="card-meta">Move {{ kin.move }}m</p>
           <div class="mt-3">
-            <p class="font-display mb-1 card-ability-name">
-              {{ kin.innateAbilityName }}
-              <span class="font-body card-ability-cost">
-                · {{ kin.innateAbilityWP === 'free' ? 'Free' : kin.innateAbilityWP + ' WP' }}
-              </span>
-            </p>
-            <p class="card-ability-desc">
-              {{ kin.innateAbilityDescription }}
-            </p>
+            @if (kin.innateAbilities) {
+              @for (ability of kin.innateAbilities; track ability.name) {
+                <p class="font-display mb-1 card-ability-name">
+                  {{ ability.name }}
+                  <span class="font-body card-ability-cost">
+                    · {{ ability.wp === 'free' ? 'Free' : ability.wp + ' WP' }}
+                  </span>
+                </p>
+                <p class="card-ability-desc mb-2">
+                  {{ ability.description }}
+                </p>
+              }
+            } @else {
+              <p class="font-display mb-1 card-ability-name">
+                {{ kin.innateAbilityName }}
+                <span class="font-body card-ability-cost">
+                  · {{ kin.innateAbilityWP === 'free' ? 'Free' : kin.innateAbilityWP + ' WP' }}
+                </span>
+              </p>
+              <p class="card-ability-desc">
+                {{ kin.innateAbilityDescription }}
+              </p>
+            }
           </div>
         </div>
 

@@ -1,5 +1,11 @@
 import { Kin } from '../models/character.models';
 
+export interface KinAbility {
+  name: string;
+  description: string;
+  wp: number | 'free';
+}
+
 export interface KinData {
   name: Kin;
   diceRange: string;
@@ -7,6 +13,7 @@ export interface KinData {
   innateAbilityName: string;
   innateAbilityDescription: string;
   innateAbilityWP: number | 'free';
+  innateAbilities?: KinAbility[];
 }
 
 export const KIN_DATA: KinData[] = [
@@ -46,9 +53,13 @@ export const KIN_DATA: KinData[] = [
     name: 'Mallard',
     diceRange: '11',
     move: 8,
-    innateAbilityName: 'Ill-Tempered / Webbed Feet',
-    innateAbilityDescription: 'Ill-Tempered (3 WP): Gain a boon to any non-INT roll and become Angry. Webbed Feet (free): Gain a boon to SWIMMING and move at full speed in water.',
+    innateAbilityName: 'Ill-Tempered',
+    innateAbilityDescription: 'Gain a boon to any non-INT roll and become Angry.',
     innateAbilityWP: 3,
+    innateAbilities: [
+      { name: 'Ill-Tempered', description: 'Gain a boon to any non-INT roll and become Angry.', wp: 3 },
+      { name: 'Webbed Feet', description: 'Gain a boon to SWIMMING and move at full speed in water.', wp: 'free' },
+    ],
   },
   {
     name: 'Wolfkin',
