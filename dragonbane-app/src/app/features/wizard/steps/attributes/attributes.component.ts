@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,15 +41,18 @@ export class AttributesComponent {
   readonly STANDARD_ARRAY = STANDARD_ARRAY;
 
   mode = signal<'roll' | 'pointbuy' | 'standard'>('roll');
-  showModeWarning = signal(false);
-  pendingMode = signal<'roll' | 'pointbuy' | 'standard' | null>(null);
+  showContinueWarning = signal(false);
+  pendingAttrs = signal<Attributes | null>(null);
 
-  // Roll mode state
+  // Roll mode — independent state
   rolledScores = signal<DiceRoll[]>([]);
-  assignments = signal<Partial<Record<AttributeKey, number>>>({});
+  rollAssignments = signal<Partial<Record<AttributeKey, number>>>({});
   swapState = signal<AttributeKey[]>([]);
 
-  // Point buy state
+  // Standard array — independent state
+  standardAssignments = signal<Partial<Record<AttributeKey, number>>>({});
+
+  // Point buy — independent state
   pointBuyValues = signal<Record<AttributeKey, number>>({
     STR: 6, CON: 6, AGL: 6, INT: 6, WIL: 6, CHA: 6,
   });
@@ -62,8 +65,10 @@ export class AttributesComponent {
         this.pointBuyValues.set({ ...draft.attributes });
       } else if (draft.attributeGenerationMethod === 'standard') {
         this.mode.set('standard');
+        this.standardAssignments.set({ ...draft.attributes });
       } else {
         this.mode.set('roll');
+        this.rollAssignments.set({ ...draft.attributes });
       }
     }
   }
@@ -78,49 +83,48 @@ export class AttributesComponent {
 
   switchMode(m: 'roll' | 'pointbuy' | 'standard'): void {
     if (m === this.mode()) return;
-    if (this.hasDownstreamData) {
-      this.pendingMode.set(m);
-      this.showModeWarning.set(true);
-    } else {
-      this.mode.set(m);
-    }
+    this.mode.set(m);
   }
 
-  confirmModeSwitch(): void {
-    const m = this.pendingMode();
-    if (m) this.mode.set(m);
-    this.showModeWarning.set(false);
-    this.pendingMode.set(null);
-    this.rolledScores.set([]);
-    this.assignments.set({});
+  confirmContinue(): void {
+    const attrs = this.pendingAttrs();
+    if (attrs) this.saveAndNavigate(attrs);
+    this.showContinueWarning.set(false);
+    this.pendingAttrs.set(null);
   }
 
-  cancelModeSwitch(): void {
-    this.showModeWarning.set(false);
-    this.pendingMode.set(null);
+  cancelContinue(): void {
+    this.showContinueWarning.set(false);
+    this.pendingAttrs.set(null);
   }
 
   // --- Roll mode ---
 
   rollAll(): void {
     this.rolledScores.set(ATTR_KEYS.map(() => roll4d6DropLowestDetailed()));
-    this.assignments.set({});
+    this.rollAssignments.set({});
     this.swapState.set([]);
   }
 
   assignScore(attr: AttributeKey, roll: DiceRoll): void {
-    this.assignments.set({ ...this.assignments(), [attr]: roll.total });
+    this.rollAssignments.set({ ...this.rollAssignments(), [attr]: roll.total });
   }
 
   unassign(attr: AttributeKey): void {
-    const a = { ...this.assignments() };
-    delete a[attr];
-    this.assignments.set(a);
-    this.swapState.set([]);
+    if (this.mode() === 'roll') {
+      const a = { ...this.rollAssignments() };
+      delete a[attr];
+      this.rollAssignments.set(a);
+      this.swapState.set([]);
+    } else {
+      const a = { ...this.standardAssignments() };
+      delete a[attr];
+      this.standardAssignments.set(a);
+    }
   }
 
   get availableScores(): DiceRoll[] {
-    const remaining = [...Object.values(this.assignments())];
+    const remaining = [...Object.values(this.rollAssignments())];
     return this.rolledScores().filter(r => {
       const idx = remaining.indexOf(r.total);
       if (idx !== -1) { remaining.splice(idx, 1); return false; }
@@ -138,27 +142,27 @@ export class AttributesComponent {
       const newSwap = [...swap, attr];
       this.swapState.set(newSwap);
       if (newSwap.length === 2) {
-        const a = { ...this.assignments() };
+        const a = { ...this.rollAssignments() };
         const [k1, k2] = newSwap;
         [a[k1], a[k2]] = [a[k2]!, a[k1]!];
-        this.assignments.set(a);
+        this.rollAssignments.set(a);
         this.swapState.set([]);
       }
     }
   }
 
-  get rollAssignmentComplete(): boolean {
-    return ATTR_KEYS.every(k => this.assignments()[k] !== undefined);
+  get rollComplete(): boolean {
+    return ATTR_KEYS.every(k => this.rollAssignments()[k] !== undefined);
   }
 
   getRollAttributes(): Attributes | null {
-    if (!this.rollAssignmentComplete) return null;
-    const a = this.assignments() as Record<AttributeKey, number>;
+    if (!this.rollComplete) return null;
+    const a = this.rollAssignments() as Record<AttributeKey, number>;
     return { STR: a.STR, CON: a.CON, AGL: a.AGL, INT: a.INT, WIL: a.WIL, CHA: a.CHA };
   }
 
   getModifiedRoll(attr: AttributeKey): number | null {
-    const base = this.assignments()[attr];
+    const base = this.rollAssignments()[attr];
     if (base === undefined) return null;
     const age = this.age;
     if (!age) return base;
@@ -170,7 +174,7 @@ export class AttributesComponent {
   // --- Standard array ---
 
   get standardAvailableScores(): number[] {
-    const remaining = [...Object.values(this.assignments())];
+    const remaining = [...Object.values(this.standardAssignments())];
     return [...STANDARD_ARRAY].filter(s => {
       const idx = remaining.indexOf(s);
       if (idx !== -1) { remaining.splice(idx, 1); return false; }
@@ -179,17 +183,21 @@ export class AttributesComponent {
   }
 
   assignStandardScore(attr: AttributeKey, score: number): void {
-    this.assignments.set({ ...this.assignments(), [attr]: score });
+    this.standardAssignments.set({ ...this.standardAssignments(), [attr]: score });
+  }
+
+  get standardComplete(): boolean {
+    return ATTR_KEYS.every(k => this.standardAssignments()[k] !== undefined);
   }
 
   getStandardModified(attr: AttributeKey): number | null {
-    const base = this.assignments()[attr];
+    const base = this.standardAssignments()[attr];
     if (base === undefined) return null;
     const age = this.age;
     if (!age) return base;
-    const attrs = this.getRollAttributes();
-    if (!attrs) return base;
-    return applyAgeModifiers(attrs, age)[attr];
+    if (!this.standardComplete) return base;
+    const a = this.standardAssignments() as Record<AttributeKey, number>;
+    return applyAgeModifiers(a as Attributes, age)[attr];
   }
 
   // --- Point buy ---
@@ -229,24 +237,43 @@ export class AttributesComponent {
     return pointBuyCost(this.pointBuyValues()[attr]);
   }
 
-  get pointBuyComplete(): boolean {
-    return true; // Always valid since defaults are set
-  }
-
   // --- Shared ---
 
   get canContinue(): boolean {
-    if (this.mode() === 'pointbuy') return this.pointBuyComplete;
-    return this.rollAssignmentComplete;
+    if (this.mode() === 'pointbuy') return true;
+    if (this.mode() === 'roll') return this.rollComplete;
+    return this.standardComplete;
+  }
+
+  private getCurrentAttrs(): Attributes | null {
+    if (this.mode() === 'pointbuy') {
+      return { ...this.pointBuyValues() } as Attributes;
+    }
+    if (this.mode() === 'roll') return this.getRollAttributes();
+    if (!this.standardComplete) return null;
+    const a = this.standardAssignments() as Record<AttributeKey, number>;
+    return { STR: a.STR, CON: a.CON, AGL: a.AGL, INT: a.INT, WIL: a.WIL, CHA: a.CHA };
+  }
+
+  private attrsChanged(newAttrs: Attributes): boolean {
+    const saved = this.draft().attributes;
+    if (!saved) return false;
+    if (this.draft().attributeGenerationMethod !== this.mode()) return true;
+    return ATTR_KEYS.some(k => newAttrs[k] !== saved[k]);
   }
 
   continue(): void {
-    let attrs: Attributes;
-    if (this.mode() === 'pointbuy') {
-      attrs = { ...this.pointBuyValues() } as Attributes;
+    const attrs = this.getCurrentAttrs();
+    if (!attrs) return;
+    if (this.hasDownstreamData && this.attrsChanged(attrs)) {
+      this.pendingAttrs.set(attrs);
+      this.showContinueWarning.set(true);
     } else {
-      attrs = this.getRollAttributes()!;
+      this.saveAndNavigate(attrs);
     }
+  }
+
+  private saveAndNavigate(attrs: Attributes): void {
     this.draftService.setAttributes(attrs, this.mode());
     this.router.navigate(['/create/derived']);
   }

@@ -83,4 +83,5 @@ export type CharacterDraft = Partial<Character> & {
   attributeGenerationMethod?: 'roll' | 'pointbuy' | 'standard';
   pointBuyRemaining?: number;
   step?: string;
+  wizardFurthestStep?: string;
 };

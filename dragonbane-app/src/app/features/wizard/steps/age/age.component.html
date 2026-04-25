@@ -1,4 +1,5 @@
-<div>
+<div class="step-animate-in">
+
   @if (pendingAge()) {
     <app-confirm-modal
       title="Change Age?"
@@ -7,54 +8,91 @@
       (confirm)="confirmChange()"
       (cancel)="cancelChange()" />
   }
-  <app-step-nav
-    [backPath]="backPath"
-    [canContinue]="!!selected"
-    (next)="continue()" />
 
-  <div class="mb-8 flex items-start justify-between">
-    <div>
-      <h2 class="font-display text-2xl font-bold text-amber-300">Choose Your Age</h2>
-      <p class="mt-1 text-stone-300">Age affects your attribute modifiers and the number of trained skills you start with.</p>
-    </div>
-    <button
-      (click)="rollRandom()"
-      class="flex items-center gap-2 rounded-lg border border-amber-700/50 bg-amber-900/20 px-4 py-2 text-sm font-medium text-amber-300 transition hover:bg-amber-900/40">
-      🎲 Roll D6
-    </button>
+  <div class="mb-2 flex items-baseline justify-between">
+    <h2 class="font-display font-semibold step-heading">
+      Choose Your Age
+    </h2>
+    <button (click)="rollRandom()" class="btn-roll">Roll D6</button>
   </div>
+  <p class="mb-8 step-intro">
+    Age shapes your attribute modifiers and the number of trained skills you begin with.
+  </p>
 
-  <div class="grid gap-4 sm:grid-cols-3">
+  <div class="grid gap-3 sm:grid-cols-3">
     @for (age of ageOptions; track age.name; let i = $index) {
       <button
         (click)="select(age.name)"
-        class="relative rounded-xl border p-5 text-left transition"
-        [class.border-amber-500]="selected === age.name"
-        [class.bg-amber-900/20]="selected === age.name"
-        [class.border-stone-700]="selected !== age.name"
-        [class.bg-stone-800/40]="selected !== age.name"
-        [class.hover:border-stone-500]="selected !== age.name"
-        [class.ring-2]="rolledIndex() === i"
-        [class.ring-amber-400]="rolledIndex() === i">
+        class="select-card"
+        [class.selected]="selected === age.name">
 
-        @if (rolledIndex() === i) {
-          <span class="absolute right-3 top-3 rounded bg-amber-500 px-1.5 py-0.5 text-xs font-bold text-stone-950">Rolled!</span>
-        }
-
-        <div class="font-display mb-1 text-xl font-bold text-stone-100">{{ age.name }}</div>
-        <div class="mb-3 text-xs text-stone-300">D6: {{ age.diceRange }}</div>
-
-        <div class="space-y-2">
-          <div class="flex items-center gap-2">
-            <span class="text-xs text-stone-300">Skills</span>
-            <span class="font-semibold text-amber-400">{{ age.skills }}</span>
-          </div>
-          <div class="rounded-lg bg-stone-900/60 p-2">
-            <span class="text-xs leading-relaxed text-stone-300">{{ age.modifier }}</span>
-          </div>
+        <!-- Age sigil -->
+        <div class="card-sigil">
+          @switch (age.name) {
+            @case ('Young') {
+              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Young" role="img">
+                <line x1="14" y1="74" x2="86" y2="74" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="30" y1="74" x2="30" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="74" x2="50" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="70" y1="74" x2="70" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            }
+            @case ('Adult') {
+              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Adult" role="img">
+                <circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="2.5"/>
+                <line x1="18" y1="50" x2="82" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="6" fill="currentColor"/>
+              </svg>
+            }
+            @case ('Old') {
+              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Old" role="img">
+                <line x1="18" y1="14" x2="82" y2="14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="18" y1="86" x2="82" y2="86" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="18" y1="14" x2="82" y2="86" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="82" y1="14" x2="18" y2="86" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="4" fill="currentColor"/>
+              </svg>
+            }
+          }
         </div>
+
+        <!-- Age info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="font-display font-semibold card-title">
+              {{ age.name }}
+            </span>
+            @if (rolledIndex() === i) {
+              <span class="rolled-badge">Rolled</span>
+            }
+          </div>
+          <p class="font-display mb-1 card-ability-name">{{ age.skills }} trained skills</p>
+          @if (age.modifiers.length === 0) {
+            <p class="card-ability-desc">No modifiers</p>
+          } @else {
+            <div class="age-mods">
+              <div>
+                @for (m of age.modifiers; track m.attr) {
+                  @if (m.delta < 0) {
+                    <div class="mod-neg">{{ m.attr }} {{ m.delta }}</div>
+                  }
+                }
+              </div>
+              <div>
+                @for (m of age.modifiers; track m.attr) {
+                  @if (m.delta > 0) {
+                    <div class="mod-pos">{{ m.attr }} +{{ m.delta }}</div>
+                  }
+                }
+              </div>
+            </div>
+          }
+        </div>
+
       </button>
     }
   </div>
+
+  <app-step-nav [backPath]="backPath" [canContinue]="!!selected" (next)="continue()" />
 
 </div>

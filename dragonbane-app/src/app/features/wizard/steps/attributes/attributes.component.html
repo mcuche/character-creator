@@ -1,181 +1,144 @@
-<div>
-  @if (showModeWarning()) {
+<div class="step-animate-in">
+
+  @if (showContinueWarning()) {
     <app-confirm-modal
-      title="Switch Attribute Method?"
-      message="Switching method will reset your current attribute assignments, derived stats, and trained skill levels."
-      confirmLabel="Switch"
-      (confirm)="confirmModeSwitch()"
-      (cancel)="cancelModeSwitch()" />
+      title="Update Attributes?"
+      message="These changes will recalculate your derived stats and reset any trained skill selections."
+      confirmLabel="Update"
+      (confirm)="confirmContinue()"
+      (cancel)="cancelContinue()" />
   }
-  <app-step-nav
-    backPath="age"
-    [canContinue]="canContinue"
-    (next)="continue()" />
 
-  <div class="mb-6 flex items-start justify-between">
-    <div>
-      <h2 class="font-display text-2xl font-bold text-amber-300">Set Your Attributes</h2>
-      <p class="mt-1 text-stone-300">Six attributes drive all of your skills and derived stats.</p>
-    </div>
+  <div class="mb-2 flex items-baseline justify-between">
+    <h2 class="font-display font-semibold step-heading">Set Your Attributes</h2>
   </div>
+  <p class="mb-6 step-intro">Six attributes drive all your skills and derived stats.</p>
 
-  <!-- Mode toggle -->
-  <div class="mb-8 flex border-b border-stone-800">
-    <button
-      (click)="switchMode('roll')"
-      class="border-b-2 px-5 py-2.5 text-sm font-medium transition"
-      [class.border-amber-500]="mode() === 'roll'"
-      [class.text-amber-300]="mode() === 'roll'"
-      [class.border-transparent]="mode() !== 'roll'"
-      [class.text-stone-300]="mode() !== 'roll'"
-      [class.hover:text-stone-300]="mode() !== 'roll'">
-      🎲 Roll (4D6 drop lowest)
-    </button>
-    <button
-      (click)="switchMode('standard')"
-      class="border-b-2 px-5 py-2.5 text-sm font-medium transition"
-      [class.border-amber-500]="mode() === 'standard'"
-      [class.text-amber-300]="mode() === 'standard'"
-      [class.border-transparent]="mode() !== 'standard'"
-      [class.text-stone-300]="mode() !== 'standard'"
-      [class.hover:text-stone-300]="mode() !== 'standard'">
-      📋 Standard Array
-    </button>
-    <button
-      (click)="switchMode('pointbuy')"
-      class="border-b-2 px-5 py-2.5 text-sm font-medium transition"
-      [class.border-amber-500]="mode() === 'pointbuy'"
-      [class.text-amber-300]="mode() === 'pointbuy'"
-      [class.border-transparent]="mode() !== 'pointbuy'"
-      [class.text-stone-300]="mode() !== 'pointbuy'"
-      [class.hover:text-stone-300]="mode() !== 'pointbuy'">
-      📊 Point Buy
-    </button>
+  <!-- Mode tabs -->
+  <div class="attr-tabs">
+    <button (click)="switchMode('roll')" class="attr-tab" [class.active]="mode() === 'roll'">Roll 4D6</button>
+    <button (click)="switchMode('standard')" class="attr-tab" [class.active]="mode() === 'standard'">Standard Array</button>
+    <button (click)="switchMode('pointbuy')" class="attr-tab" [class.active]="mode() === 'pointbuy'">Point Buy</button>
   </div>
 
   <!-- ROLL MODE -->
   @if (mode() === 'roll') {
-    <div class="mb-6 flex items-center gap-4">
-      <button
-        (click)="rollAll()"
-        class="rounded-lg bg-amber-600 px-5 py-2 text-sm font-semibold text-stone-950 transition hover:bg-amber-500">
-        🎲 Roll All 6 Attributes
-      </button>
-      @if (rolledScores().length > 0) {
-        <span class="text-sm text-stone-300">Assign scores to each attribute below.</span>
+    <div class="mb-5 flex items-center gap-4 flex-wrap">
+      <button (click)="rollAll()" class="btn-roll-action">Roll All 6</button>
+      @if (rolledScores().length > 0 && availableScores.length > 0) {
+        <span class="step-intro">Assign each score to an attribute below.</span>
       }
     </div>
 
-    <!-- Available scores (only after rolling) -->
     @if (rolledScores().length > 0) {
-      <div class="mb-4">
-        <p class="mb-2 text-xs text-stone-300">Available scores — click a score to assign it to an attribute:</p>
+      <div class="mb-5">
+        <p class="section-label mb-2">Available scores</p>
         <div class="flex flex-wrap gap-2">
           @for (roll of availableScores; track $index) {
-            <div class="rounded-lg border border-stone-600 bg-stone-800 px-4 py-2 text-center">
-              <div class="font-mono font-bold text-stone-200">{{ roll.total }}</div>
-              <div class="mt-0.5 flex gap-1 text-xs">
+            <div class="score-chip">
+              <div class="score-chip-total">{{ roll.total }}</div>
+              <div class="score-chip-dice">
                 @for (d of roll.kept; track $index) {
-                  <span class="text-stone-300">{{ d }}</span>
+                  <span>{{ d }}</span>
                 }
-                <span class="text-red-400 line-through">{{ roll.dropped }}</span>
+                <span class="score-chip-dropped">{{ roll.dropped }}</span>
               </div>
             </div>
           }
           @if (availableScores.length === 0) {
-            <span class="text-sm text-stone-300 italic">All scores assigned</span>
+            <span class="step-intro italic">All scores assigned</span>
           }
         </div>
       </div>
     }
 
-    <!-- Attribute rows (always visible) -->
-    <div class="mb-4 space-y-2">
+    <div class="mb-4">
       @for (attr of attrKeys; track attr) {
-        <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/60 p-3">
-          <div class="w-32 shrink-0">
-            <div class="font-semibold text-stone-200">{{ attr }}</div>
+        <div class="attr-row">
+          <div class="attr-row-label">
+            <span class="attr-row-key">{{ attr }}</span>
+            <span class="attr-row-name">{{ attrLabels[attr] }}</span>
           </div>
-
-          @if (assignments()[attr] !== undefined) {
-            <div class="flex items-center gap-2">
-              <span class="font-mono text-xl font-bold text-amber-400">{{ assignments()[attr] }}</span>
-              @if (age && getModifiedRoll(attr) !== assignments()[attr]) {
-                <span class="text-sm text-stone-300">→ <span class="font-bold text-amber-300">{{ getModifiedRoll(attr) }}</span> <span class="text-xs text-stone-300">(age)</span></span>
+          <div class="flex-1 flex items-center gap-3">
+            @if (rollAssignments()[attr] !== undefined) {
+              <span class="attr-assigned-val">{{ rollAssignments()[attr] }}</span>
+              @if (age && getModifiedRoll(attr) !== rollAssignments()[attr]) {
+                <span class="attr-age-arrow">→</span>
+                <span class="attr-age-modified">{{ getModifiedRoll(attr) }}</span>
+                <span class="section-label">age</span>
               }
-              <button (click)="unassign(attr)" class="ml-2 text-xs text-stone-300 hover:text-stone-300">✕ unassign</button>
+              <button (click)="unassign(attr)" class="attr-action-btn">unassign</button>
               <button
                 (click)="toggleSwap(attr)"
-                class="rounded px-2 py-0.5 text-xs transition"
-                [class.bg-amber-600]="swapState().includes(attr)"
-                [class.text-stone-950]="swapState().includes(attr)"
-                [class.bg-stone-700]="!swapState().includes(attr)"
-                [class.text-stone-300]="!swapState().includes(attr)">
-                ⇄ swap
+                class="attr-action-btn"
+                [class.swap-active]="swapState().includes(attr)">
+                swap
               </button>
-            </div>
-          } @else if (rolledScores().length > 0) {
-            <div class="flex flex-wrap gap-1">
-              @for (roll of availableScores; track $index) {
-                <button
-                  (click)="assignScore(attr, roll)"
-                  class="rounded border border-stone-600 bg-stone-700 px-3 py-1 font-mono text-sm font-bold transition hover:border-amber-500 hover:bg-stone-600">
-                  {{ roll.total }}
-                </button>
-              }
-            </div>
-          } @else {
-            <span class="font-mono text-xl font-bold text-stone-700">—</span>
-          }
+            } @else if (rolledScores().length > 0) {
+              <div class="flex flex-wrap gap-1.5">
+                @for (roll of availableScores; track $index) {
+                  <button (click)="assignScore(attr, roll)" class="score-assign-btn">
+                    {{ roll.total }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <span class="attr-empty-dash">—</span>
+            }
+          </div>
         </div>
       }
     </div>
 
     @if (swapState().length === 1) {
-      <p class="mb-4 text-sm text-amber-400">Select a second attribute to swap with <strong>{{ swapState()[0] }}</strong>.</p>
+      <p class="step-intro mb-4">Select a second attribute to swap with
+        <span class="text-gold font-semibold">{{ swapState()[0] }}</span>.
+      </p>
     }
   }
 
   <!-- STANDARD ARRAY MODE -->
   @if (mode() === 'standard') {
-    <div class="mb-6">
-      <p class="mb-2 text-xs text-stone-300">Available scores — click a score to assign it to an attribute:</p>
+    <div class="mb-5">
+      <p class="section-label mb-2">Available scores</p>
       <div class="flex flex-wrap gap-2">
         @for (score of standardAvailableScores; track $index) {
-          <span class="rounded-lg border border-stone-600 bg-stone-800 px-4 py-2 font-mono font-bold text-stone-200">{{ score }}</span>
+          <div class="score-chip">
+            <div class="score-chip-total">{{ score }}</div>
+          </div>
         }
         @if (standardAvailableScores.length === 0) {
-          <span class="text-sm text-stone-300 italic">All scores assigned</span>
+          <span class="step-intro italic">All scores assigned</span>
         }
       </div>
     </div>
 
-    <div class="mb-4 space-y-2">
+    <div class="mb-4">
       @for (attr of attrKeys; track attr) {
-        <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/60 p-3">
-          <div class="w-32 shrink-0">
-            <div class="font-semibold text-stone-200">{{ attr }}</div>
+        <div class="attr-row">
+          <div class="attr-row-label">
+            <span class="attr-row-key">{{ attr }}</span>
+            <span class="attr-row-name">{{ attrLabels[attr] }}</span>
           </div>
-
-          @if (assignments()[attr] !== undefined) {
-            <div class="flex items-center gap-2">
-              <span class="font-mono text-xl font-bold text-amber-400">{{ assignments()[attr] }}</span>
-              @if (age && getStandardModified(attr) !== assignments()[attr]) {
-                <span class="text-sm text-stone-300">→ <span class="font-bold text-amber-300">{{ getStandardModified(attr) }}</span> <span class="text-xs text-stone-300">(age)</span></span>
+          <div class="flex-1 flex items-center gap-3">
+            @if (standardAssignments()[attr] !== undefined) {
+              <span class="attr-assigned-val">{{ standardAssignments()[attr] }}</span>
+              @if (age && getStandardModified(attr) !== standardAssignments()[attr]) {
+                <span class="attr-age-arrow">→</span>
+                <span class="attr-age-modified">{{ getStandardModified(attr) }}</span>
+                <span class="section-label">age</span>
               }
-              <button (click)="unassign(attr)" class="ml-2 text-xs text-stone-300 hover:text-stone-300">✕ unassign</button>
-            </div>
-          } @else {
-            <div class="flex flex-wrap gap-1">
-              @for (score of standardAvailableScores; track $index) {
-                <button
-                  (click)="assignStandardScore(attr, score)"
-                  class="rounded border border-stone-600 bg-stone-700 px-3 py-1 font-mono text-sm font-bold transition hover:border-amber-500 hover:bg-stone-600">
-                  {{ score }}
-                </button>
-              }
-            </div>
-          }
+              <button (click)="unassign(attr)" class="attr-action-btn">unassign</button>
+            } @else {
+              <div class="flex flex-wrap gap-1.5">
+                @for (score of standardAvailableScores; track $index) {
+                  <button (click)="assignStandardScore(attr, score)" class="score-assign-btn">
+                    {{ score }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
         </div>
       }
     </div>
@@ -183,62 +146,56 @@
 
   <!-- POINT BUY MODE -->
   @if (mode() === 'pointbuy') {
-    <div class="mb-6 flex items-center gap-4">
-      <div class="rounded-lg border border-stone-700 bg-stone-800/60 px-4 py-2">
-        <span class="text-sm text-stone-300">Points remaining: </span>
-        <span class="font-bold"
-          [class.text-amber-400]="pointBuyRemaining >= 0"
-          [class.text-red-400]="pointBuyRemaining < 0">
-          {{ pointBuyRemaining }} / {{ POINT_BUY_BUDGET }}
+    <div class="mb-5 flex items-center gap-4 flex-wrap">
+      <div class="pb-budget">
+        <span class="pb-budget-label">Remaining</span>
+        <span class="pb-budget-val" [class.ok]="pointBuyRemaining >= 0" [class.over]="pointBuyRemaining < 0">
+          {{ pointBuyRemaining }}
         </span>
+        <span class="pb-budget-total">/ {{ POINT_BUY_BUDGET }}</span>
       </div>
-      <span class="text-xs text-stone-300">Min {{ POINT_BUY_MIN }} · Max {{ POINT_BUY_MAX }} (before age modifiers)</span>
+      <span class="step-intro">Min {{ POINT_BUY_MIN }} · Max {{ POINT_BUY_MAX }} before age modifiers</span>
     </div>
 
-    <div class="space-y-2">
+    <div class="mb-4">
       @for (attr of attrKeys; track attr) {
-        <div class="flex items-center gap-4 rounded-lg border border-stone-700 bg-stone-800/60 p-3">
-          <div class="w-32">
-            <div class="font-semibold text-stone-200">{{ attr }}</div>
-            <div class="text-xs text-stone-300">{{ attrLabels[attr] }}</div>
+        <div class="attr-row">
+          <div class="attr-row-label">
+            <span class="attr-row-key">{{ attr }}</span>
+            <span class="attr-row-name">{{ attrLabels[attr] }}</span>
           </div>
-
-          <div class="flex items-center gap-3">
+          <div class="pb-stepper">
             <button
               (click)="adjustPointBuy(attr, -1)"
               [disabled]="pointBuyValues()[attr] <= POINT_BUY_MIN"
-              class="h-8 w-8 rounded-full border border-stone-600 bg-stone-700 font-bold text-stone-200 transition hover:border-stone-500 disabled:opacity-30">
-              −
-            </button>
-            <span class="w-8 text-center font-mono text-xl font-bold text-amber-400">{{ pointBuyValues()[attr] }}</span>
+              class="pb-btn">−</button>
+            <span class="pb-val">{{ pointBuyValues()[attr] }}</span>
             <button
               (click)="adjustPointBuy(attr, 1)"
               [disabled]="pointBuyValues()[attr] >= effectivePointBuyMax(attr) || pointBuyRemaining <= 0"
-              class="h-8 w-8 rounded-full border border-stone-600 bg-stone-700 font-bold text-stone-200 transition hover:border-stone-500 disabled:opacity-30">
-              +
-            </button>
+              class="pb-btn">+</button>
           </div>
-
           @if (age && getPointBuyModified(attr) !== pointBuyValues()[attr]) {
-            <span class="text-sm text-stone-300">→ <span class="font-bold text-amber-300">{{ getPointBuyModified(attr) }}</span> <span class="text-xs text-stone-300">(age)</span></span>
+            <span class="attr-age-arrow">→</span>
+            <span class="attr-age-modified">{{ getPointBuyModified(attr) }}</span>
+            <span class="section-label">age</span>
           }
-
-          <div class="ml-auto text-xs text-stone-300">
-            Cost: {{ getPointBuyCost(attr) }} pts
-          </div>
+          <div class="ml-auto pb-cost">{{ getPointBuyCost(attr) }} pts</div>
         </div>
       }
     </div>
   }
 
   @if (age) {
-    <p class="mt-4 rounded-lg bg-stone-800/60 p-3 text-xs text-stone-300">
-      <span class="font-semibold text-stone-300">Age modifier ({{ age }}):</span>
+    <p class="attr-age-notice mb-6">
+      <span class="card-meta font-semibold">Age ({{ age }}):</span>
       @if (age === 'Young') { AGL +1, CON +1 }
-      @if (age === 'Adult') { No modifiers }
+      @if (age === 'Adult') { no modifiers }
       @if (age === 'Old') { STR −2, AGL −2, CON −2, INT +1, WIL +1 }
       — applied automatically to final values.
     </p>
   }
+
+  <app-step-nav backPath="age" [canContinue]="canContinue" (next)="continue()" />
 
 </div>

@@ -7,6 +7,10 @@ import { CharacterDraftService } from '../../services/character-draft.service';
 import { WizardNavService } from '../../services/wizard-nav.service';
 import { WIZARD_STEPS } from '../../shared/wizard-steps';
 
+function wizardStepIndex(path: string): number {
+  return WIZARD_STEPS.findIndex(s => s.path === path);
+}
+
 const STEPS = WIZARD_STEPS.filter(s => s.path !== 'mage-school');
 
 @Component({
@@ -28,10 +32,11 @@ export class WizardComponent {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: NavigationEnd) => {
       const segments = e.urlAfterRedirects.split('/');
       this.currentPath = segments[segments.length - 1] ?? '';
+      this.draftService.advanceHighWaterMark(this.currentPath);
     });
-    // Set initial path
     const segments = this.router.url.split('/');
     this.currentPath = segments[segments.length - 1] ?? '';
+    this.draftService.advanceHighWaterMark(this.currentPath);
   }
 
   get currentStepIndex(): number {
@@ -72,8 +77,14 @@ export class WizardComponent {
     this.wizardNav.nextTrigger$.next();
   }
 
-  navigateToStep(path: string, index: number): void {
-    if (index < this.currentVisibleIndex) {
+  isVisited(path: string): boolean {
+    const furthest = this.draft().wizardFurthestStep;
+    if (!furthest) return false;
+    return wizardStepIndex(path) <= wizardStepIndex(furthest);
+  }
+
+  navigateToStep(path: string): void {
+    if (this.isVisited(path) && path !== this.currentPath) {
       this.router.navigate(['/create', path]);
       this.closeSidebar();
     }

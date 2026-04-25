@@ -2,6 +2,11 @@ import { Injectable, signal } from '@angular/core';
 import { CharacterDraft, Kin, Profession, Age, MagicSchool, Attributes, SkillEntry, GearItem, Memento, Appearance, Character, Condition } from '../models/character.models';
 import { deriveStats, computeSkills } from './character-rules.service';
 import { PROFESSION_DATA } from '../data/professions.data';
+import { WIZARD_STEPS } from '../shared/wizard-steps';
+
+function stepIndex(path: string): number {
+  return WIZARD_STEPS.findIndex(s => s.path === path);
+}
 
 const DRAFT_KEY = 'dragonbane_draft';
 
@@ -49,6 +54,20 @@ export class CharacterDraftService {
     this.patch({ name });
   }
 
+  private clampFurthest(maxPath: string): string {
+    const current = this._draft().wizardFurthestStep;
+    if (!current) return maxPath;
+    return stepIndex(current) <= stepIndex(maxPath) ? current : maxPath;
+  }
+
+  advanceHighWaterMark(path: string): void {
+    const current = this._draft().wizardFurthestStep;
+    const currentIdx = current ? stepIndex(current) : -1;
+    if (stepIndex(path) > currentIdx) {
+      this.patch({ wizardFurthestStep: path });
+    }
+  }
+
   setKin(kin: Kin): void {
     // Kin only resets innate ability — no downstream cascade
     this.patch({ kin });
@@ -80,6 +99,7 @@ export class CharacterDraftService {
       preparedSpells: [],
       magicTricks: [],
       skills: resetSkills,
+      wizardFurthestStep: this.clampFurthest('profession'),
     });
   }
 
@@ -100,6 +120,7 @@ export class CharacterDraftService {
       skills: {},
       attributeGenerationMethod: undefined,
       pointBuyRemaining: undefined,
+      wizardFurthestStep: this.clampFurthest('age'),
     });
   }
 
@@ -128,6 +149,7 @@ export class CharacterDraftService {
       currentHP: derived.hp,
       currentWP: derived.wp,
       attributeGenerationMethod: method,
+      wizardFurthestStep: this.clampFurthest('attributes'),
     });
   }
 
