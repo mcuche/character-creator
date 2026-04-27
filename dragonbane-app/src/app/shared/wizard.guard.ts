@@ -12,7 +12,7 @@ function firstUnlockedStep(draft: CharacterDraft): string {
   if (!draft.derivedStats) return 'derived';
   const hasSkills = draft.skills && Object.values(draft.skills).some(s => s.trained);
   if (!hasSkills) return 'skills';
-  return 'weakness'; // weakness, gear, memento, appearance, summary are always unlocked
+  return 'summary'; // weakness, gear, memento, appearance, summary are always unlocked once skills are done
 }
 
 const STEP_ORDER = [

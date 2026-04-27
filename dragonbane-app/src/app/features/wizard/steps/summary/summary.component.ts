@@ -3,10 +3,11 @@ import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CharacterDraftService } from '../../../../services/character-draft.service';
 import { CharacterService } from '../../../../services/character.service';
+import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
 
 @Component({
   selector: 'app-summary',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, StepNavComponent],
   templateUrl: './summary.component.html',
 })
 export class SummaryComponent {

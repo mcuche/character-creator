@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CharacterDraftService } from '../../../../services/character-draft.service';
@@ -19,17 +19,16 @@ export class SkillsComponent {
   readonly draft = this.draftService.draft;
   readonly allSkills = SKILLS_DATA;
 
-  selectedProfSkills = signal<Set<string>>(new Set());
   selectedFreeSkills = signal<Set<string>>(new Set());
+  tooltipSkill = signal<string | null>(null);
 
   constructor() {
     const draft = this.draft();
     const trainedNames = Object.entries(draft.skills ?? {})
       .filter(([, e]) => e.trained)
       .map(([name]) => name);
-    const profSkills = this.professionSkills;
-    this.selectedProfSkills.set(new Set(trainedNames.filter(n => profSkills.includes(n))));
-    this.selectedFreeSkills.set(new Set(trainedNames.filter(n => !profSkills.includes(n))));
+    const profSkills = new Set(this.professionSkills);
+    this.selectedFreeSkills.set(new Set(trainedNames.filter(n => !profSkills.has(n))));
   }
 
   get profession() {
@@ -44,28 +43,27 @@ export class SkillsComponent {
     return this.age ? getTrainedSkillCount(this.age) : 10;
   }
 
-  get profSkillSlots(): number {
-    return 6;
-  }
-
   get freeSkillSlots(): number {
-    return this.totalSkills - this.profSkillSlots;
+    return this.totalSkills - 6;
   }
 
   get professionSkills(): string[] {
     const prof = PROFESSION_DATA.find(p => p.name === this.profession);
-    if (!prof) return [];
-    // For Mage, include the magic school as a profession skill
-    const skills = [...prof.skills];
-    const draft = this.draft();
-    if (this.profession === 'Mage' && draft.magicSchool) {
-      skills.unshift(draft.magicSchool);
-    }
-    return skills;
+    return prof ? [...prof.skills] : [];
+  }
+
+  get magicSchool(): string | null {
+    if (this.profession !== 'Mage') return null;
+    return this.draft().magicSchool ?? null;
   }
 
   get freeSkillOptions(): string[] {
-    return this.allSkills.map(s => s.name).filter(n => !this.selectedProfSkills().has(n));
+    const profSet = new Set(this.professionSkills);
+    return this.allSkills.map(s => s.name).filter(n => !profSet.has(n));
+  }
+
+  isProfSkill(name: string): boolean {
+    return new Set(this.professionSkills).has(name);
   }
 
   getSkillLevel(name: string): number {
@@ -76,17 +74,8 @@ export class SkillsComponent {
     return SKILLS_DATA.find(s => s.name === name)?.attribute ?? '';
   }
 
-  toggleProfSkill(name: string): void {
-    const set = new Set(this.selectedProfSkills());
-    if (set.has(name)) {
-      set.delete(name);
-    } else if (set.size < this.profSkillSlots) {
-      set.add(name);
-    }
-    this.selectedProfSkills.set(set);
-  }
-
   toggleFreeSkill(name: string): void {
+    if (this.isProfSkill(name)) return;
     const set = new Set(this.selectedFreeSkills());
     if (set.has(name)) {
       set.delete(name);
@@ -96,14 +85,21 @@ export class SkillsComponent {
     this.selectedFreeSkills.set(set);
   }
 
+  showTooltip(name: string): void {
+    this.tooltipSkill.set(name);
+  }
+
+  hideTooltip(): void {
+    this.tooltipSkill.set(null);
+  }
+
   get canContinue(): boolean {
-    return this.selectedProfSkills().size === this.profSkillSlots &&
-      this.selectedFreeSkills().size === this.freeSkillSlots;
+    return this.selectedFreeSkills().size === this.freeSkillSlots;
   }
 
   continue(): void {
-    const trained = [...this.selectedProfSkills(), ...this.selectedFreeSkills()];
-    this.draftService.setTrainedSkills(trained);
+    const allTrained = [...this.professionSkills, ...this.selectedFreeSkills()];
+    this.draftService.setTrainedSkills(allTrained);
     this.router.navigate(['/create/weakness']);
   }
 }
