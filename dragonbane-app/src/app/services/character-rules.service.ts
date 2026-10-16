@@ -1,4 +1,4 @@
-import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry, MagicSchool } from '../models/character.models';
+import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry, MagicSchool, Character } from '../models/character.models';
 import { SKILLS_DATA } from '../data/skills.data';
 import { KIN_DATA } from '../data/kin.data';
 
@@ -89,6 +89,37 @@ export function computeSkills(
     };
   }
   return result;
+}
+
+// Edit an attribute from the sheet, where scores are shown age-adjusted.
+// The stored (raw) score absorbs the age offset; derived stats and untrained
+// skill levels follow. Trained levels are advanced in play, so they're kept.
+export function applyAttributeEdit(char: Character, attr: AttributeKey, finalValue: number): Character {
+  if (!char.attributes) return char;
+  // Nominal age offset, measured on a mid score so the 1..18 clamp can't hide it
+  const mid: Attributes = { STR: 10, CON: 10, AGL: 10, INT: 10, WIL: 10, CHA: 10 };
+  const offset = char.age ? applyAgeModifiers(mid, char.age)[attr] - 10 : 0;
+  const raw = Math.max(1, Math.min(18, Math.round(finalValue) - offset));
+  const attributes = { ...char.attributes, [attr]: raw };
+  const derivedStats = deriveStats(attributes, char.kin, char.age);
+  const modified = char.age ? applyAgeModifiers(attributes, char.age) : attributes;
+
+  const skills: Record<string, SkillEntry> = {};
+  for (const [name, entry] of Object.entries(char.skills)) {
+    const skillAttr = SKILLS_DATA.find(s => s.name === name)?.attribute as AttributeKey | undefined;
+    skills[name] = !entry.trained && skillAttr
+      ? { ...entry, level: getSkillLevel(modified[skillAttr], false) }
+      : entry;
+  }
+
+  return {
+    ...char,
+    attributes,
+    derivedStats,
+    skills,
+    currentHP: Math.min(char.currentHP, derivedStats.hp),
+    currentWP: Math.min(char.currentWP, derivedStats.wp),
+  };
 }
 
 export function getTrainedSkillCount(age: Age): number {

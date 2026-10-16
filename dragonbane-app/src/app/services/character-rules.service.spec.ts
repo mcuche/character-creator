@@ -1,5 +1,5 @@
-import { computeSkills, getBaseChance, getSkillLevel } from './character-rules.service';
-import { Attributes } from '../models/character.models';
+import { applyAttributeEdit, computeSkills, deriveStats, getBaseChance, getSkillLevel } from './character-rules.service';
+import { Age, Attributes, Character } from '../models/character.models';
 
 const ATTRS: Attributes = { STR: 10, CON: 14, AGL: 12, INT: 15, WIL: 17, CHA: 8 };
 
@@ -46,5 +46,64 @@ describe('computeSkills', () => {
     const skills = computeSkills(ATTRS, 'Adult', [], 'Animism');
     expect(skills['Animism']).toEqual({ name: 'Animism', level: 14, trained: true, advancementMarks: 0 });
     expect(computeSkills(ATTRS, 'Adult')['Animism']).toBeUndefined();
+  });
+});
+
+describe('applyAttributeEdit', () => {
+  function makeChar(age: Age, overrides: Partial<Character> = {}): Character {
+    const derivedStats = deriveStats(ATTRS, 'Human', age);
+    return {
+      id: 'c1', name: 'Test', kin: 'Human', profession: 'Mage', age,
+      attributes: ATTRS, derivedStats,
+      skills: computeSkills(ATTRS, age, ['Acrobatics'], 'Animism'),
+      heroicAbilities: [], gear: [], appearance: {}, conditions: [],
+      currentHP: derivedStats.hp, currentWP: derivedStats.wp,
+      magicSchool: 'Animism', preparedSpells: [], magicTricks: [],
+      gold: 0, silver: 0, copper: 0, createdAt: '', updatedAt: '',
+      ...overrides,
+    };
+  }
+
+  it('stores the raw score behind a Young age bonus', () => {
+    // Young: CON 14 → 15 shown; setting the shown value to 12 stores 11
+    const next = applyAttributeEdit(makeChar('Young'), 'CON', 12);
+    expect(next.attributes!.CON).toBe(11);
+    expect(next.derivedStats!.hp).toBe(12);
+  });
+
+  it('stores the raw score behind an Old age penalty', () => {
+    // Old: STR 10 → 8 shown; setting the shown value to 14 stores 16
+    const next = applyAttributeEdit(makeChar('Old'), 'STR', 14);
+    expect(next.attributes!.STR).toBe(16);
+    expect(next.derivedStats!.strDamageBonus).toBe('+D4');
+  });
+
+  it('clamps current HP and WP to the new maxima', () => {
+    const lowCon = applyAttributeEdit(makeChar('Adult'), 'CON', 9);
+    expect(lowCon.derivedStats!.hp).toBe(9);
+    expect(lowCon.currentHP).toBe(9);
+    expect(lowCon.currentWP).toBe(17);
+    const lowWil = applyAttributeEdit(makeChar('Adult'), 'WIL', 11);
+    expect(lowWil.currentWP).toBe(11);
+  });
+
+  it('does not refill current HP when the maximum rises', () => {
+    const next = applyAttributeEdit(makeChar('Adult', { currentHP: 5 }), 'CON', 16);
+    expect(next.derivedStats!.hp).toBe(16);
+    expect(next.currentHP).toBe(5);
+  });
+
+  it('recomputes untrained skills and keeps trained levels', () => {
+    const char = makeChar('Adult');
+    char.skills['Acrobatics'] = { ...char.skills['Acrobatics'], level: 13, advancementMarks: 1 };
+    const next = applyAttributeEdit(char, 'AGL', 16);
+    expect(next.skills['Acrobatics']).toMatchObject({ level: 13, trained: true, advancementMarks: 1 });
+    expect(next.skills['Evade']).toMatchObject({ level: 7, trained: false });
+    expect(next.skills['Animism'].level).toBe(14);
+  });
+
+  it('keeps the stored score within 1..18', () => {
+    expect(applyAttributeEdit(makeChar('Old'), 'STR', 30).attributes!.STR).toBe(18);
+    expect(applyAttributeEdit(makeChar('Young'), 'AGL', 0).attributes!.AGL).toBe(1);
   });
 });

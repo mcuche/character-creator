@@ -1,0 +1,56 @@
+@let char = character();
+
+@if (char.heroicAbilities.length > 0) {
+  <section class="mb-6">
+    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Heroic Abilities</h3>
+    <div class="space-y-2">
+      @for (ability of char.heroicAbilities; track ability) {
+        <div class="rounded-lg border border-amber-800/40 bg-amber-900/10 p-3">
+          <span class="font-semibold text-amber-300">★ {{ ability }}</span>
+        </div>
+      }
+    </div>
+  </section>
+}
+
+@if (kinData(); as kinData) {
+  <section class="mb-6">
+    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Innate Ability</h3>
+    <div class="rounded-lg border border-stone-700 bg-stone-800/60 p-4">
+      <div class="mb-1 flex items-center justify-between">
+        <span class="font-semibold text-stone-200">{{ kinData.innateAbilityName }}</span>
+        <span class="text-xs text-stone-300">{{ kinData.innateAbilityWP === 'free' ? 'Free' : kinData.innateAbilityWP + ' WP' }}</span>
+      </div>
+      <p class="text-sm text-stone-300">{{ kinData.innateAbilityDescription }}</p>
+    </div>
+  </section>
+}
+
+@if (char.magicSchool) {
+  <section class="mb-6">
+    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Magic</h3>
+    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4">
+      <div class="mb-3 font-semibold text-blue-300">{{ char.magicSchool }}</div>
+      @if (char.preparedSpells.length > 0) {
+        <div class="mb-2">
+          <p class="mb-1 text-xs text-stone-300">Spells</p>
+          <div class="flex flex-wrap gap-2">
+            @for (spell of char.preparedSpells; track spell) {
+              <span class="rounded bg-blue-900/30 px-2 py-1 text-sm text-blue-300">{{ spell }}</span>
+            }
+          </div>
+        </div>
+      }
+      @if (char.magicTricks.length > 0) {
+        <div>
+          <p class="mb-1 text-xs text-stone-300">Magic Tricks</p>
+          <div class="flex flex-wrap gap-2">
+            @for (trick of char.magicTricks; track trick) {
+              <span class="rounded bg-stone-700 px-2 py-1 text-sm text-stone-300">{{ trick }}</span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+}

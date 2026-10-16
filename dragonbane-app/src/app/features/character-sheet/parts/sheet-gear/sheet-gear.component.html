@@ -1,0 +1,70 @@
+@let char = character();
+
+<section>
+  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Inventory</h3>
+  @if (char.attributes) {
+    <p class="mb-4 text-sm text-stone-300">
+      Carrying capacity: <span class="font-bold text-stone-300">{{ Math.ceil(char.attributes.STR / 2) }}</span> slots
+      (STR {{ char.attributes.STR }} ÷ 2)
+    </p>
+  }
+  <div class="space-y-2">
+    @for (item of char.gear; track item.id) {
+      <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/40 p-3">
+        <span class="flex-1 text-stone-200">{{ item.name }}</span>
+        @if (item.quantity > 1) {
+          <span class="text-sm text-stone-300">×{{ item.quantity }}</span>
+        }
+      </div>
+    }
+    @if (char.gear.length === 0) {
+      <p class="text-stone-300 italic">No gear.</p>
+    }
+  </div>
+</section>
+
+<!-- Currency -->
+<section class="mt-8">
+  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Coin</h3>
+  <div class="grid grid-cols-3 gap-3">
+    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+      <div class="mb-1 text-xs text-yellow-400">Gold</div>
+      <div class="flex items-center justify-center gap-2">
+        <button (click)="updateCurrency('gold', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+        <input type="number" min="0" [ngModel]="char.gold" (ngModelChange)="setCurrency('gold', +$event)"
+          class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
+        <button (click)="updateCurrency('gold', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+      </div>
+    </div>
+    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+      <div class="mb-1 text-xs text-slate-300">Silver</div>
+      <div class="flex items-center justify-center gap-2">
+        <button (click)="updateCurrency('silver', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+        <input type="number" min="0" [ngModel]="char.silver" (ngModelChange)="setCurrency('silver', +$event)"
+          class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
+        <button (click)="updateCurrency('silver', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+      </div>
+    </div>
+    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+      <div class="mb-1 text-xs text-orange-400">Copper</div>
+      <div class="flex items-center justify-center gap-2">
+        <button (click)="updateCurrency('copper', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
+        <input type="number" min="0" [ngModel]="char.copper" (ngModelChange)="setCurrency('copper', +$event)"
+          class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
+        <button (click)="updateCurrency('copper', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+@if (char.memento) {
+  <section class="mt-8">
+    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Memento</h3>
+    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4">
+      <p class="font-semibold text-stone-200">{{ char.memento.name }}</p>
+      @if (char.memento.significance) {
+        <p class="mt-1 text-sm text-stone-300">{{ char.memento.significance }}</p>
+      }
+    </div>
+  </section>
+}

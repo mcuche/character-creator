@@ -1,0 +1,52 @@
+@let char = character();
+
+<!-- Attributes -->
+<section class="mb-8">
+  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Attributes</h3>
+  <div class="grid grid-cols-3 gap-3 sm:grid-cols-6">
+    @for (attr of attrKeys; track attr) {
+      <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
+        <div class="mb-1 text-xs text-stone-300">{{ attr }}</div>
+        <input
+          type="number"
+          [ngModel]="finalAttributes()?.[attr]"
+          (ngModelChange)="updateAttribute(attr, +$event)"
+          min="1" max="18"
+          class="w-full bg-transparent text-center font-mono text-2xl font-bold text-amber-400 outline-none"
+        />
+      </div>
+    }
+  </div>
+</section>
+
+<!-- Derived stats -->
+@if (char.derivedStats) {
+  <section class="mb-8">
+    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Derived Stats</h3>
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+        <div class="text-xs text-stone-300">Move</div>
+        <div class="font-mono text-xl font-bold text-green-400">{{ char.derivedStats.movement }}m</div>
+      </div>
+      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+        <div class="text-xs text-stone-300">STR Dmg</div>
+        <div class="font-mono text-xl font-bold text-amber-400">{{ char.derivedStats.strDamageBonus }}</div>
+      </div>
+      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+        <div class="text-xs text-stone-300">AGL Dmg</div>
+        <div class="font-mono text-xl font-bold text-amber-400">{{ char.derivedStats.aglDamageBonus }}</div>
+      </div>
+      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
+        <div class="text-xs text-stone-300">Carry</div>
+        <div class="font-mono text-xl font-bold text-stone-300">{{ Math.ceil((finalAttributes()?.STR ?? 10) / 2) }}</div>
+      </div>
+    </div>
+  </section>
+}
+
+@if (char.weakness) {
+  <section class="mb-8 rounded-xl border border-amber-800/30 bg-amber-900/10 p-4">
+    <span class="text-xs text-stone-300">Weakness</span>
+    <p class="font-semibold text-amber-300">{{ char.weakness }}</p>
+  </section>
+}

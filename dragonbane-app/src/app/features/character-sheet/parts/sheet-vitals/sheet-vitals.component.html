@@ -1,0 +1,67 @@
+@let char = character();
+
+<input
+  type="text"
+  [ngModel]="char.name"
+  (ngModelChange)="updateName($event)"
+  placeholder="Character name…"
+  class="char-name-input flex-1 text-xl text-stone-200 placeholder-stone-500 focus:text-white"
+/>
+
+<!-- Identity bar -->
+<div class="border-b border-stone-800 bg-stone-950/50 px-6 py-3">
+  <div class="mx-auto flex max-w-4xl flex-wrap items-center gap-4 text-sm">
+    @if (char.kin) { <span class="rounded bg-stone-800 px-2 py-1 text-stone-300">{{ char.kin }}</span> }
+    @if (char.profession) { <span class="rounded bg-stone-800 px-2 py-1 text-stone-300">{{ char.profession }}</span> }
+    @if (char.age) { <span class="rounded bg-stone-800 px-2 py-1 text-stone-300">{{ char.age }}</span> }
+
+    <div class="ml-auto flex items-center gap-6">
+      <!-- HP -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-stone-300">HP</span>
+        <button (click)="updateCurrentHP(-1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">−</button>
+        <span class="font-mono font-bold text-red-400">{{ char.currentHP }}</span>
+        <span class="text-stone-300">/</span>
+        <span class="text-stone-300">{{ char.derivedStats?.hp }}</span>
+        <button (click)="updateCurrentHP(1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">+</button>
+      </div>
+      <!-- WP -->
+      <div class="flex items-center gap-2">
+        <span class="text-xs text-stone-300">WP</span>
+        <button (click)="updateCurrentWP(-1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">−</button>
+        <span class="font-mono font-bold text-blue-400">{{ char.currentWP }}</span>
+        <span class="text-stone-300">/</span>
+        <span class="text-stone-300">{{ char.derivedStats?.wp }}</span>
+        <button (click)="updateCurrentWP(1)" class="h-6 w-6 rounded bg-stone-800 text-stone-300 hover:bg-stone-700">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Conditions -->
+<section class="mb-8">
+  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Conditions</h3>
+  <div class="grid grid-cols-2 gap-2 sm:grid-cols-3">
+    @for (cond of conditions; track cond) {
+      <button
+        (click)="toggleCondition(cond)"
+        class="flex items-center gap-3 rounded-lg border p-3 text-left transition"
+        [class.border-red-700]="hasCondition(cond)"
+        [class.bg-red-900/20]="hasCondition(cond)"
+        [class.border-stone-700]="!hasCondition(cond)"
+        [class.bg-stone-800/40]="!hasCondition(cond)"
+        [class.hover:border-stone-600]="!hasCondition(cond)">
+        <span class="h-4 w-4 rounded border flex items-center justify-center text-xs"
+          [class.border-red-500]="hasCondition(cond)"
+          [class.bg-red-600]="hasCondition(cond)"
+          [class.border-stone-600]="!hasCondition(cond)">
+          @if (hasCondition(cond)) { ✓ }
+        </span>
+        <div>
+          <div class="text-sm font-medium" [class.text-red-300]="hasCondition(cond)" [class.text-stone-300]="!hasCondition(cond)">{{ cond }}</div>
+          <div class="text-xs text-stone-300">Bane on {{ conditionAttrs[cond] }}</div>
+        </div>
+      </button>
+    }
+  </div>
+</section>
