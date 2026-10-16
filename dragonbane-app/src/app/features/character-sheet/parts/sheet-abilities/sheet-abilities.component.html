@@ -1,56 +1,123 @@
-@let char = character();
-
-@if (char.heroicAbilities.length > 0) {
-  <section class="mb-6">
-    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Heroic Abilities</h3>
-    <div class="space-y-2">
-      @for (ability of char.heroicAbilities; track ability) {
-        <div class="rounded-lg border border-amber-800/40 bg-amber-900/10 p-3">
-          <span class="font-semibold text-amber-300">★ {{ ability }}</span>
-        </div>
+<!-- Heroic abilities -->
+<section class="mb-10">
+  <div class="mb-3 flex items-baseline justify-between gap-4">
+    <h3 class="section-label">Heroic Abilities</h3>
+    <span class="pick-counter">{{ heroicAbilities().length }}</span>
+  </div>
+  @if (heroicAbilities().length > 0) {
+    <ul class="grid gap-2" role="list">
+      @for (ability of heroicAbilities(); track $index) {
+        <li class="toggle-card rich locked">
+          <div class="min-w-0 flex-1">
+            <p class="font-display card-ability-name" [class.mb-1]="ability.description">
+              {{ ability.name }}
+              @if (ability.source) {
+                <span class="font-body card-ability-cost">· {{ ability.source }}</span>
+              }
+            </p>
+            @if (ability.description) {
+              <p class="card-ability-desc">{{ ability.description }}</p>
+            }
+          </div>
+        </li>
       }
+    </ul>
+  } @else {
+    <p class="empty-note">None yet. Reaching level 18 in a skill earns one.</p>
+  }
+</section>
+
+<!-- Innate (kin) abilities -->
+@if (innateAbilities().length > 0) {
+  <section class="mb-10">
+    <div class="mb-3 flex items-baseline justify-between gap-4">
+      <h3 class="section-label">{{ innateAbilities().length > 1 ? 'Innate Abilities' : 'Innate Ability' }}</h3>
+      <span class="card-meta">{{ kinData()?.name }}</span>
     </div>
+    <ul class="grid gap-2" role="list">
+      @for (ability of innateAbilities(); track ability.name) {
+        <li class="toggle-card rich">
+          <div class="min-w-0 flex-1">
+            <p class="font-display mb-1 card-ability-name">
+              {{ ability.name }}
+              <span class="font-body card-ability-cost">· {{ wpLabel(ability.wp) }}</span>
+            </p>
+            <p class="card-ability-desc">{{ ability.description }}</p>
+          </div>
+        </li>
+      }
+    </ul>
   </section>
 }
 
-@if (kinData(); as kinData) {
+<!-- Magic -->
+@if (school(); as school) {
   <section class="mb-6">
-    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Innate Ability</h3>
-    <div class="rounded-lg border border-stone-700 bg-stone-800/60 p-4">
-      <div class="mb-1 flex items-center justify-between">
-        <span class="font-semibold text-stone-200">{{ kinData.innateAbilityName }}</span>
-        <span class="text-xs text-stone-300">{{ kinData.innateAbilityWP === 'free' ? 'Free' : kinData.innateAbilityWP + ' WP' }}</span>
+    <h3 class="section-label mb-3">Magic</h3>
+
+    <div class="mb-6 flex items-center gap-3">
+      <span class="text-gold flex">
+        <app-icon [name]="'magic/' + school.name.toLowerCase()" [size]="36" />
+      </span>
+      <div class="min-w-0">
+        <p class="font-display card-title">{{ school.name }}</p>
+        @if (school.theme) {
+          <p class="card-meta">{{ school.theme }}</p>
+        }
       </div>
-      <p class="text-sm text-stone-300">{{ kinData.innateAbilityDescription }}</p>
     </div>
+
+    <div class="mb-3 flex items-baseline justify-between gap-4">
+      <h4 class="section-label">Prepared Spells</h4>
+      <span class="pick-counter">{{ spells().length }}</span>
+    </div>
+    @if (spells().length > 0) {
+      <ul class="mb-8 grid gap-2 sm:grid-cols-2" role="list">
+        @for (spell of spells(); track $index) {
+          <li class="toggle-card rich">
+            <ng-container *ngTemplateOutlet="spellCard; context: { $implicit: spell, cost: '2 WP / power level' }" />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="mb-8 empty-note">No spells prepared.</p>
+    }
+
+    <div class="mb-1 flex items-baseline justify-between gap-4">
+      <h4 class="section-label">Magic Tricks</h4>
+      <span class="pick-counter">{{ tricks().length }}</span>
+    </div>
+    <p class="mb-3 card-meta">Tricks always succeed and cost 1 WP.</p>
+    @if (tricks().length > 0) {
+      <ul class="grid gap-2 sm:grid-cols-2" role="list">
+        @for (trick of tricks(); track $index) {
+          <li class="toggle-card rich">
+            <ng-container *ngTemplateOutlet="spellCard; context: { $implicit: trick }" />
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="empty-note">No magic tricks.</p>
+    }
   </section>
 }
 
-@if (char.magicSchool) {
-  <section class="mb-6">
-    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Magic</h3>
-    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4">
-      <div class="mb-3 font-semibold text-blue-300">{{ char.magicSchool }}</div>
-      @if (char.preparedSpells.length > 0) {
-        <div class="mb-2">
-          <p class="mb-1 text-xs text-stone-300">Spells</p>
-          <div class="flex flex-wrap gap-2">
-            @for (spell of char.preparedSpells; track spell) {
-              <span class="rounded bg-blue-900/30 px-2 py-1 text-sm text-blue-300">{{ spell }}</span>
-            }
-          </div>
-        </div>
-      }
-      @if (char.magicTricks.length > 0) {
-        <div>
-          <p class="mb-1 text-xs text-stone-300">Magic Tricks</p>
-          <div class="flex flex-wrap gap-2">
-            @for (trick of char.magicTricks; track trick) {
-              <span class="rounded bg-stone-700 px-2 py-1 text-sm text-stone-300">{{ trick }}</span>
-            }
-          </div>
-        </div>
+<ng-template #spellCard let-spell let-cost="cost">
+  <span class="text-muted-stone mt-0.5 flex">
+    <app-icon [name]="spellIcon(spell)" [size]="20" />
+  </span>
+  <div class="min-w-0 flex-1">
+    <div [class.mb-1]="spell.data">
+      <span class="toggle-card-name">{{ spell.name }}</span>
+      @if (spell.data) {
+        <span class="toggle-card-meta">{{ spell.data.isTrick ? spell.data.school : 'Rank ' + spell.data.rank }}</span>
       }
     </div>
-  </section>
-}
+    @if (spell.data) {
+      <p class="card-ability-desc">{{ spell.data.description }}</p>
+      @if (cost) {
+        <p class="mt-1 card-ability-cost text-sm">{{ cost }}</p>
+      }
+    }
+  </div>
+</ng-template>

@@ -1,48 +1,80 @@
-<section class="mb-6">
-  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Trained Skills</h3>
-  <div class="space-y-1">
-    @for (skill of trainedSkills(); track skill.name) {
-      <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/40 px-3 py-2">
-        <div class="flex-1">
-          <span class="font-medium text-stone-100">{{ skill.name }}</span>
-          <span class="ml-2 text-xs text-stone-300">{{ getSkillAttr(skill.name) }}</span>
-        </div>
-        <input
-          type="number"
-          [ngModel]="skill.level"
-          (ngModelChange)="updateSkillLevel(skill.name, +$event)"
-          min="1" max="18"
-          class="w-12 rounded bg-stone-900 text-center font-mono font-bold text-amber-400 outline-none focus:ring-1 focus:ring-amber-500"
-        />
-        <!-- Advancement marks -->
-        <button
-          (click)="toggleAdvancementMark(skill.name)"
-          class="flex gap-0.5"
-          title="Advancement marks (click to cycle)">
-          @for (i of [0,1]; track i) {
-            <span class="h-3 w-3 rounded-sm border"
-              [class.border-amber-500]="skill.advancementMarks > i"
-              [class.bg-amber-500]="skill.advancementMarks > i"
-              [class.border-stone-600]="skill.advancementMarks <= i">
-            </span>
-          }
-        </button>
-      </div>
-    }
+<section class="mb-10">
+  <div class="mb-3 flex items-baseline justify-between gap-4">
+    <h3 class="section-label">Trained Skills</h3>
+    <span class="pick-counter">{{ trainedSkills().length }}</span>
   </div>
+
+  @if (trainedSkills().length > 0) {
+    <p class="mb-3 card-meta">Tick a mark when you roll a Dragon or Demon with the skill.</p>
+    <ul class="grid gap-2" role="list">
+      @for (skill of trainedSkills(); track skill.name) {
+        <li class="toggle-card pr-1!">
+          <div class="flex min-w-0 flex-1 items-center gap-2">
+            @if (isMagicSchool(skill.name)) {
+              <span class="text-muted-stone flex">
+                <app-icon [name]="'magic/' + skill.name.toLowerCase()" [size]="20" />
+              </span>
+            }
+            <span class="min-w-0">
+              <span class="toggle-card-name">{{ skill.name }}</span>
+              <span class="toggle-card-meta">{{ getSkillAttr(skill.name) }}</span>
+            </span>
+          </div>
+
+          <input
+            #levelInput
+            type="text"
+            inputmode="numeric"
+            pattern="[0-9]*"
+            maxlength="2"
+            class="skill-level-input"
+            [value]="skill.level"
+            [attr.aria-label]="skill.name + ' level'"
+            (focus)="levelInput.select()"
+            (change)="commitLevel(skill.name, levelInput)"
+            (keydown.enter)="levelInput.blur()"
+          />
+
+          <div
+            class="flex"
+            role="group"
+            [attr.aria-label]="'Advancement marks: ' + skill.advancementMarks + ' of ' + marks.length">
+            @for (i of marks; track i) {
+              <button
+                type="button"
+                class="adv-mark"
+                [class.marked]="skill.advancementMarks > i"
+                [attr.aria-pressed]="skill.advancementMarks > i"
+                [attr.aria-label]="skill.name + ' advancement mark ' + (i + 1)"
+                (click)="setAdvancementMark(skill.name, i)">
+                <span class="adv-mark-pip" aria-hidden="true"></span>
+              </button>
+            }
+          </div>
+        </li>
+      }
+    </ul>
+  } @else {
+    <p class="step-empty">No trained skills.</p>
+  }
 </section>
 
-<section>
-  <h3 class="font-display mb-4 text-lg font-semibold text-stone-300">Untrained Skills</h3>
-  <div class="space-y-1 opacity-60">
-    @for (skill of untrainedSkills(); track skill.name) {
-      <div class="flex items-center gap-3 rounded-lg border border-stone-800 px-3 py-2">
-        <div class="flex-1">
-          <span class="text-stone-300">{{ skill.name }}</span>
-          <span class="ml-2 text-xs text-stone-300">{{ getSkillAttr(skill.name) }}</span>
-        </div>
-        <span class="font-mono text-stone-300">{{ skill.level }}</span>
-      </div>
-    }
-  </div>
-</section>
+@if (untrainedSkills().length > 0) {
+  <section>
+    <div class="mb-1 flex items-baseline justify-between gap-4">
+      <h3 class="section-label">Untrained Skills</h3>
+      <span class="pick-counter">{{ untrainedSkills().length }}</span>
+    </div>
+    <p class="mb-3 card-meta">Base chance only, set by attributes.</p>
+    <ul class="grid gap-x-8 sm:grid-cols-2" role="list">
+      @for (skill of untrainedSkills(); track skill.name) {
+        <li class="skill-untrained">
+          <span class="min-w-0 flex-1 truncate">
+            {{ skill.name }}<span class="toggle-card-meta">{{ getSkillAttr(skill.name) }}</span>
+          </span>
+          <span class="skill-untrained-val">{{ skill.level }}</span>
+        </li>
+      }
+    </ul>
+  </section>
+}
