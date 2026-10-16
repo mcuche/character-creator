@@ -67,7 +67,7 @@ When a wizard step changes a foundational value, downstream data is reset. The r
 
 ### Point Buy
 
-Budget is **42 points** (`POINT_BUY_BUDGET`), min **6**, max **16** (before age modifiers). The cost table is in `character-rules.service.ts`. Note: `DESIGN.md` specifies 73 points / min 8 / max 15 — the implementation differs; trust the code.
+Budget is **54 points** (`POINT_BUY_BUDGET`), min **6**, max **18** (before age modifiers; an attribute raised +1 by age is capped at 17 so the final value never exceeds 18). The cost table is in `character-rules.service.ts`. Three generation modes exist: 4D6-drop-lowest roll, standard array (`STANDARD_ARRAY` = 17, 15, 14, 11, 10, 8), and point buy — see `attribute-assignment.md`. Note: `DESIGN.md` specifies 73 points / min 8 / max 15 — the implementation differs; trust the code.
 
 ### Game Data
 
