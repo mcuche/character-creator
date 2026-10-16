@@ -1,92 +1,70 @@
-<div>
-  <app-step-nav
-    backPath="derived"
-    [canContinue]="canContinue"
-    (next)="continue()" />
+<div class="step-animate-in">
 
-  <div class="mb-8">
-    <h2 class="font-display text-2xl font-bold text-amber-300">Trained Skills</h2>
-    <p class="mt-1 text-stone-300">
-      All profession skills are trained automatically. Choose {{ freeSkillSlots }} additional skills freely.
-    </p>
-  </div>
+  <h2 class="font-display font-semibold step-heading">Trained Skills</h2>
+  <p class="mb-8 step-intro">
+    All profession skills are trained automatically. Choose {{ freeSkillSlots }} additional skills freely.
+  </p>
 
   <!-- Profession skills (locked, context only) -->
-  <div class="mb-8">
-    <h3 class="font-display mb-3 text-lg font-semibold text-stone-200">Profession Skills</h3>
+  <section class="mb-8">
+    <h3 class="section-label mb-3">Profession Skills</h3>
     <div class="grid gap-2 sm:grid-cols-2">
       @for (name of professionSkills; track name) {
-        <div class="flex items-center justify-between rounded-lg border border-stone-600 bg-stone-800/40 p-3">
-          <div>
-            <span class="font-medium text-stone-200">{{ name }}</span>
-            <span class="ml-2 text-xs text-stone-400">{{ getSkillAttr(name) }}</span>
+        <div class="toggle-card locked">
+          <div class="min-w-0">
+            <span class="toggle-card-name">{{ name }}</span>
+            <span class="toggle-card-meta">{{ getSkillAttr(name) }}</span>
           </div>
-          <span class="text-sm font-bold text-amber-400">{{ getSkillLevel(name) }}</span>
+          <span class="toggle-card-val">{{ getSkillLevel(name) }}</span>
         </div>
       }
     </div>
 
     @if (magicSchool) {
-      <div class="mt-2">
-        <p class="mb-2 text-xs text-stone-400">Magic School</p>
-        <div class="flex items-center justify-between rounded-lg border border-stone-600 bg-stone-800/40 p-3">
-          <div>
-            <span class="font-medium text-stone-200">{{ magicSchool }}</span>
-            <span class="ml-2 text-xs text-stone-400">WIL</span>
+      <h3 class="section-label mb-3 mt-6">Magic School</h3>
+      <div class="grid gap-2 sm:grid-cols-2">
+        <div class="toggle-card locked">
+          <div class="min-w-0">
+            <span class="toggle-card-name">{{ magicSchool }}</span>
+            <span class="toggle-card-meta">WIL</span>
           </div>
-          <span class="text-sm font-bold text-amber-400">{{ getSkillLevel(magicSchool) }}</span>
+          <span class="toggle-card-val">{{ getSkillLevel(magicSchool) }}</span>
         </div>
       </div>
     }
-  </div>
+  </section>
 
   <!-- Free picks -->
-  <div class="mb-6">
-    <h3 class="font-display mb-1 text-lg font-semibold text-stone-200">
-      Free Picks
-      <span class="ml-2 text-sm font-normal text-stone-400">{{ selectedFreeSkills().size }}/{{ freeSkillSlots }}</span>
-    </h3>
-    <p class="mb-3 text-xs text-stone-400">Choose any {{ freeSkillSlots }} skills from the full list.</p>
+  <section class="mb-6">
+    <div class="mb-1 flex items-baseline justify-between gap-4">
+      <h3 class="section-label">Free Picks</h3>
+      <span class="pick-counter" [class.complete]="canContinue" aria-live="polite">
+        {{ selectedFreeSkills().size }} / {{ freeSkillSlots }}
+      </span>
+    </div>
+    <p class="mb-3 card-meta">Choose any {{ freeSkillSlots }} skills from the full list.</p>
     <div class="grid gap-2 sm:grid-cols-2">
-      @for (skill of allSkills; track skill.name) {
-        <div class="relative">
-          @if (isProfSkill(skill.name)) {
-            <!-- Locked profession skill in free picks list -->
-            <div
-              class="flex items-center justify-between rounded-lg border border-stone-700/50 bg-stone-800/20 p-3 opacity-50 cursor-not-allowed"
-              (mouseenter)="showTooltip(skill.name)"
-              (mouseleave)="hideTooltip()">
-              <div>
-                <span class="font-medium text-stone-300">{{ skill.name }}</span>
-                <span class="ml-2 text-xs text-stone-500">{{ skill.attribute }}</span>
-              </div>
-              <span class="text-xs text-stone-500">✓ profession</span>
-            </div>
-            @if (tooltipSkill() === skill.name) {
-              <div class="absolute bottom-full left-1/2 z-10 mb-2 -translate-x-1/2 rounded bg-stone-900 border border-stone-600 px-3 py-1.5 text-xs text-stone-200 whitespace-nowrap shadow-lg">
-                Already trained as a profession skill
-              </div>
-            }
-          } @else {
-            <button
-              (click)="toggleFreeSkill(skill.name)"
-              [disabled]="!selectedFreeSkills().has(skill.name) && selectedFreeSkills().size >= freeSkillSlots"
-              class="flex w-full items-center justify-between rounded-lg border p-3 text-left transition"
-              [class.border-amber-500]="selectedFreeSkills().has(skill.name)"
-              [class.bg-amber-900/20]="selectedFreeSkills().has(skill.name)"
-              [class.border-stone-700]="!selectedFreeSkills().has(skill.name)"
-              [class.bg-stone-800/40]="!selectedFreeSkills().has(skill.name)"
-              [class.opacity-40]="!selectedFreeSkills().has(skill.name) && selectedFreeSkills().size >= freeSkillSlots">
-              <div>
-                <span class="font-medium text-stone-100">{{ skill.name }}</span>
-                <span class="ml-2 text-xs text-stone-300">{{ skill.attribute }}</span>
-              </div>
-              <span class="text-sm font-bold text-amber-400">{{ getSkillLevel(skill.name) }}</span>
-            </button>
-          }
-        </div>
+      @for (name of freeSkillOptions; track name) {
+        <button
+          type="button"
+          (click)="toggleFreeSkill(name)"
+          [disabled]="!selectedFreeSkills().has(name) && selectedFreeSkills().size >= freeSkillSlots"
+          class="toggle-card"
+          [class.selected]="selectedFreeSkills().has(name)"
+          [attr.aria-pressed]="selectedFreeSkills().has(name)">
+          <div class="min-w-0">
+            <span class="toggle-card-name">{{ name }}</span>
+            <span class="toggle-card-meta">{{ getSkillAttr(name) }}</span>
+          </div>
+          <span class="toggle-card-val">{{ getSkillLevel(name) }}</span>
+        </button>
       }
     </div>
-  </div>
+  </section>
+
+  <app-step-nav
+    backPath="derived"
+    [canContinue]="canContinue"
+    (next)="continue()" />
 
 </div>

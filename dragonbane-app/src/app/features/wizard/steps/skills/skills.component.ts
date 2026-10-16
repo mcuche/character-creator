@@ -20,7 +20,6 @@ export class SkillsComponent {
   readonly allSkills = SKILLS_DATA;
 
   selectedFreeSkills = signal<Set<string>>(new Set());
-  tooltipSkill = signal<string | null>(null);
 
   constructor() {
     const draft = this.draft();
@@ -83,14 +82,6 @@ export class SkillsComponent {
       set.add(name);
     }
     this.selectedFreeSkills.set(set);
-  }
-
-  showTooltip(name: string): void {
-    this.tooltipSkill.set(name);
-  }
-
-  hideTooltip(): void {
-    this.tooltipSkill.set(null);
   }
 
   get canContinue(): boolean {

@@ -1,89 +1,129 @@
-<div>
-  <app-step-nav
-    backPath="profession"
-    [canContinue]="canContinue"
-    (next)="continue()" />
+<div class="step-animate-in">
 
-  <div class="mb-8">
-    <h2 class="font-display text-2xl font-bold text-amber-300">Choose Your Magic</h2>
-    <p class="mt-1 text-stone-300">Select a school of magic, then choose 3 rank 1 spells and 3 magic tricks.</p>
-  </div>
+  <h2 class="font-display font-semibold step-heading">Choose Your Magic</h2>
+  <p class="mb-8 step-intro">
+    Select a school of magic, then choose 3 rank 1 spells and 3 magic tricks.
+  </p>
 
   <!-- School selection -->
-  <div class="mb-8 grid gap-3 sm:grid-cols-3">
+  <div class="mb-10 grid gap-3 sm:grid-cols-3">
     @for (school of schools; track school.name) {
       <button
+        type="button"
         (click)="selectSchool(school.name)"
-        class="rounded-xl border p-4 text-left transition"
-        [class.border-amber-500]="selectedSchool() === school.name"
-        [class.bg-amber-900/20]="selectedSchool() === school.name"
-        [class.border-stone-700]="selectedSchool() !== school.name"
-        [class.bg-stone-800/40]="selectedSchool() !== school.name"
-        [class.hover:border-stone-500]="selectedSchool() !== school.name">
-        <div class="font-display mb-1 font-semibold text-stone-100">{{ school.name }}</div>
-        <div class="mb-1 text-xs font-medium text-amber-400">{{ school.theme }}</div>
-        <p class="text-xs leading-relaxed text-stone-300">{{ school.description }}</p>
+        class="select-card"
+        [class.selected]="selectedSchool() === school.name"
+        [attr.aria-pressed]="selectedSchool() === school.name">
+
+        <!-- School sigil -->
+        <div class="card-sigil">
+          @switch (school.name) {
+            @case ('Animism') {
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Animism" role="img">
+                <line x1="50" y1="88" x2="50" y2="14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="34" x2="30" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="34" x2="70" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="54" x2="26" y2="40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="54" x2="74" y2="40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="88" x2="34" y2="78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="50" y1="88" x2="66" y2="78" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            }
+            @case ('Elementalism') {
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Elementalism" role="img">
+                <polygon points="50,12 88,50 50,88 12,50" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <line x1="50" y1="12" x2="50" y2="88" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="12" y1="50" x2="88" y2="50" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="50" cy="50" r="4" fill="currentColor"/>
+              </svg>
+            }
+            @case ('Mentalism') {
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mentalism" role="img">
+                <path d="M12,50 C28,26 72,26 88,50 C72,74 28,74 12,50 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+                <circle cx="50" cy="50" r="12" stroke="currentColor" stroke-width="2.5"/>
+                <circle cx="50" cy="50" r="4" fill="currentColor"/>
+                <line x1="50" y1="8" x2="50" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <line x1="50" y1="80" x2="50" y2="92" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              </svg>
+            }
+          }
+        </div>
+
+        <!-- School info -->
+        <div class="flex-1 min-w-0">
+          <span class="font-display font-semibold card-title">{{ school.name }}</span>
+          <p class="font-display mt-1 mb-2 card-ability-name">{{ school.theme }}</p>
+          <p class="card-ability-desc">{{ school.description }}</p>
+        </div>
+
       </button>
     }
   </div>
 
   @if (selectedSchool()) {
     <!-- Spells -->
-    <div class="mb-6">
-      <h3 class="font-display mb-3 text-lg font-semibold text-stone-200">
-        Starting Spells
-        <span class="ml-2 text-sm font-normal text-stone-300">{{ selectedSpells().size }}/3 chosen</span>
-      </h3>
+    <section class="mb-10">
+      <div class="mb-3 flex items-baseline justify-between gap-4">
+        <h3 class="section-label">Starting Spells</h3>
+        <span class="pick-counter" [class.complete]="selectedSpells().size === 3" aria-live="polite">
+          {{ selectedSpells().size }} / 3
+        </span>
+      </div>
       <div class="grid gap-2 sm:grid-cols-2">
         @for (spell of availableSpells(); track spell.name) {
           <button
+            type="button"
             (click)="toggleSpell(spell.name)"
             [disabled]="!selectedSpells().has(spell.name) && selectedSpells().size >= 3"
-            class="rounded-lg border p-3 text-left transition"
-            [class.border-amber-500]="selectedSpells().has(spell.name)"
-            [class.bg-amber-900/20]="selectedSpells().has(spell.name)"
-            [class.border-stone-700]="!selectedSpells().has(spell.name)"
-            [class.bg-stone-800/40]="!selectedSpells().has(spell.name)"
-            [class.opacity-40]="!selectedSpells().has(spell.name) && selectedSpells().size >= 3"
-            [class.hover:border-stone-500]="!selectedSpells().has(spell.name) && selectedSpells().size < 3">
-            <div class="mb-1 flex items-center justify-between">
-              <span class="text-sm font-semibold text-stone-100">{{ spell.name }}</span>
-              <span class="text-xs text-stone-300">{{ spell.school }}</span>
+            class="toggle-card rich"
+            [class.selected]="selectedSpells().has(spell.name)"
+            [attr.aria-pressed]="selectedSpells().has(spell.name)">
+            <div class="flex-1 min-w-0">
+              <div class="mb-1">
+                <span class="toggle-card-name">{{ spell.name }}</span>
+                <span class="toggle-card-meta">{{ spell.school }}</span>
+              </div>
+              <p class="card-ability-desc">{{ spell.description }}</p>
             </div>
-            <p class="text-xs leading-relaxed text-stone-300">{{ spell.description }}</p>
           </button>
         }
       </div>
-    </div>
+    </section>
 
     <!-- Tricks -->
-    <div class="mb-6">
-      <h3 class="font-display mb-3 text-lg font-semibold text-stone-200">
-        Magic Tricks
-        <span class="ml-2 text-sm font-normal text-stone-300">{{ selectedTricks().size }}/3 chosen</span>
-      </h3>
-      <p class="mb-3 text-xs text-stone-300">Tricks always succeed and cost 1 WP.</p>
+    <section class="mb-6">
+      <div class="mb-1 flex items-baseline justify-between gap-4">
+        <h3 class="section-label">Magic Tricks</h3>
+        <span class="pick-counter" [class.complete]="selectedTricks().size === 3" aria-live="polite">
+          {{ selectedTricks().size }} / 3
+        </span>
+      </div>
+      <p class="mb-3 card-meta">Tricks always succeed and cost 1 WP.</p>
       <div class="grid gap-2 sm:grid-cols-2">
         @for (trick of availableTricks(); track trick.name) {
           <button
+            type="button"
             (click)="toggleTrick(trick.name)"
             [disabled]="!selectedTricks().has(trick.name) && selectedTricks().size >= 3"
-            class="rounded-lg border p-3 text-left transition"
-            [class.border-amber-500]="selectedTricks().has(trick.name)"
-            [class.bg-amber-900/20]="selectedTricks().has(trick.name)"
-            [class.border-stone-700]="!selectedTricks().has(trick.name)"
-            [class.bg-stone-800/40]="!selectedTricks().has(trick.name)"
-            [class.opacity-40]="!selectedTricks().has(trick.name) && selectedTricks().size >= 3"
-            [class.hover:border-stone-500]="!selectedTricks().has(trick.name) && selectedTricks().size < 3">
-            <div class="mb-1 flex items-center justify-between">
-              <span class="text-sm font-semibold text-stone-100">{{ trick.name }}</span>
-              <span class="text-xs text-stone-300">{{ trick.school }}</span>
+            class="toggle-card rich"
+            [class.selected]="selectedTricks().has(trick.name)"
+            [attr.aria-pressed]="selectedTricks().has(trick.name)">
+            <div class="flex-1 min-w-0">
+              <div class="mb-1">
+                <span class="toggle-card-name">{{ trick.name }}</span>
+                <span class="toggle-card-meta">{{ trick.school }}</span>
+              </div>
+              <p class="card-ability-desc">{{ trick.description }}</p>
             </div>
-            <p class="text-xs leading-relaxed text-stone-300">{{ trick.description }}</p>
           </button>
         }
       </div>
-    </div>
+    </section>
   }
+
+  <app-step-nav
+    backPath="profession"
+    [canContinue]="canContinue"
+    (next)="continue()" />
 
 </div>
