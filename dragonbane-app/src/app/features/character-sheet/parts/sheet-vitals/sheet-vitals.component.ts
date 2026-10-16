@@ -1,6 +1,7 @@
-import { Component, input, output } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Character, Condition } from '../../../../models/character.models';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 const CONDITIONS: Condition[] = ['Exhausted', 'Sickly', 'Dazed', 'Angry', 'Scared', 'Disheartened'];
 const CONDITION_ATTRS: Record<Condition, string> = {
@@ -9,7 +10,7 @@ const CONDITION_ATTRS: Record<Condition, string> = {
 
 @Component({
   selector: 'app-sheet-vitals',
-  imports: [FormsModule],
+  imports: [FormsModule, IconComponent],
   templateUrl: './sheet-vitals.component.html',
 })
 export class SheetVitalsComponent {
@@ -19,20 +20,27 @@ export class SheetVitalsComponent {
   readonly conditions = CONDITIONS;
   readonly conditionAttrs = CONDITION_ATTRS;
 
+  readonly maxHP = computed(() => this.character().derivedStats?.hp ?? 0);
+  readonly maxWP = computed(() => this.character().derivedStats?.wp ?? 0);
+
+  /** "Elf · Mage · Adult", skipping anything not yet chosen. */
+  readonly identity = computed(() => {
+    const c = this.character();
+    return [c.kin, c.profession, c.age].filter(Boolean).join(' · ');
+  });
+
   updateName(name: string): void {
     this.patch.emit({ name });
   }
 
   updateCurrentHP(delta: number): void {
     const char = this.character();
-    const max = char.derivedStats?.hp ?? 0;
-    this.patch.emit({ currentHP: Math.max(0, Math.min(max, char.currentHP + delta)) });
+    this.patch.emit({ currentHP: Math.max(0, Math.min(this.maxHP(), char.currentHP + delta)) });
   }
 
   updateCurrentWP(delta: number): void {
     const char = this.character();
-    const max = char.derivedStats?.wp ?? 0;
-    this.patch.emit({ currentWP: Math.max(0, Math.min(max, char.currentWP + delta)) });
+    this.patch.emit({ currentWP: Math.max(0, Math.min(this.maxWP(), char.currentWP + delta)) });
   }
 
   toggleCondition(condition: Condition): void {

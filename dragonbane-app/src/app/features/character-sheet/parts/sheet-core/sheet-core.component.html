@@ -1,52 +1,128 @@
 @let char = character();
 
 <!-- Attributes -->
-<section class="mb-8">
-  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Attributes</h3>
-  <div class="grid grid-cols-3 gap-3 sm:grid-cols-6">
-    @for (attr of attrKeys; track attr) {
-      <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
-        <div class="mb-1 text-xs text-stone-300">{{ attr }}</div>
-        <input
-          type="number"
-          [ngModel]="finalAttributes()?.[attr]"
-          (ngModelChange)="updateAttribute(attr, +$event)"
-          min="1" max="18"
-          class="w-full bg-transparent text-center font-mono text-2xl font-bold text-amber-400 outline-none"
-        />
-      </div>
-    }
-  </div>
+<section class="mb-6">
+  <h3 class="section-label mb-2">Attributes</h3>
+
+  @if (finalAttributes(); as attrs) {
+    <div class="grid gap-4 md:grid-cols-2 md:gap-x-10">
+      @for (group of attrGroups; track $index) {
+        <div>
+          @for (attr of group; track attr) {
+            @let base = baseScore(attr);
+            <div class="attr-row">
+              <span class="card-meta flex">
+                <app-icon [name]="iconFor(attr)" [size]="28" />
+              </span>
+
+              <div class="attr-row-label">
+                <span class="attr-row-key">{{ attr }}</span>
+                <span class="attr-row-name">{{ attrNames[attr] }}</span>
+                @if (base !== null) {
+                  <span class="secondary-breakdown mt-0.5"
+                    [class.mod-neg]="base > attrs[attr]"
+                    [class.mod-pos]="base < attrs[attr]">base {{ base }}</span>
+                }
+              </div>
+
+              <div class="ml-auto flex items-center gap-1">
+                <button
+                  type="button"
+                  class="vital-stepper"
+                  (click)="step(attr, -1)"
+                  [disabled]="!canDecrease(attr)"
+                  [attr.aria-label]="'Decrease ' + attrNames[attr]">−</button>
+                <input
+                  #scoreInput
+                  type="number"
+                  inputmode="numeric"
+                  [min]="attrMin"
+                  [max]="attrMax"
+                  [value]="attrs[attr]"
+                  (change)="commitAttribute(attr, scoreInput)"
+                  (keydown.enter)="scoreInput.blur()"
+                  [attr.aria-label]="attrNames[attr]"
+                  class="sheet-score-input"
+                />
+                <button
+                  type="button"
+                  class="vital-stepper"
+                  (click)="step(attr, 1)"
+                  [disabled]="!canIncrease(attr)"
+                  [attr.aria-label]="'Increase ' + attrNames[attr]">+</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="empty-note">No attributes set.</p>
+  }
 </section>
 
-<!-- Derived stats -->
-@if (char.derivedStats) {
-  <section class="mb-8">
-    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Derived Stats</h3>
-    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
-        <div class="text-xs text-stone-300">Move</div>
-        <div class="font-mono text-xl font-bold text-green-400">{{ char.derivedStats.movement }}m</div>
+<!-- Derived -->
+@if (char.derivedStats && finalAttributes(); as attrs) {
+  <section class="mb-6">
+    <h3 class="section-label mb-2">Derived</h3>
+    <div class="grid gap-2 sm:grid-cols-2">
+      <div class="derived-secondary mb-0!">
+        <div class="secondary-item">
+          <span class="secondary-label">Movement</span>
+          <span class="secondary-val">{{ char.derivedStats.movement }}<span class="secondary-unit">m</span></span>
+          <span class="secondary-breakdown">{{ char.kin ? char.kin + ', ' : '' }}AGL {{ attrs.AGL }}</span>
+        </div>
+        <div class="secondary-rule" aria-hidden="true"></div>
+        <div class="secondary-item">
+          <span class="secondary-label">Carry Capacity</span>
+          <span class="secondary-val">{{ carryCapacity() }}<span class="secondary-unit">items</span></span>
+          <span class="secondary-breakdown">STR {{ attrs.STR }} ÷ 2</span>
+        </div>
       </div>
-      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
-        <div class="text-xs text-stone-300">STR Dmg</div>
-        <div class="font-mono text-xl font-bold text-amber-400">{{ char.derivedStats.strDamageBonus }}</div>
-      </div>
-      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
-        <div class="text-xs text-stone-300">AGL Dmg</div>
-        <div class="font-mono text-xl font-bold text-amber-400">{{ char.derivedStats.aglDamageBonus }}</div>
-      </div>
-      <div class="rounded-lg border border-stone-700 bg-stone-800/40 p-3 text-center">
-        <div class="text-xs text-stone-300">Carry</div>
-        <div class="font-mono text-xl font-bold text-stone-300">{{ Math.ceil((finalAttributes()?.STR ?? 10) / 2) }}</div>
+
+      <div class="derived-secondary mb-0!">
+        <div class="secondary-item">
+          <span class="secondary-label">STR Damage</span>
+          <span class="secondary-val">{{ char.derivedStats.strDamageBonus }}</span>
+          <span class="secondary-breakdown">STR {{ attrs.STR }}</span>
+        </div>
+        <div class="secondary-rule" aria-hidden="true"></div>
+        <div class="secondary-item">
+          <span class="secondary-label">AGL Damage</span>
+          <span class="secondary-val">{{ char.derivedStats.aglDamageBonus }}</span>
+          <span class="secondary-breakdown">AGL {{ attrs.AGL }}</span>
+        </div>
       </div>
     </div>
   </section>
 }
 
+@if (char.weakness || appearanceRows().length) {
+  <!-- Ornamental divider -->
+  <div class="derived-divider mb-6! justify-center" aria-hidden="true">
+    <app-icon name="ornaments/divider-knot" [size]="20" class="w-72! max-w-full" />
+  </div>
+}
+
+<!-- Weakness -->
 @if (char.weakness) {
-  <section class="mb-8 rounded-xl border border-amber-800/30 bg-amber-900/10 p-4">
-    <span class="text-xs text-stone-300">Weakness</span>
-    <p class="font-semibold text-amber-300">{{ char.weakness }}</p>
+  <section class="mb-6">
+    <h3 class="section-label mb-1">Weakness</h3>
+    <p class="step-intro">{{ char.weakness }}</p>
+  </section>
+}
+
+<!-- Appearance -->
+@if (appearanceRows().length) {
+  <section class="mb-6">
+    <h3 class="section-label mb-1">Appearance</h3>
+    <div>
+      @for (row of appearanceRows(); track row.label) {
+        <div class="summary-row">
+          <span class="summary-row-label">{{ row.label }}</span>
+          <span class="summary-row-value">{{ row.value }}</span>
+        </div>
+      }
+    </div>
   </section>
 }

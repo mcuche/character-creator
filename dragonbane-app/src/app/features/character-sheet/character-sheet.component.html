@@ -1,37 +1,45 @@
 @if (character(); as char) {
-<div class="min-h-screen bg-stone-900 text-stone-100">
-  <!-- Header -->
-  <header class="sticky top-0 z-20 border-b border-amber-800/40 bg-stone-950/95 px-6 py-4 backdrop-blur">
-    <div class="mx-auto flex max-w-4xl items-center gap-4">
-      <a routerLink="/" class="font-display text-lg font-bold text-amber-400 hover:text-amber-300">Dragonbane</a>
-      <span class="text-stone-300">/</span>
-      <div class="flex gap-2">
-        <button (click)="exportJson()" class="rounded-lg border border-stone-700 px-3 py-1 text-xs text-stone-300 hover:text-stone-300">↓ JSON</button>
+<div class="min-h-screen bg-page">
+
+  <!-- Pinned block: nav row, vitals, tab bar -->
+  <header class="sticky top-0 z-20 site-header">
+    <div class="mx-auto max-w-3xl px-4 sm:px-6">
+      <div class="flex items-center justify-between gap-4">
+        <a routerLink="/" class="wizard-home-link inline-flex min-h-11 items-center gap-2" aria-label="Back to roster">
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="none" aria-hidden="true">
+            <path d="M6.5 1 L1.5 6 L6.5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Roster
+        </a>
+        <button (click)="exportJson()" class="btn-roll-action min-h-11 px-4!" aria-label="Export character as JSON">
+          Export
+        </button>
       </div>
-    </div>
-    <div class="mx-auto max-w-4xl pt-3">
+
       <app-sheet-vitals [character]="char" (patch)="patch($event)" />
+
+      <nav class="sheet-tabs" role="tablist" aria-label="Character sheet sections">
+        @for (tab of tabs; track tab.id) {
+          <button
+            role="tab"
+            [id]="'sheet-tab-' + tab.id"
+            [attr.aria-selected]="activeTab() === tab.id"
+            aria-controls="sheet-panel"
+            (click)="activeTab.set(tab.id)"
+            class="sheet-tab"
+            [class.active]="activeTab() === tab.id">
+            {{ tab.label }}
+          </button>
+        }
+      </nav>
     </div>
   </header>
 
-  <!-- Tab navigation -->
-  <div class="border-b border-stone-800 px-6">
-    <div class="mx-auto flex max-w-4xl gap-1">
-      @for (tab of tabs; track tab.id) {
-        <button
-          (click)="activeTab.set(tab.id)"
-          class="border-b-2 px-4 py-3 text-sm font-medium transition"
-          [class.border-amber-500]="activeTab() === tab.id"
-          [class.text-amber-300]="activeTab() === tab.id"
-          [class.border-transparent]="activeTab() !== tab.id"
-          [class.text-stone-300]="activeTab() !== tab.id">
-          {{ tab.label }}
-        </button>
-      }
-    </div>
-  </div>
-
-  <main class="mx-auto max-w-4xl px-6 py-8">
+  <main
+    id="sheet-panel"
+    role="tabpanel"
+    [attr.aria-labelledby]="'sheet-tab-' + activeTab()"
+    class="mx-auto max-w-3xl px-4 pt-6 pb-24 sm:px-6">
     @switch (activeTab()) {
       @case ('core') { <app-sheet-core [character]="char" (patch)="patch($event)" /> }
       @case ('skills') { <app-sheet-skills [character]="char" (patch)="patch($event)" /> }
