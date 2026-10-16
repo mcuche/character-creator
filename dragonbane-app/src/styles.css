@@ -1262,3 +1262,162 @@ button:focus {
   padding: 0.5rem 0.875rem;
   border-top: 1px solid oklch(0.185 0.008 68);
 }
+
+/* ── Shared step primitives (skills, mage school, weakness, gear, memento, appearance, summary) ── */
+
+/* Suggestion chip — single-select from a short list */
+.choice-chip {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: oklch(0.67 0.009 68);
+  background: oklch(0.155 0.008 68);
+  border: 1px solid oklch(0.22 0.008 68);
+  border-radius: 0.25rem;
+  padding: 0.5rem 0.875rem;
+  min-height: 2.75rem;
+  text-align: left;
+  transition: border-color 160ms ease, background 160ms ease, color 160ms ease;
+}
+
+.choice-chip:hover {
+  border-color: oklch(0.34 0.010 68);
+  color: oklch(0.80 0.009 70);
+}
+
+.choice-chip.selected {
+  border-color: oklch(0.74 0.13 72);
+  background: oklch(0.17 0.010 72);
+  color: oklch(0.84 0.008 70);
+}
+
+/* Free-text input — underline, amber on focus */
+.text-field {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid oklch(0.26 0.008 68);
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  color: oklch(0.84 0.008 70);
+  padding: 0.625rem 0.125rem;
+  transition: border-color 200ms ease;
+}
+
+.text-field::placeholder {
+  color: oklch(0.42 0.007 68);
+  font-style: italic;
+}
+
+.text-field:focus {
+  border-bottom-color: oklch(0.74 0.13 72);
+}
+
+textarea.text-field {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+/* Toggle card — multi-select (skills, spells, tricks) */
+.toggle-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  text-align: left;
+  background: oklch(0.155 0.008 68);
+  border: 1px solid oklch(0.21 0.008 68);
+  border-radius: 0.3rem;
+  transition: border-color 160ms ease, background 160ms ease, opacity 160ms ease;
+}
+
+button.toggle-card:not(:disabled):hover {
+  border-color: oklch(0.34 0.010 68);
+  background: oklch(0.17 0.008 68);
+}
+
+.toggle-card.selected {
+  border-color: oklch(0.74 0.13 72);
+  background: oklch(0.17 0.010 72);
+}
+
+.toggle-card.locked {
+  background: oklch(0.14 0.008 68);
+  border-color: oklch(0.19 0.007 68);
+  border-left: 2px solid oklch(0.55 0.10 72);
+  cursor: default;
+}
+
+.toggle-card:disabled:not(.selected):not(.locked) {
+  opacity: 0.38;
+  cursor: not-allowed;
+}
+
+.toggle-card-name {
+  font-size: 0.9375rem;
+  color: oklch(0.84 0.008 70);
+}
+
+.toggle-card-meta {
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: oklch(0.48 0.007 68);
+  margin-left: 0.5rem;
+}
+
+.toggle-card-val {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: oklch(0.74 0.13 72);
+  line-height: 1;
+}
+
+/* Selection counter — "2 / 6" */
+.pick-counter {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  color: oklch(0.52 0.008 68);
+}
+
+.pick-counter.complete {
+  color: oklch(0.74 0.13 72);
+}
+
+/* Label / value recap row */
+.summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 0.25rem;
+  border-top: 1px solid oklch(0.185 0.007 68);
+}
+
+.summary-row:last-child {
+  border-bottom: 1px solid oklch(0.185 0.007 68);
+}
+
+.summary-row-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: oklch(0.50 0.008 68);
+  flex-shrink: 0;
+}
+
+.summary-row-value {
+  font-size: 0.9375rem;
+  color: oklch(0.84 0.008 70);
+  text-align: right;
+}
+
+.summary-row-value.empty {
+  color: oklch(0.40 0.007 68);
+  font-style: italic;
+}
