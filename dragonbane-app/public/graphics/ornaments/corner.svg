@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Corner ornament">
+  <title>Corner ornament</title>
+  <path d="M4 60 V14 L14 4 H60"/>
+  <path d="M12 60 V20 L20 12 H60" stroke-opacity="0.5"/>
+  <path d="M20 26 L26 20 L32 26 L26 32 Z" fill="currentColor"/>
+</svg>

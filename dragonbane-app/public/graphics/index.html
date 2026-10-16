@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dragonbane Graphics</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Skranji:wght@400;700&family=Vollkorn:wght@400;600&display=swap">
+<style>
+  body { margin: 0; padding: 40px 16px 80px; background: oklch(0.13 0.008 68); color: oklch(0.88 0.008 70); font-family: 'Vollkorn', Georgia, serif; }
+  main { max-width: 1040px; margin: 0 auto; }
+  h1 { font-family: 'Skranji', serif; font-size: 2.25rem; margin: 0 0 4px; color: oklch(0.74 0.13 72); letter-spacing: 0.02em; }
+  h2 { font-family: 'Skranji', serif; text-transform: capitalize; font-size: 1.35rem; margin: 48px 0 16px; color: oklch(0.80 0.01 70); border-bottom: 1px solid oklch(0.22 0.008 68); padding-bottom: 8px; }
+  p { color: oklch(0.62 0.01 70); margin: 0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+  .card { margin: 0; padding: 24px 12px 14px; background: oklch(0.16 0.008 68); border: 1px solid oklch(0.22 0.008 68); border-radius: 6px; display: flex; flex-direction: column; align-items: center; gap: 14px; color: oklch(0.62 0.012 70); transition: color 240ms cubic-bezier(0.22,1,0.36,1), border-color 240ms; }
+  .card:hover { color: oklch(0.74 0.13 72); border-color: oklch(0.35 0.06 72); }
+  .card svg { width: 72px; height: 72px; }
+  .card.wide { grid-column: span 2; }
+  .card.wide svg { width: 100%; height: 32px; }
+  figcaption { font-size: 0.78rem; color: oklch(0.55 0.009 68); text-align: center; word-break: break-all; }
+</style>
+</head>
+<body><main>
+<h1>Dragonbane Graphics</h1>
+<p>All glyphs use <code>currentColor</code>; hover a card to see the gold accent state.</p>
+<section><h2>professions</h2><div class="grid"><figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Artisan">
+  <title>Artisan</title>
+  <rect x="34" y="12" width="32" height="12" rx="1.5"/>
+  <line x1="50" y1="24" x2="50" y2="50"/>
+  <path d="M20 58 H72 C77 58 80 55 82 52 L85 60 C81 64 76 66 70 66 H64 L62 74 L70 84 H30 L38 74 L36 66 H26 C22 66 20 62 20 58 Z"/>
+</svg>
+<figcaption>professions/artisan.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bard">
+  <title>Bard</title>
+  <path d="M34 80 C22 62 24 38 33 22"/>
+  <path d="M66 80 C78 62 76 38 67 22"/>
+  <line x1="30" y1="28" x2="70" y2="28"/>
+  <line x1="32" y1="80" x2="68" y2="80"/>
+  <g stroke-width="1.5"><line x1="43" y1="28" x2="43" y2="80"/><line x1="50" y1="28" x2="50" y2="80"/><line x1="57" y1="28" x2="57" y2="80"/></g>
+</svg>
+<figcaption>professions/bard.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Fighter">
+  <title>Fighter</title>
+  <line x1="30" y1="70" x2="80" y2="20"/>
+  <line x1="27" y1="59" x2="41" y2="73"/>
+  <line x1="30" y1="70" x2="22" y2="78"/>
+  <circle cx="19" cy="81" r="3.5"/>
+  <line x1="70" y1="70" x2="20" y2="20"/>
+  <line x1="59" y1="73" x2="73" y2="59"/>
+  <line x1="70" y1="70" x2="78" y2="78"/>
+  <circle cx="81" cy="81" r="3.5"/>
+</svg>
+<figcaption>professions/fighter.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Hunter">
+  <title>Hunter</title>
+  <path d="M38 12 Q80 50 38 88"/>
+  <line x1="38" y1="12" x2="38" y2="88" stroke-width="1.5"/>
+  <line x1="16" y1="50" x2="84" y2="50"/>
+  <path d="M75 43 L86 50 L75 57"/>
+  <path d="M16 50 L10 44 M16 50 L10 56 M23 50 L17 44 M23 50 L17 56" stroke-width="2"/>
+</svg>
+<figcaption>professions/hunter.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Knight">
+  <title>Knight</title>
+  <path d="M50 10 L82 20 V46 C82 67 68 81 50 90 C32 81 18 67 18 46 V20 Z"/>
+  <path d="M30 34 L50 50 L70 34"/>
+  <path d="M30 50 L50 66 L70 50"/>
+</svg>
+<figcaption>professions/knight.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Mage">
+  <title>Mage</title>
+  <circle cx="50" cy="22" r="7"/>
+  <g stroke-width="2">
+    <line x1="50" y1="6" x2="50" y2="10"/><line x1="61.3" y1="10.7" x2="58.5" y2="13.5"/>
+    <line x1="66" y1="22" x2="62" y2="22"/><line x1="38.7" y1="10.7" x2="41.5" y2="13.5"/>
+    <line x1="34" y1="22" x2="38" y2="22"/>
+  </g>
+  <line x1="50" y1="29" x2="50" y2="92"/>
+  <path d="M42 38 L50 34 L58 38"/>
+</svg>
+<figcaption>professions/mage.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Mariner">
+  <title>Mariner</title>
+  <circle cx="50" cy="16" r="6"/>
+  <line x1="50" y1="22" x2="50" y2="88"/>
+  <line x1="34" y1="32" x2="66" y2="32"/>
+  <path d="M22 62 C24 79 37 88 50 88 C63 88 76 79 78 62"/>
+  <path d="M15 69 L22 60 L29 68"/>
+  <path d="M71 68 L78 60 L85 69"/>
+</svg>
+<figcaption>professions/mariner.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Merchant">
+  <title>Merchant</title>
+  <circle cx="50" cy="14" r="3" fill="currentColor"/>
+  <line x1="50" y1="18" x2="50" y2="84"/>
+  <line x1="36" y1="84" x2="64" y2="84"/>
+  <line x1="18" y1="28" x2="82" y2="28"/>
+  <path d="M18 28 L9 54 M18 28 L27 54 M82 28 L73 54 M82 28 L91 54" stroke-width="1.5"/>
+  <path d="M7 54 H29 C28 61 24 64 18 64 C12 64 8 61 7 54 Z"/>
+  <path d="M71 54 H93 C92 61 88 64 82 64 C76 64 72 61 71 54 Z"/>
+</svg>
+<figcaption>professions/merchant.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scholar">
+  <title>Scholar</title>
+  <path d="M50 30 C40 23 26 23 14 27 V77 C26 73 40 73 50 79 C60 73 74 73 86 77 V27 C74 23 60 23 50 30 Z"/>
+  <line x1="50" y1="30" x2="50" y2="79"/>
+  <g stroke-width="1.5">
+    <path d="M22 38 C30 36 36 36 42 38 M22 47 C30 45 36 45 42 47 M22 56 C30 54 36 54 42 56"/>
+    <path d="M58 38 C64 36 70 36 78 38 M58 47 C64 45 70 45 78 47"/>
+  </g>
+</svg>
+<figcaption>professions/scholar.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Thief">
+  <title>Thief</title>
+  <circle cx="31" cy="31" r="15"/>
+  <circle cx="31" cy="31" r="5"/>
+  <line x1="42" y1="42" x2="84" y2="84"/>
+  <path d="M66 66 L58 74 M76 76 L68 84"/>
+</svg>
+<figcaption>professions/thief.svg</figcaption></figure></div></section>
+<section><h2>magic</h2><div class="grid"><figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="General Magic">
+  <title>General Magic</title>
+  <rect x="26" y="26" width="48" height="48"/>
+  <path d="M50 16 L84 50 L50 84 L16 50 Z"/>
+  <circle cx="50" cy="50" r="6"/>
+</svg>
+<figcaption>magic/general-magic.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Animism">
+  <title>Animism</title>
+  <path d="M50 84 C22 66 22 34 50 12 C78 34 78 66 50 84 Z"/>
+  <line x1="50" y1="20" x2="50" y2="93"/>
+  <path d="M50 40 L39 32 M50 40 L61 32 M50 55 L36 45 M50 55 L64 45 M50 70 L40 62 M50 70 L60 62" stroke-width="1.75"/>
+</svg>
+<figcaption>magic/animism.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Elementalism">
+  <title>Elementalism</title>
+  <circle cx="50" cy="50" r="40" stroke-width="2"/>
+  <path d="M50 16 L80 68 H20 Z"/>
+  <path d="M35 42 H65 L50 68 Z" stroke-width="2"/>
+</svg>
+<figcaption>magic/elementalism.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Mentalism">
+  <title>Mentalism</title>
+  <path d="M10 54 C27 30 73 30 90 54 C73 78 27 78 10 54 Z"/>
+  <circle cx="50" cy="54" r="12"/>
+  <circle cx="50" cy="54" r="4" fill="currentColor"/>
+  <path d="M50 22 V12 M30 26 L25 17 M70 26 L75 17" stroke-width="2"/>
+</svg>
+<figcaption>magic/mentalism.svg</figcaption></figure></div></section>
+<section><h2>attributes</h2><div class="grid"><figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Strength (STR) — Uruz">
+  <title>Strength (STR) — Uruz</title>
+  <path d="M28 88 V32 C28 17 38 9 50 9 C62 9 72 17 72 32 V88" stroke-width="2"/>
+  <line x1="20" y1="88" x2="80" y2="88" stroke-width="2"/>
+  <path d="M40 78 V26 L60 38 V78" stroke-width="3.5"/>
+</svg>
+<figcaption>attributes/str.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Constitution (CON) — Eihwaz">
+  <title>Constitution (CON) — Eihwaz</title>
+  <path d="M28 88 V32 C28 17 38 9 50 9 C62 9 72 17 72 32 V88" stroke-width="2"/>
+  <line x1="20" y1="88" x2="80" y2="88" stroke-width="2"/>
+  <path d="M50 24 V80 M50 24 L60 34 M50 80 L40 70" stroke-width="3.5"/>
+</svg>
+<figcaption>attributes/constitution.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Agility (AGL) — Ehwaz">
+  <title>Agility (AGL) — Ehwaz</title>
+  <path d="M28 88 V32 C28 17 38 9 50 9 C62 9 72 17 72 32 V88" stroke-width="2"/>
+  <line x1="20" y1="88" x2="80" y2="88" stroke-width="2"/>
+  <path d="M40 78 V26 L50 42 L60 26 V78" stroke-width="3.5"/>
+</svg>
+<figcaption>attributes/agl.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Intelligence (INT) — Ansuz">
+  <title>Intelligence (INT) — Ansuz</title>
+  <path d="M28 88 V32 C28 17 38 9 50 9 C62 9 72 17 72 32 V88" stroke-width="2"/>
+  <line x1="20" y1="88" x2="80" y2="88" stroke-width="2"/>
+  <path d="M42 24 V80 M42 26 L60 38 M42 42 L60 54" stroke-width="3.5"/>
+</svg>
+<figcaption>attributes/int.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Willpower (WIL) — Nauthiz">
+  <title>Willpower (WIL) — Nauthiz</title>
+  <path d="M28 88 V32 C28 17 38 9 50 9 C62 9 72 17 72 32 V88" stroke-width="2"/>
+  <line x1="20" y1="88" x2="80" y2="88" stroke-width="2"/>
+  <path d="M50 24 V80 M40 42 L60 58" stroke-width="3.5"/>
+</svg>
+<figcaption>attributes/wil.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Charisma (CHA) — Wunjo">
+  <title>Charisma (CHA) — Wunjo</title>
+  <path d="M28 88 V32 C28 17 38 9 50 9 C62 9 72 17 72 32 V88" stroke-width="2"/>
+  <line x1="20" y1="88" x2="80" y2="88" stroke-width="2"/>
+  <path d="M44 24 V80 M44 24 L58 36 L44 48" stroke-width="3.5"/>
+</svg>
+<figcaption>attributes/cha.svg</figcaption></figure></div></section>
+<section><h2>dice</h2><div class="grid"><figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="D20">
+  <title>D20</title>
+  <path d="M50 8 L86 29 V71 L50 92 L14 71 V29 Z"/>
+  <path d="M50 28 L74 68 H26 Z"/>
+  <path d="M50 8 V28 M86 29 L50 28 M86 29 L74 68 M86 71 L74 68 M50 92 L74 68 M50 92 L26 68 M14 71 L26 68 M14 29 L26 68 M14 29 L50 28" stroke-width="1.5"/>
+</svg>
+<figcaption>dice/d20.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="D6">
+  <title>D6</title>
+  <path d="M50 12 L84 30 V70 L50 88 L16 70 V30 Z"/>
+  <path d="M16 30 L50 48 L84 30 M50 48 V88" stroke-width="2"/>
+  <g fill="currentColor" stroke="none">
+    <ellipse cx="50" cy="30" rx="4" ry="2.4"/>
+    <circle cx="27" cy="48" r="3"/><circle cx="39" cy="70" r="3"/>
+    <circle cx="61" cy="52" r="3"/><circle cx="67" cy="61" r="3"/><circle cx="73" cy="70" r="3"/>
+  </g>
+</svg>
+<figcaption>dice/d6.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Boon">
+  <title>Boon</title>
+  <path d="M50 8 L92 50 L50 92 L8 50 Z" stroke-width="2"/>
+  <path d="M32 54 L50 36 L68 54"/>
+  <path d="M32 68 L50 50 L68 68"/>
+</svg>
+<figcaption>dice/boon.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bane">
+  <title>Bane</title>
+  <path d="M50 8 L92 50 L50 92 L8 50 Z" stroke-width="2"/>
+  <path d="M32 46 L50 64 L68 46"/>
+  <path d="M32 32 L50 50 L68 32"/>
+</svg>
+<figcaption>dice/bane.svg</figcaption></figure></div></section>
+<section><h2>ornaments</h2><div class="grid"><figure class="card wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" role="img" aria-label="Divider">
+  <title>Divider</title>
+  <defs>
+    <linearGradient id="divider-rune-fade-l" x1="0" x2="1"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset="1" stop-color="currentColor"/></linearGradient>
+    <linearGradient id="divider-rune-fade-r" x1="1" x2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset="1" stop-color="currentColor"/></linearGradient>
+  </defs>
+  <rect x="0" y="11.25" width="168" height="1.5" fill="url(#divider-rune-fade-l)" stroke="none"/>
+  <rect x="232" y="11.25" width="168" height="1.5" fill="url(#divider-rune-fade-r)" stroke="none"/>
+  <path d="M200 2 L210 12 L200 22 L190 12 Z"/>
+  <path d="M200 7 L205 12 L200 17 L195 12 Z" fill="currentColor"/>
+  <path d="M178 12 L182 8 L186 12 L182 16 Z M214 12 L218 8 L222 12 L218 16 Z"/>
+</svg>
+<figcaption>ornaments/divider-rune.svg</figcaption></figure>
+<figure class="card wide"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 32" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" role="img" aria-label="Knotwork divider">
+  <title>Knotwork divider</title>
+  <line x1="20" y1="16" x2="128" y2="16"/>
+  <line x1="272" y1="16" x2="380" y2="16"/>
+  <path d="M128 16 C140 4 152 4 164 16 S188 28 200 16 S224 4 236 16 S260 28 272 16"/>
+  <path d="M128 16 C140 28 152 28 164 16 S188 4 200 16 S224 28 236 16 S260 4 272 16" stroke-opacity="0.6"/>
+  <circle cx="14" cy="16" r="2" fill="currentColor"/>
+  <circle cx="386" cy="16" r="2" fill="currentColor"/>
+</svg>
+<figcaption>ornaments/divider-knot.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Corner ornament">
+  <title>Corner ornament</title>
+  <path d="M4 60 V14 L14 4 H60"/>
+  <path d="M12 60 V20 L20 12 H60" stroke-opacity="0.5"/>
+  <path d="M20 26 L26 20 L32 26 L26 32 Z" fill="currentColor"/>
+</svg>
+<figcaption>ornaments/corner.svg</figcaption></figure>
+<figure class="card"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Dragonbane seal">
+  <title>Dragonbane seal</title>
+  <circle cx="50" cy="50" r="46" stroke-width="2"/>
+  <circle cx="50" cy="50" r="40" stroke-width="1"/>
+  <path d="M18 46 C30 32 40 58 50 48 C60 38 68 62 80 50" stroke-width="3.5"/>
+  <path d="M80 50 L89 43 L86 54 Z" fill="currentColor"/>
+  <circle cx="50" cy="16" r="3"/>
+  <line x1="50" y1="19" x2="50" y2="26"/>
+  <line x1="38" y1="26" x2="62" y2="26"/>
+  <path d="M46 26 V74 L50 84 L54 74 V26"/>
+</svg>
+<figcaption>ornaments/dragonbane-seal.svg</figcaption></figure></div></section>
+</main></body>
+</html>

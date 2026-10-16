@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="D20">
+  <title>D20</title>
+  <path d="M50 8 L86 29 V71 L50 92 L14 71 V29 Z"/>
+  <path d="M50 28 L74 68 H26 Z"/>
+  <path d="M50 8 V28 M86 29 L50 28 M86 29 L74 68 M86 71 L74 68 M50 92 L74 68 M50 92 L26 68 M14 71 L26 68 M14 29 L26 68 M14 29 L50 28" stroke-width="1.5"/>
+</svg>

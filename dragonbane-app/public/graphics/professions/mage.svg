@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Mage">
+  <title>Mage</title>
+  <circle cx="50" cy="22" r="7"/>
+  <g stroke-width="2">
+    <line x1="50" y1="6" x2="50" y2="10"/><line x1="61.3" y1="10.7" x2="58.5" y2="13.5"/>
+    <line x1="66" y1="22" x2="62" y2="22"/><line x1="38.7" y1="10.7" x2="41.5" y2="13.5"/>
+    <line x1="34" y1="22" x2="38" y2="22"/>
+  </g>
+  <line x1="50" y1="29" x2="50" y2="92"/>
+  <path d="M42 38 L50 34 L58 38"/>
+</svg>

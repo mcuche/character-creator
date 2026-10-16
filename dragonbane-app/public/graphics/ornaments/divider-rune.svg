@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" role="img" aria-label="Divider">
+  <title>Divider</title>
+  <defs>
+    <linearGradient id="fade-l" x1="0" x2="1"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset="1" stop-color="currentColor"/></linearGradient>
+    <linearGradient id="fade-r" x1="1" x2="0"><stop offset="0" stop-color="currentColor" stop-opacity="0"/><stop offset="1" stop-color="currentColor"/></linearGradient>
+  </defs>
+  <rect x="0" y="11.25" width="168" height="1.5" fill="url(#fade-l)" stroke="none"/>
+  <rect x="232" y="11.25" width="168" height="1.5" fill="url(#fade-r)" stroke="none"/>
+  <path d="M200 2 L210 12 L200 22 L190 12 Z"/>
+  <path d="M200 7 L205 12 L200 17 L195 12 Z" fill="currentColor"/>
+  <path d="M178 12 L182 8 L186 12 L182 16 Z M214 12 L218 8 L222 12 L218 16 Z"/>
+</svg>

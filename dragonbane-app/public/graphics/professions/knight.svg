@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Knight">
+  <title>Knight</title>
+  <path d="M50 10 L82 20 V46 C82 67 68 81 50 90 C32 81 18 67 18 46 V20 Z"/>
+  <path d="M30 34 L50 50 L70 34"/>
+  <path d="M30 50 L50 66 L70 50"/>
+</svg>

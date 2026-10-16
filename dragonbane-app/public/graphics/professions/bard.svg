@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Bard">
+  <title>Bard</title>
+  <path d="M34 80 C22 62 24 38 33 22"/>
+  <path d="M66 80 C78 62 76 38 67 22"/>
+  <line x1="30" y1="28" x2="70" y2="28"/>
+  <line x1="32" y1="80" x2="68" y2="80"/>
+  <g stroke-width="1.5"><line x1="43" y1="28" x2="43" y2="80"/><line x1="50" y1="28" x2="50" y2="80"/><line x1="57" y1="28" x2="57" y2="80"/></g>
+</svg>

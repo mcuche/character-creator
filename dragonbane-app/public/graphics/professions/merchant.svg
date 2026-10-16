@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Merchant">
+  <title>Merchant</title>
+  <circle cx="50" cy="14" r="3" fill="currentColor"/>
+  <line x1="50" y1="18" x2="50" y2="84"/>
+  <line x1="36" y1="84" x2="64" y2="84"/>
+  <line x1="18" y1="28" x2="82" y2="28"/>
+  <path d="M18 28 L9 54 M18 28 L27 54 M82 28 L73 54 M82 28 L91 54" stroke-width="1.5"/>
+  <path d="M7 54 H29 C28 61 24 64 18 64 C12 64 8 61 7 54 Z"/>
+  <path d="M71 54 H93 C92 61 88 64 82 64 C76 64 72 61 71 54 Z"/>
+</svg>

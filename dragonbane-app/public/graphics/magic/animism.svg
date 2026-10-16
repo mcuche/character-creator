@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Animism">
+  <title>Animism</title>
+  <path d="M50 84 C22 66 22 34 50 12 C78 34 78 66 50 84 Z"/>
+  <line x1="50" y1="20" x2="50" y2="93"/>
+  <path d="M50 40 L39 32 M50 40 L61 32 M50 55 L36 45 M50 55 L64 45 M50 70 L40 62 M50 70 L60 62" stroke-width="1.75"/>
+</svg>

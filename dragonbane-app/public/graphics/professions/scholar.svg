@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Scholar">
+  <title>Scholar</title>
+  <path d="M50 30 C40 23 26 23 14 27 V77 C26 73 40 73 50 79 C60 73 74 73 86 77 V27 C74 23 60 23 50 30 Z"/>
+  <line x1="50" y1="30" x2="50" y2="79"/>
+  <g stroke-width="1.5">
+    <path d="M22 38 C30 36 36 36 42 38 M22 47 C30 45 36 45 42 47 M22 56 C30 54 36 54 42 56"/>
+    <path d="M58 38 C64 36 70 36 78 38 M58 47 C64 45 70 45 78 47"/>
+  </g>
+</svg>

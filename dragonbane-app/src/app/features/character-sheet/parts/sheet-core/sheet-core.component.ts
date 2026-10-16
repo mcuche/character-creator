@@ -58,7 +58,8 @@ export class SheetCoreComponent {
   });
 
   iconFor(attr: AttributeKey): string {
-    return `attributes/${attr.toLowerCase()}`;
+    // CON is a reserved device name on Windows, so that rune is constitution.svg
+    return attr === 'CON' ? 'attributes/constitution' : `attributes/${attr.toLowerCase()}`;
   }
 
   /** Raw (pre-age) score, or null when age leaves this attribute unchanged. */
