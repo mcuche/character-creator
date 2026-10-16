@@ -55,6 +55,8 @@ The character name `<input>` sits on a `stone-950/95` bar with no border or visu
 ---
 
 ### 5. Character sheet tab bar indicator is too subtle
+**Status:** Done (2026-10-17). `.sheet-tab.active` has a 3px amber underline plus a faint amber fill.
+
 **File:** `features/character-sheet/character-sheet.component.html`
 
 The active tab uses a 2px `border-b` in `amber-500`. On a dark background (`stone-900`) this nearly disappears, making it hard to tell which tab is active at a glance.
@@ -79,6 +81,8 @@ Then set `font-family: 'Crimson Pro', serif` as the base body in `@theme` or `bo
 ---
 
 ### 7. HP/WP +/− buttons too small for table use
+**Status:** Done (2026-10-17). The sheet uses 44px circular `.vital-stepper` buttons for HP, WP and coin.
+
 **File:** `features/character-sheet/character-sheet.component.html` (lines 31–46)
 
 `h-6 w-6` increment/decrement buttons are barely tappable on a phone or tablet — a real problem if this is used at the game table.
@@ -93,7 +97,7 @@ Then set `font-family: 'Crimson Pro', serif` as the base body in `@theme` or `bo
 |----------|-------|-----------------|
 | High | Name input affordance in wizard header | ~5 min |
 | High | Card left-border accent + consistent HP/WP display | ~10 min |
-| Medium | Tab active state visibility | ~5 min |
+| Medium | ~~Tab active state visibility~~ (done) | ~5 min |
 | Medium | Replace emoji dice with SVG icon | ~15 min |
 | Low | Crimson Pro body font | ~10 min |
-| Low | HP/WP button size on character sheet | ~5 min |
+| Low | ~~HP/WP button size on character sheet~~ (done) | ~5 min |
