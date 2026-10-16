@@ -1,55 +1,53 @@
-<div>
+<div class="step-animate-in">
+
+  <h2 class="mb-2 font-display font-semibold step-heading">Weakness</h2>
+  <p class="mb-8 step-intro">
+    An optional character flaw. Acting against your weakness grants 2 advancement marks, then removes it.
+  </p>
+
+  @if (!expanded()) {
+    <button
+      type="button"
+      (click)="toggle()"
+      class="add-slot">
+      <span class="add-slot-label">+ Add a Weakness</span>
+      <span class="card-meta">Or continue without one.</span>
+    </button>
+  } @else {
+    <div class="mb-3 flex items-center justify-between gap-4">
+      <h3 class="section-label">Choose a weakness</h3>
+      <button type="button" (click)="toggle()" class="btn-roll inline-flex min-h-11 items-center">Remove</button>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="mb-8 flex flex-wrap gap-2">
+      @for (w of suggestions; track w) {
+        <button
+          type="button"
+          (click)="selectSuggestion(w)"
+          class="choice-chip"
+          [class.selected]="weaknessText() === w"
+          [attr.aria-pressed]="weaknessText() === w">
+          {{ w }}
+        </button>
+      }
+    </div>
+
+    <!-- Free text -->
+    <label for="weakness-text" class="section-label block">Or write your own</label>
+    <input
+      id="weakness-text"
+      type="text"
+      [ngModel]="weaknessText()"
+      (ngModelChange)="weaknessText.set($event)"
+      placeholder="A flaw in your own words…"
+      class="text-field"
+    />
+  }
+
   <app-step-nav
     backPath="skills"
     [canContinue]="true"
     (next)="continue()" />
-
-  <div class="mb-8">
-    <h2 class="font-display text-2xl font-bold text-amber-300">Weakness</h2>
-    <p class="mt-1 text-stone-300">
-      An optional character flaw. Acting against your weakness grants 2 advancement marks, then removes it.
-    </p>
-  </div>
-
-  @if (!expanded()) {
-    <button
-      (click)="toggle()"
-      class="rounded-lg border border-dashed border-stone-600 px-6 py-4 text-stone-300 transition hover:border-stone-500 hover:text-stone-300">
-      + Add a Weakness
-    </button>
-  } @else {
-    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-6">
-      <div class="mb-4 flex items-center justify-between">
-        <h3 class="font-semibold text-stone-200">Choose a weakness</h3>
-        <button (click)="toggle()" class="text-sm text-stone-300 hover:text-stone-300">Remove ✕</button>
-      </div>
-
-      <!-- Suggestions -->
-      <div class="mb-4 flex flex-wrap gap-2">
-        @for (w of suggestions; track w) {
-          <button
-            (click)="selectSuggestion(w)"
-            class="rounded-full border px-3 py-1 text-sm transition"
-            [class.border-amber-500]="weaknessText() === w"
-            [class.bg-amber-900/20]="weaknessText() === w"
-            [class.text-amber-300]="weaknessText() === w"
-            [class.border-stone-600]="weaknessText() !== w"
-            [class.text-stone-300]="weaknessText() !== w"
-            [class.hover:border-stone-500]="weaknessText() !== w">
-            {{ w }}
-          </button>
-        }
-      </div>
-
-      <!-- Free text -->
-      <input
-        type="text"
-        [ngModel]="weaknessText()"
-        (ngModelChange)="weaknessText.set($event)"
-        placeholder="Or write your own…"
-        class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500"
-      />
-    </div>
-  }
 
 </div>

@@ -1,56 +1,55 @@
-<div>
+<div class="step-animate-in">
+
+  <h2 class="mb-2 font-display font-semibold step-heading">Appearance</h2>
+  <p class="mb-8 step-intro">All fields are optional. Fill in what feels right for your character.</p>
+
+  <div class="grid gap-x-8 gap-y-6 sm:grid-cols-2">
+    <div>
+      <label for="appearance-height" class="section-label block">Height</label>
+      <input id="appearance-height" type="text" [ngModel]="height()" (ngModelChange)="height.set($event)"
+        placeholder="e.g. Tall, average, short"
+        class="text-field" />
+    </div>
+    <div>
+      <label for="appearance-build" class="section-label block">Build</label>
+      <input id="appearance-build" type="text" [ngModel]="build()" (ngModelChange)="build.set($event)"
+        placeholder="e.g. Lean, stocky, wiry"
+        class="text-field" />
+    </div>
+    <div>
+      <label for="appearance-hair" class="section-label block">Hair</label>
+      <input id="appearance-hair" type="text" [ngModel]="hair()" (ngModelChange)="hair.set($event)"
+        placeholder="e.g. Dark and curly"
+        class="text-field" />
+    </div>
+    <div>
+      <label for="appearance-eyes" class="section-label block">Eyes</label>
+      <input id="appearance-eyes" type="text" [ngModel]="eyes()" (ngModelChange)="eyes.set($event)"
+        placeholder="e.g. Pale blue, amber"
+        class="text-field" />
+    </div>
+    <div>
+      <label for="appearance-skin" class="section-label block">Skin</label>
+      <input id="appearance-skin" type="text" [ngModel]="skin()" (ngModelChange)="skin.set($event)"
+        placeholder="e.g. Tanned, pale, weathered"
+        class="text-field" />
+    </div>
+  </div>
+
+  <div class="mt-6">
+    <label for="appearance-features" class="section-label block">Distinguishing Features</label>
+    <textarea
+      id="appearance-features"
+      [ngModel]="distinguishingFeatures()" (ngModelChange)="distinguishingFeatures.set($event)"
+      placeholder="Scars, tattoos, unusual markings, a particular way of carrying yourself…"
+      rows="3"
+      class="text-field"></textarea>
+  </div>
+
   <app-step-nav
     backPath="memento"
     [canContinue]="true"
     nextLabel="Review Summary →"
     (next)="continue()" />
-
-  <div class="mb-8">
-    <h2 class="font-display text-2xl font-bold text-amber-300">Appearance</h2>
-    <p class="mt-1 text-stone-300">All fields are optional. Fill in what feels right for your character.</p>
-  </div>
-
-  <div class="grid gap-4 sm:grid-cols-2">
-    <div>
-      <label class="mb-1 block text-sm text-stone-300">Height</label>
-      <input type="text" [ngModel]="height()" (ngModelChange)="height.set($event)"
-        placeholder="e.g. Tall, average, short"
-        class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500" />
-    </div>
-    <div>
-      <label class="mb-1 block text-sm text-stone-300">Build</label>
-      <input type="text" [ngModel]="build()" (ngModelChange)="build.set($event)"
-        placeholder="e.g. Lean, stocky, wiry"
-        class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500" />
-    </div>
-    <div>
-      <label class="mb-1 block text-sm text-stone-300">Hair</label>
-      <input type="text" [ngModel]="hair()" (ngModelChange)="hair.set($event)"
-        placeholder="e.g. Dark and curly"
-        class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500" />
-    </div>
-    <div>
-      <label class="mb-1 block text-sm text-stone-300">Eyes</label>
-      <input type="text" [ngModel]="eyes()" (ngModelChange)="eyes.set($event)"
-        placeholder="e.g. Pale blue, amber"
-        class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500" />
-    </div>
-    <div>
-      <label class="mb-1 block text-sm text-stone-300">Skin</label>
-      <input type="text" [ngModel]="skin()" (ngModelChange)="skin.set($event)"
-        placeholder="e.g. Tanned, pale, weathered"
-        class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500" />
-    </div>
-  </div>
-
-  <div class="mt-4">
-    <label class="mb-1 block text-sm text-stone-300">Distinguishing Features</label>
-    <textarea
-      [ngModel]="distinguishingFeatures()" (ngModelChange)="distinguishingFeatures.set($event)"
-      placeholder="Scars, tattoos, unusual markings, a particular way of carrying yourself…"
-      rows="3"
-      class="w-full rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500 resize-none">
-    </textarea>
-  </div>
 
 </div>
