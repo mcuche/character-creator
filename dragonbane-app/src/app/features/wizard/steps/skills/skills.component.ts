@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { CharacterDraftService } from '../../../../services/character-draft.service';
 import { PROFESSION_DATA } from '../../../../data/professions.data';
 import { SKILLS_DATA } from '../../../../data/skills.data';
-import { getTrainedSkillCount } from '../../../../services/character-rules.service';
+import { applyAgeModifiers, getSkillLevel, getTrainedSkillCount } from '../../../../services/character-rules.service';
+import { AttributeKey } from '../../../../models/character.models';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
 
 @Component({
@@ -65,8 +66,13 @@ export class SkillsComponent {
     return new Set(this.professionSkills).has(name);
   }
 
-  getSkillLevel(name: string): number {
-    return this.draft().skills?.[name]?.level ?? 0;
+  // Level the skill has once trained — every row on this step is a trained skill
+  getTrainedLevel(name: string): number {
+    const { attributes, age } = this.draft();
+    if (!attributes) return 0;
+    const modified = age ? applyAgeModifiers(attributes, age) : attributes;
+    const attr = (name === this.magicSchool ? 'WIL' : this.getSkillAttr(name)) as AttributeKey;
+    return getSkillLevel(modified[attr], true);
   }
 
   getSkillAttr(name: string): string {

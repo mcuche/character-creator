@@ -1,4 +1,4 @@
-import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry } from '../models/character.models';
+import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry, MagicSchool } from '../models/character.models';
 import { SKILLS_DATA } from '../data/skills.data';
 import { KIN_DATA } from '../data/kin.data';
 
@@ -54,16 +54,37 @@ export function deriveStats(attributes: Attributes, kin: Kin | undefined, age: A
   };
 }
 
-export function computeSkills(attributes: Attributes): Record<string, SkillEntry> {
+// Untrained skill = base chance; trained at creation = 2× base chance
+export function getSkillLevel(attrScore: number, trained: boolean): number {
+  const baseChance = getBaseChance(attrScore);
+  return trained ? baseChance * 2 : baseChance;
+}
+
+// Skill levels are derived from age-modified attributes. A mage's school is
+// always a trained WIL skill.
+export function computeSkills(
+  attributes: Attributes,
+  age: Age | undefined,
+  trainedNames: Iterable<string> = [],
+  magicSchool?: MagicSchool,
+): Record<string, SkillEntry> {
+  const modified = age ? applyAgeModifiers(attributes, age) : attributes;
+  const trained = new Set(trainedNames);
   const result: Record<string, SkillEntry> = {};
   for (const skill of SKILLS_DATA) {
-    const attrScore = attributes[skill.attribute as AttributeKey];
-    const baseChance = getBaseChance(attrScore);
-    const trainedLevel = baseChance * 2;
+    const isTrained = trained.has(skill.name);
     result[skill.name] = {
       name: skill.name,
-      level: trainedLevel,
-      trained: false,
+      level: getSkillLevel(modified[skill.attribute as AttributeKey], isTrained),
+      trained: isTrained,
+      advancementMarks: 0,
+    };
+  }
+  if (magicSchool) {
+    result[magicSchool] = {
+      name: magicSchool,
+      level: getSkillLevel(modified.WIL, true),
+      trained: true,
       advancementMarks: 0,
     };
   }

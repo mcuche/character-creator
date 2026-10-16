@@ -125,21 +125,16 @@ export class CharacterDraftService {
   }
 
   setAttributes(attributes: Attributes, method: 'roll' | 'pointbuy' | 'standard'): void {
-    const age = this._draft().age;
-    const derived = deriveStats(attributes, this._draft().kin, age);
-    const baseSkills = computeSkills(attributes);
+    const { age, kin, magicSchool } = this._draft();
+    const derived = deriveStats(attributes, kin, age);
 
-    // Re-initialize all skills at base chance, preserving trained flags
+    // Recompute all skill levels, preserving trained flags. The school entry is
+    // only kept if the skills step already added it — the wizard guard treats
+    // any trained skill as "skills step done".
     const currentSkills = this._draft().skills ?? {};
-    const updatedSkills: Record<string, SkillEntry> = {};
-    for (const [name, entry] of Object.entries(baseSkills)) {
-      updatedSkills[name] = {
-        ...entry,
-        trained: currentSkills[name]?.trained ?? false,
-        level: currentSkills[name]?.trained ? entry.level : entry.level,
-        advancementMarks: currentSkills[name]?.advancementMarks ?? 0,
-      };
-    }
+    const trainedNames = Object.values(currentSkills).filter(s => s.trained).map(s => s.name);
+    const keepSchool = magicSchool && currentSkills[magicSchool] ? magicSchool : undefined;
+    const updatedSkills = this.withAdvancementMarks(computeSkills(attributes, age, trainedNames, keepSchool));
 
     this.persist({
       ...this._draft(),
@@ -154,23 +149,20 @@ export class CharacterDraftService {
   }
 
   setTrainedSkills(trainedSkillNames: string[]): void {
-    const attributes = this._draft().attributes;
+    const { attributes, age, magicSchool } = this._draft();
     if (!attributes) return;
 
-    const baseSkills = computeSkills(attributes);
-    const skills: Record<string, SkillEntry> = {};
-
-    for (const [name, entry] of Object.entries(baseSkills)) {
-      const trained = trainedSkillNames.includes(name);
-      skills[name] = {
-        ...entry,
-        trained,
-        level: trained ? entry.level * 2 : entry.level,
-        advancementMarks: this._draft().skills?.[name]?.advancementMarks ?? 0,
-      };
-    }
-
+    const school = this._draft().profession === 'Mage' ? magicSchool : undefined;
+    const skills = this.withAdvancementMarks(computeSkills(attributes, age, trainedSkillNames, school));
     this.patch({ skills });
+  }
+
+  private withAdvancementMarks(skills: Record<string, SkillEntry>): Record<string, SkillEntry> {
+    const current = this._draft().skills ?? {};
+    for (const [name, entry] of Object.entries(skills)) {
+      entry.advancementMarks = current[name]?.advancementMarks ?? 0;
+    }
+    return skills;
   }
 
   setWeakness(weakness: string | undefined): void {

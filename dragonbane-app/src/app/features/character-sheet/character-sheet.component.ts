@@ -56,7 +56,9 @@ export class CharacterSheetComponent {
 
   get trainedSkills(): SkillEntry[] {
     const skills = this.character()?.skills ?? {};
-    return SKILLS_DATA.map(s => skills[s.name]).filter(Boolean).filter(s => s.trained);
+    const school = this.character()?.magicSchool;
+    const names = [...(school ? [school] : []), ...SKILLS_DATA.map(s => s.name)];
+    return names.map(n => skills[n]).filter(Boolean).filter(s => s.trained);
   }
 
   get untrainedSkills(): SkillEntry[] {
@@ -65,6 +67,7 @@ export class CharacterSheetComponent {
   }
 
   getSkillAttr(name: string): string {
+    if (name === this.character()?.magicSchool) return 'WIL';
     return SKILLS_DATA.find(s => s.name === name)?.attribute ?? '';
   }
 
