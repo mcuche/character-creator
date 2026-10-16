@@ -25,33 +25,8 @@
     @if (characters().length === 0) {
       <div class="flex flex-col items-center py-28 text-center">
 
-        <!-- Ornamental runic wheel -->
-        <svg width="116" height="116" viewBox="0 0 116 116" fill="none" xmlns="http://www.w3.org/2000/svg"
-          class="ornament-dim" aria-hidden="true">
-          <!-- Outer ring -->
-          <circle cx="58" cy="58" r="52" stroke="currentColor" stroke-width="1.25"/>
-          <!-- Mid ring -->
-          <circle cx="58" cy="58" r="36" stroke="currentColor" stroke-width="1.25"/>
-          <!-- Inner ring -->
-          <circle cx="58" cy="58" r="18" stroke="currentColor" stroke-width="1"/>
-          <!-- Center -->
-          <circle cx="58" cy="58" r="3.5" fill="currentColor"/>
-          <!-- Cardinal spokes (long, N/S/E/W) -->
-          <line x1="58" y1="6" x2="58" y2="22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="58" y1="94" x2="58" y2="110" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="6" y1="58" x2="22" y2="58" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <line x1="94" y1="58" x2="110" y2="58" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-          <!-- Ordinal marks (diagonal, shorter) -->
-          <line x1="95.4" y1="20.6" x2="84.8" y2="31.2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-          <line x1="20.6" y1="20.6" x2="31.2" y2="31.2" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-          <line x1="95.4" y1="95.4" x2="84.8" y2="84.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-          <line x1="20.6" y1="95.4" x2="31.2" y2="84.8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
-          <!-- Inner radial ticks at cardinals -->
-          <line x1="58" y1="22" x2="58" y2="40" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
-          <line x1="58" y1="76" x2="58" y2="94" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
-          <line x1="22" y1="58" x2="40" y2="58" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
-          <line x1="76" y1="58" x2="94" y2="58" stroke="currentColor" stroke-width="0.75" stroke-linecap="round" opacity="0.45"/>
-        </svg>
+        <!-- Dragonbane seal -->
+        <app-icon name="ornaments/dragonbane-seal" [size]="116" class="ornament-dim" />
 
         <p class="mt-10 font-display empty-heading">
           Your roster is empty.
@@ -76,22 +51,23 @@
 
         <div>
           @for (char of characters(); track char.id) {
-            <div class="character-entry entry-row group relative flex items-center" [class.opacity-60]="isDraft(char)">
+            <div class="character-entry entry-row relative flex items-center" [class.opacity-60]="isDraft(char)">
 
               <!-- Delete confirm overlay -->
               @if (deleteConfirmId === char.id) {
-                <div class="absolute inset-0 z-10 flex items-center justify-center gap-4 rounded confirm-overlay-bg">
-                  <p class="confirm-text">
+                <div class="absolute inset-0 z-10 flex flex-wrap content-center items-center justify-center gap-x-4 gap-y-2 rounded px-3 confirm-overlay-bg"
+                  role="alertdialog" [attr.aria-label]="'Delete ' + (char.name || 'Unnamed') + '?'">
+                  <p class="confirm-text min-w-0 max-w-full break-words text-center">
                     Delete
                     <span class="font-semibold text-gold">{{ char.name || 'Unnamed' }}</span>?
                   </p>
                   <div class="flex gap-2">
                     <button (click)="deleteCharacter(char.id)"
-                      class="confirm-delete-btn px-4 py-1.5 rounded font-semibold">
+                      class="confirm-delete-btn min-h-11 px-4 rounded font-semibold">
                       Delete character
                     </button>
                     <button (click)="cancelDelete()"
-                      class="confirm-cancel-btn px-4 py-1.5 rounded font-semibold">
+                      class="confirm-cancel-btn min-h-11 px-4 rounded font-semibold">
                       Keep
                     </button>
                   </div>
@@ -172,16 +148,29 @@
                     {{ char.name || 'Unnamed Hero' }}
                   </h3>
                   <p class="mt-1.5 char-list-meta">
-                    @if (char.kin && char.profession) {
-                      {{ char.kin }}&thinsp;·&thinsp;{{ char.profession }}
-                    } @else if (char.kin) {
-                      {{ char.kin }}
-                    } @else if (char.profession) {
-                      {{ char.profession }}
+                    @if (char.kin || char.profession) {
+                      @if (char.kin) {
+                        {{ char.kin }}
+                      }
+                      @if (char.kin && char.profession) {
+                        &thinsp;·&thinsp;
+                      }
+                      @if (char.profession) {
+                        <span class="whitespace-nowrap">
+                          <app-icon [name]="'professions/' + char.profession.toLowerCase()" [size]="15" class="mr-1 align-[-0.15em]" />{{ char.profession }}
+                        </span>
+                      }
                     } @else {
                       <span class="text-muted-stone">No kin or profession set</span>
                     }
                   </p>
+                  @if (!isDraft(char) && char.derivedStats) {
+                    <p class="mt-0.5 card-meta tabular-nums">
+                      <span class="whitespace-nowrap">HP {{ char.currentHP }}/{{ char.derivedStats.hp }}</span>
+                      &thinsp;·&thinsp;
+                      <span class="whitespace-nowrap">WP {{ char.currentWP }}/{{ char.derivedStats.wp }}</span>
+                    </p>
+                  }
                   @if (isDraft(char)) {
                     <span class="font-display inline-block mt-2.5 badge-incomplete">
                       Incomplete
@@ -191,20 +180,29 @@
 
               </a>
 
-              <!-- Action buttons — hidden until hover -->
-              <div class="flex items-center gap-0.5 px-2 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <button (click)="exportJson(char)"
-                  class="entry-action-btn"
-                  title="Export as JSON"
-                  aria-label="Export {{ char.name || 'character' }} as JSON">
-                  ↓
-                </button>
-                <button (click)="confirmDelete(char.id)"
-                  class="entry-action-btn danger"
-                  title="Delete character"
-                  aria-label="Delete {{ char.name || 'character' }}">
-                  ✕
-                </button>
+              <!-- Action buttons — revealed on hover/focus, always shown on touch -->
+              <div class="entry-actions shrink-0">
+                <div class="flex items-center gap-0.5 pl-2">
+                  <button (click)="exportJson(char)"
+                    class="entry-action-btn"
+                    title="Export as JSON"
+                    aria-label="Export {{ char.name || 'character' }} as JSON">
+                    <svg width="16" height="16" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <line x1="50" y1="14" x2="50" y2="64" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                      <polyline points="30,46 50,66 70,46" stroke="currentColor" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                      <line x1="18" y1="86" x2="82" y2="86" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                  <button (click)="confirmDelete(char.id)"
+                    class="entry-action-btn danger"
+                    title="Delete character"
+                    aria-label="Delete {{ char.name || 'character' }}">
+                    <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <line x1="20" y1="20" x2="80" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+                      <line x1="80" y1="20" x2="20" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+                    </svg>
+                  </button>
+                </div>
               </div>
 
             </div>

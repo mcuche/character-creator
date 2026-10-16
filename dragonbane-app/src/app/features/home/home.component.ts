@@ -4,10 +4,11 @@ import { CommonModule } from '@angular/common';
 import { CharacterService } from '../../services/character.service';
 import { CharacterDraftService } from '../../services/character-draft.service';
 import { Character } from '../../models/character.models';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, IconComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
