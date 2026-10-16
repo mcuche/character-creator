@@ -1,70 +1,147 @@
 @let char = character();
+@let cap = capacity();
 
-<section>
-  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Inventory</h3>
-  @if (char.attributes) {
-    <p class="mb-4 text-sm text-stone-300">
-      Carrying capacity: <span class="font-bold text-stone-300">{{ Math.ceil(char.attributes.STR / 2) }}</span> slots
-      (STR {{ char.attributes.STR }} ÷ 2)
+<!-- ── Pack ── -->
+<section aria-labelledby="gear-pack-heading">
+  <div class="mb-1 flex items-baseline justify-between gap-4">
+    <h3 id="gear-pack-heading" class="section-label">Your Pack</h3>
+    <span class="pick-counter shrink-0" [class.complete]="full()" [class.over]="over()" aria-live="polite">
+      @if (cap !== null) {
+        {{ load() }} / {{ cap }} carried
+      } @else {
+        {{ load() }} carried
+      }
+    </span>
+  </div>
+
+  @if (str() !== null) {
+    <p class="mb-3 derived-enc-note">
+      Capacity: STR {{ str() }} ÷ 2
+      @if (hasBackpack()) { + 2 backpack }
+      @if (coinLoad() > 0) { &ensp;·&ensp; coins take {{ coinLoad() }} }
     </p>
   }
-  <div class="space-y-2">
-    @for (item of char.gear; track item.id) {
-      <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/40 p-3">
-        <span class="flex-1 text-stone-200">{{ item.name }}</span>
-        @if (item.quantity > 1) {
-          <span class="text-sm text-stone-300">×{{ item.quantity }}</span>
+  @if (over()) {
+    <p class="mb-3 text-sm"><span class="mod-neg">Over-encumbered: roll STR to move in a combat round or walk a shift.</span></p>
+  }
+
+  @if (char.gear.length > 0) {
+    <div>
+      @for (item of char.gear; track item.id) {
+        <div class="attr-row gap-2! py-1! sm:gap-4!">
+          <div class="flex min-w-0 flex-1 flex-col items-start">
+            <span class="max-w-full break-words pt-2 toggle-card-name">{{ item.name }}</span>
+            <button
+              (click)="cycleWeight(item.id)"
+              class="attr-action-btn -mt-1 -mb-1 inline-flex min-h-11 items-center"
+              title="Weight: tap to change"
+              [attr.aria-label]="'Weight of ' + item.name + ': ' + weightLabel(item.weight) + '. Change'">
+              {{ weightLabel(item.weight) }}
+            </button>
+          </div>
+
+          <div class="flex shrink-0 items-center" role="group" [attr.aria-label]="'Quantity of ' + item.name">
+            <button
+              (click)="updateQuantity(item.id, -1)"
+              [disabled]="item.quantity <= 1"
+              class="flex h-11 w-11 items-center justify-center disabled:cursor-not-allowed"
+              [attr.aria-label]="'Decrease ' + item.name">
+              <span class="pb-btn" [class.opacity-25]="item.quantity <= 1" aria-hidden="true">−</span>
+            </button>
+            <span class="w-7 text-center score-chip-total" aria-live="polite">{{ item.quantity }}</span>
+            <button
+              (click)="updateQuantity(item.id, 1)"
+              class="flex h-11 w-11 items-center justify-center"
+              [attr.aria-label]="'Increase ' + item.name">
+              <span class="pb-btn" aria-hidden="true">+</span>
+            </button>
+          </div>
+
+          <button
+            (click)="removeItem(item.id)"
+            class="attr-action-btn inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center"
+            [attr.aria-label]="'Remove ' + item.name">
+            <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <line x1="20" y1="20" x2="80" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+              <line x1="80" y1="20" x2="20" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="step-empty">Your pack is empty.</p>
+  }
+
+  <!-- Add item -->
+  <div class="mt-4 flex items-end gap-3">
+    <input
+      type="text"
+      [ngModel]="newItemName()"
+      (ngModelChange)="newItemName.set($event)"
+      (keydown.enter)="addItem()"
+      placeholder="Rope, torch, lucky coin…"
+      aria-label="New item name"
+      class="min-w-0 flex-1 text-field"
+    />
+    <button
+      (click)="addItem()"
+      [disabled]="!newItemName().trim()"
+      class="btn-roll-action min-h-11 shrink-0">
+      Add
+    </button>
+  </div>
+</section>
+
+<!-- ── Coin ── -->
+<section class="mt-10" aria-labelledby="gear-coin-heading">
+  <h3 id="gear-coin-heading" class="mb-1 section-label">Coin</h3>
+  <div class="sm:max-w-sm">
+    @for (coin of coins; track coin.key) {
+      @let amount = char[coin.key];
+      <div class="attr-row justify-between gap-3! py-2!">
+        <span class="attr-row-key" [class]="'coin-' + coin.key">{{ coin.label }}</span>
+        <div class="flex items-center gap-2" role="group" [attr.aria-label]="coin.label + ' coins'">
+          <button
+            (click)="updateCurrency(coin.key, -1)"
+            [disabled]="amount <= 0"
+            class="vital-stepper"
+            [attr.aria-label]="'One less ' + coin.label.toLowerCase()">−</button>
+          <div class="w-16">
+            <input
+              #field
+              type="number"
+              inputmode="numeric"
+              min="0"
+              step="1"
+              [value]="amount"
+              (change)="commitCurrency(coin.key, field)"
+              (keydown.enter)="field.blur()"
+              [attr.aria-label]="coin.label + ' amount'"
+              class="text-field num-field"
+            />
+          </div>
+          <button
+            (click)="updateCurrency(coin.key, 1)"
+            class="vital-stepper"
+            [attr.aria-label]="'One more ' + coin.label.toLowerCase()">+</button>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ── Memento ── -->
+@if (char.memento) {
+  <section class="mt-10" aria-labelledby="gear-memento-heading">
+    <h3 id="gear-memento-heading" class="mb-1 section-label">Memento</h3>
+    <div class="attr-row items-start!">
+      <div class="min-w-0 flex-1">
+        <p class="break-words toggle-card-name">{{ char.memento.name }}</p>
+        @if (char.memento.significance) {
+          <p class="mt-1 break-words card-meta">{{ char.memento.significance }}</p>
         }
       </div>
-    }
-    @if (char.gear.length === 0) {
-      <p class="text-stone-300 italic">No gear.</p>
-    }
-  </div>
-</section>
-
-<!-- Currency -->
-<section class="mt-8">
-  <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Coin</h3>
-  <div class="grid grid-cols-3 gap-3">
-    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
-      <div class="mb-1 text-xs text-yellow-400">Gold</div>
-      <div class="flex items-center justify-center gap-2">
-        <button (click)="updateCurrency('gold', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
-        <input type="number" min="0" [ngModel]="char.gold" (ngModelChange)="setCurrency('gold', +$event)"
-          class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
-        <button (click)="updateCurrency('gold', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
-      </div>
-    </div>
-    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
-      <div class="mb-1 text-xs text-slate-300">Silver</div>
-      <div class="flex items-center justify-center gap-2">
-        <button (click)="updateCurrency('silver', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
-        <input type="number" min="0" [ngModel]="char.silver" (ngModelChange)="setCurrency('silver', +$event)"
-          class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
-        <button (click)="updateCurrency('silver', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
-      </div>
-    </div>
-    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-3 text-center">
-      <div class="mb-1 text-xs text-orange-400">Copper</div>
-      <div class="flex items-center justify-center gap-2">
-        <button (click)="updateCurrency('copper', -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
-        <input type="number" min="0" [ngModel]="char.copper" (ngModelChange)="setCurrency('copper', +$event)"
-          class="w-14 bg-transparent text-center font-mono text-xl font-bold text-stone-100 outline-none" />
-        <button (click)="updateCurrency('copper', 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
-      </div>
-    </div>
-  </div>
-</section>
-
-@if (char.memento) {
-  <section class="mt-8">
-    <h3 class="font-display mb-4 text-lg font-semibold text-stone-200">Memento</h3>
-    <div class="rounded-xl border border-stone-700 bg-stone-800/60 p-4">
-      <p class="font-semibold text-stone-200">{{ char.memento.name }}</p>
-      @if (char.memento.significance) {
-        <p class="mt-1 text-sm text-stone-300">{{ char.memento.significance }}</p>
-      }
     </div>
   </section>
 }
