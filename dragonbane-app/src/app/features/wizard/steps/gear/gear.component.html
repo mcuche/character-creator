@@ -1,49 +1,80 @@
-<div>
-  <app-step-nav
-    backPath="weakness"
-    [canContinue]="true"
-    (next)="continue()" />
+<div class="step-animate-in">
 
-  <div class="mb-8">
-    <h2 class="font-display text-2xl font-bold text-amber-300">Starting Gear</h2>
-    <p class="mt-1 text-stone-300">Your suggested loadout is pre-filled. Add or remove items as you like.</p>
+  <h2 class="mb-2 font-display font-semibold step-heading">Starting Gear</h2>
+  <p class="mb-8 step-intro">
+    Your suggested loadout is pre-filled. Add or remove items as you like.
+  </p>
+
+  <!-- Pack -->
+  <div class="mb-2 flex items-baseline justify-between">
+    <h3 class="section-label">Your Pack</h3>
+    <span class="pick-counter">{{ gear().length }} {{ gear().length === 1 ? 'item' : 'items' }}</span>
   </div>
 
-  <!-- Gear list -->
-  <div class="mb-6 space-y-2">
-    @for (item of gear(); track item.id) {
-      <div class="flex items-center gap-3 rounded-lg border border-stone-700 bg-stone-800/60 p-3">
-        <span class="flex-1 text-stone-200">{{ item.name }}</span>
-        <div class="flex items-center gap-2">
-          <button (click)="updateQuantity(item.id, -1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">−</button>
-          <span class="w-6 text-center text-sm text-stone-300">{{ item.quantity }}</span>
-          <button (click)="updateQuantity(item.id, 1)" class="h-6 w-6 rounded bg-stone-700 text-stone-300 hover:bg-stone-600">+</button>
+  @if (gear().length > 0) {
+    <div class="mb-8">
+      @for (item of gear(); track item.id) {
+        <div class="attr-row gap-2! py-1! sm:gap-4!">
+          <span class="min-w-0 flex-1 break-words toggle-card-name">{{ item.name }}</span>
+
+          <div class="flex items-center" role="group" [attr.aria-label]="'Quantity of ' + item.name">
+            <button
+              (click)="updateQuantity(item.id, -1)"
+              [disabled]="item.quantity <= 1"
+              class="flex h-11 w-11 items-center justify-center disabled:cursor-not-allowed"
+              [attr.aria-label]="'Decrease ' + item.name">
+              <span class="pb-btn" [class.opacity-25]="item.quantity <= 1" aria-hidden="true">−</span>
+            </button>
+            <span class="w-7 text-center score-chip-total" aria-live="polite">{{ item.quantity }}</span>
+            <button
+              (click)="updateQuantity(item.id, 1)"
+              class="flex h-11 w-11 items-center justify-center"
+              [attr.aria-label]="'Increase ' + item.name">
+              <span class="pb-btn" aria-hidden="true">+</span>
+            </button>
+          </div>
+
+          <button
+            (click)="removeItem(item.id)"
+            class="attr-action-btn inline-flex min-h-11 min-w-11 items-center justify-center"
+            [attr.aria-label]="'Remove ' + item.name">
+            <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <line x1="20" y1="20" x2="80" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+              <line x1="80" y1="20" x2="20" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
-        <button (click)="removeItem(item.id)" class="text-stone-300 hover:text-red-400">✕</button>
-      </div>
-    }
-
-    @if (gear().length === 0) {
-      <p class="text-stone-300 italic">No items yet. Add some below.</p>
-    }
-  </div>
+      }
+    </div>
+  } @else {
+    <p class="mb-8 step-empty">
+      Your pack is empty. Add some items below.
+    </p>
+  }
 
   <!-- Add item -->
-  <div class="flex gap-2">
+  <h3 class="mb-1 section-label">Add an Item</h3>
+  <div class="flex items-end gap-3">
     <input
       type="text"
       [ngModel]="newItemName()"
       (ngModelChange)="newItemName.set($event)"
       (keydown.enter)="addItem()"
-      placeholder="Add an item…"
-      class="flex-1 rounded-lg border border-stone-600 bg-stone-900 px-4 py-2 text-stone-200 placeholder-stone-400 outline-none focus:border-amber-500"
+      placeholder="Rope, torch, lucky coin…"
+      aria-label="Item name"
+      class="min-w-0 flex-1 text-field"
     />
     <button
       (click)="addItem()"
       [disabled]="!newItemName().trim()"
-      class="rounded-lg bg-stone-700 px-4 py-2 text-sm font-medium text-stone-200 transition hover:bg-stone-600 disabled:opacity-40">
+      class="btn-roll-action min-h-11 shrink-0">
       Add
     </button>
   </div>
+
+  <app-step-nav
+    backPath="weakness"
+    [canContinue]="true"
+    (next)="continue()" />
 
 </div>
