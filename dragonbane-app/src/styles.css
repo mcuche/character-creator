@@ -1336,14 +1336,22 @@ button:focus {
   font-weight: 600;
   letter-spacing: 0.04em;
   color: oklch(0.84 0.008 70);
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   position: relative;
 }
 
 .prof-ability-section {
-  border-top: 1px solid oklch(0.20 0.008 68);
-  padding-top: 0.625rem;
+  padding-top: 0.875rem;
   position: relative;
+}
+
+.prof-ability-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 75%;
+  border-top: 1px solid oklch(0.20 0.008 68);
 }
 
 .prof-ability-name {
