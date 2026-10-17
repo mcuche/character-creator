@@ -5,10 +5,11 @@ import { CharacterDraftService } from '../../../../services/character-draft.serv
 import { KIN_DATA, KinData } from '../../../../data/kin.data';
 import { Kin } from '../../../../models/character.models';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-kin',
-  imports: [CommonModule, StepNavComponent],
+  imports: [CommonModule, StepNavComponent, IconComponent],
   templateUrl: './kin.component.html',
 })
 export class KinComponent {

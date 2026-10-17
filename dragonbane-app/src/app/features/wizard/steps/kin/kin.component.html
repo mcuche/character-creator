@@ -19,54 +19,7 @@
 
         <!-- Kin sigil -->
         <div class="card-sigil">
-          @switch (kin.name) {
-            @case ('Human') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Human" role="img">
-                <circle cx="50" cy="50" r="28" stroke="currentColor" stroke-width="2.5"/>
-                <line x1="50" y1="18" x2="50" y2="8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="50" y1="82" x2="50" y2="92" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="82" y1="50" x2="92" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="18" y1="50" x2="8" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="4" fill="currentColor"/>
-              </svg>
-            }
-            @case ('Halfling') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Halfling" role="img">
-                <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="2.5"/>
-                <circle cx="50" cy="50" r="22" stroke="currentColor" stroke-width="2.5"/>
-                <circle cx="50" cy="50" r="4" fill="currentColor"/>
-              </svg>
-            }
-            @case ('Dwarf') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Dwarf" role="img">
-                <line x1="50" y1="14" x2="50" y2="80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="50" y1="38" x2="22" y2="58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="50" y1="38" x2="78" y2="58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="33" y1="84" x2="67" y2="84" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            }
-            @case ('Elf') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Elf" role="img">
-                <polygon points="50,11 85,80 15,80" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" fill="none"/>
-                <line x1="50" y1="18" x2="50" y2="72" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                <line x1="27" y1="59" x2="73" y2="59" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-              </svg>
-            }
-            @case ('Mallard') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mallard" role="img">
-                <path d="M16,32 C27,24 38,40 50,32 C62,24 73,40 84,32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M16,50 C27,42 38,58 50,50 C62,42 73,58 84,50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M16,68 C27,60 38,76 50,68 C62,60 73,76 84,68" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            }
-            @case ('Wolfkin') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wolfkin" role="img">
-                <line x1="18" y1="24" x2="82" y2="24" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <path d="M26,24 L42,24 L34,78 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                <path d="M58,24 L74,24 L66,78 Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-              </svg>
-            }
-          }
+          <app-icon [name]="'kin/' + kin.name.toLowerCase()" [size]="44" />
         </div>
 
         <!-- Kin info -->

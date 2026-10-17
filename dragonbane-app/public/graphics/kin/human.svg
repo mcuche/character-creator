@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Human">
+  <title>Human</title>
+  <path d="M46 16 V10 H54 V16 M46 36 V42 M54 36 V42 M46 64 V90 M54 64 V90"/>
+  <path d="M42 16 H78 L88 26 L78 36 H42 Z"/>
+  <path d="M58 42 H22 L12 53 L22 64 H58 Z"/>
+  <path d="M34 90 H66"/>
+</svg>
