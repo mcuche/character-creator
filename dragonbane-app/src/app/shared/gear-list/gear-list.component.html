@@ -182,6 +182,24 @@
             }
           </div>
         }
+        @if (canEquip(item)) {
+          @let matched = nameMatch(item);
+          <div class="mt-3 flex flex-wrap items-baseline gap-x-3">
+            <label class="gear-editor-label" [for]="'gear-ref-' + item.id">Stats</label>
+            @if (!item.ref) {
+              <span class="gear-slot-note">{{ matched ? 'matched: ' + matched : 'no match by name' }}</span>
+            }
+          </div>
+          <select
+            [id]="'gear-ref-' + item.id"
+            class="text-field gear-ref-select"
+            (change)="setRef(item, $any($event.target).value)">
+            <option value="" [selected]="!item.ref">Match by name</option>
+            @for (name of refOptions(item.type); track name) {
+              <option [value]="name" [selected]="item.ref === name">{{ name }}</option>
+            }
+          </select>
+        }
       </div>
     }
   </div>

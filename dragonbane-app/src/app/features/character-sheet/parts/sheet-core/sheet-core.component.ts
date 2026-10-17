@@ -1,6 +1,6 @@
 import { Component, computed, input, output } from '@angular/core';
 import { Appearance, AttributeKey, Attributes, Character } from '../../../../models/character.models';
-import { applyAgeModifiers, applyAttributeEdit } from '../../../../services/character-rules.service';
+import { applyAgeModifiers, applyAttributeEdit, computeEncumbrance } from '../../../../services/character-rules.service';
 import { IconComponent } from '../../../../shared/icon/icon.component';
 
 /** Physical and mental halves — rendered as two columns on wide screens. */
@@ -45,9 +45,12 @@ export class SheetCoreComponent {
   /** Age-adjusted scores — the values HP/WP/movement are derived from. */
   readonly finalAttributes = computed<Attributes | null>(() => ageAdjusted(this.character()));
 
-  readonly carryCapacity = computed(() => {
+  /** Same capacity the gear tab carries against, backpack included. */
+  readonly carry = computed(() => {
     const attrs = this.finalAttributes();
-    return attrs ? Math.ceil(attrs.STR / 2) : null;
+    if (!attrs) return null;
+    const { capacity, hasBackpack } = computeEncumbrance(this.character().gear, attrs.STR, 0);
+    return { capacity, hasBackpack };
   });
 
   readonly appearanceRows = computed(() => {

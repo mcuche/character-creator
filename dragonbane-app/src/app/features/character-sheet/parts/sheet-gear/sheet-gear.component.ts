@@ -2,12 +2,13 @@ import { Component, computed, input, output } from '@angular/core';
 import { Character, GearItem } from '../../../../models/character.models';
 import { applyAgeModifiers, computeEncumbrance } from '../../../../services/character-rules.service';
 import { GearListComponent } from '../../../../shared/gear-list/gear-list.component';
+import { SheetCombatComponent } from '../sheet-combat/sheet-combat.component';
 
 type Coin = 'gold' | 'silver' | 'copper';
 
 @Component({
   selector: 'app-sheet-gear',
-  imports: [GearListComponent],
+  imports: [GearListComponent, SheetCombatComponent],
   templateUrl: './sheet-gear.component.html',
 })
 export class SheetGearComponent {

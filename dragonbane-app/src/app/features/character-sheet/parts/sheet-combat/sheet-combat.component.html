@@ -1,0 +1,93 @@
+<!-- ── Weapons at hand ── -->
+<section class="mb-8" aria-labelledby="combat-weapons-heading">
+  <h3 id="combat-weapons-heading" class="mb-1 section-label">Weapons at hand</h3>
+  @if (weapons().length > 0) {
+    <div>
+      @for (p of weapons(); track p.item.id) {
+        <div class="gear-row">
+          <div class="attr-row flex-col items-stretch! gap-1! py-3!">
+            <div class="flex items-baseline justify-between gap-3">
+              <span class="min-w-0 break-words toggle-card-name">{{ p.item.name }}</span>
+              @if (p.data) {
+                <span class="shrink-0 combat-skill">
+                  {{ p.skill }} <span class="toggle-card-val">{{ p.skillLevel ?? '—' }}</span>
+                </span>
+              }
+            </div>
+
+            @if (p.data) {
+              <p class="card-meta">{{ statLine(p) }}</p>
+              @if (p.strStatus === 'bane') {
+                <p class="text-sm mod-neg">STR {{ str() }} &lt; {{ p.strReq }}: bane on attacks</p>
+              } @else if (p.strStatus === 'unusable') {
+                <p class="text-sm mod-neg">STR too low to use this weapon</p>
+              }
+              @if (p.twoHandHint) {
+                <p class="gear-slot-note">−3 STR req if held two-handed</p>
+              }
+            } @else {
+              <p class="card-meta">No stats: choose them in the item's editor</p>
+            }
+
+            <div class="flex flex-wrap items-center justify-between gap-x-4">
+              <span class="gear-slot-note">{{ features(p) }}</span>
+              <label class="equip-toggle">
+                <input
+                  type="checkbox"
+                  class="equip-toggle-box"
+                  [checked]="!!p.item.damaged"
+                  (change)="setDamaged(p.item, $any($event.target).checked)"
+                  [attr.aria-label]="p.item.name + ' damaged'" />
+                <span aria-hidden="true">Damaged</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <p class="empty-note">No weapons at hand. Tick "At hand" on a weapon below.</p>
+  }
+</section>
+
+<!-- ── Armor ── -->
+<section class="mb-8" aria-labelledby="combat-armor-heading">
+  <h3 id="combat-armor-heading" class="mb-1 section-label">Armor</h3>
+  @if (armor(); as a) {
+    @if (a.pieces.length > 0) {
+      <div class="gear-row">
+        <div class="attr-row items-start! py-3!">
+          <div class="combat-rating">
+            <span class="secondary-val">{{ a.rating }}</span>
+            <span class="secondary-label">Armor rating</span>
+          </div>
+          <div class="flex min-w-0 flex-1 flex-col gap-1">
+            <p class="break-words toggle-card-name">
+              @for (piece of a.pieces; track piece.item.id) {
+                @if (!$first) { <span class="ornament-dim" aria-hidden="true">&ensp;·&ensp;</span> }
+                <span>{{ pieceLabel(piece) }}</span>
+              }
+            </p>
+            @if (a.banes.length > 0) {
+              <p class="card-meta">Bane on {{ a.banes.join(', ') }}</p>
+            }
+            @for (piece of a.pieces; track piece.item.id) {
+              @if (piece.data?.note; as pieceNote) {
+                <p class="gear-slot-note">{{ piece.item.name }}: {{ pieceNote }} (optional rule)</p>
+              }
+            }
+            @if (metalBlocksMagic()) {
+              <p class="text-sm mod-neg">Metal armor: you can't cast spells while wearing it.</p>
+            }
+          </div>
+        </div>
+      </div>
+    } @else {
+      <p class="empty-note">No armor worn.</p>
+    }
+  }
+</section>
+
+<div class="derived-divider mb-8! justify-center" aria-hidden="true">
+  <app-icon name="ornaments/divider-knot" [size]="20" class="w-72! max-w-full" />
+</div>

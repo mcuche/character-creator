@@ -1,5 +1,10 @@
 @let char = character();
 
+<app-sheet-combat
+  [character]="char"
+  [encumbrance]="encumbrance()"
+  (patch)="patch.emit($event)" />
+
 <app-gear-list
   [gear]="char.gear"
   [encumbrance]="encumbrance()"

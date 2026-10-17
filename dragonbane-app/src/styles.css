@@ -1840,3 +1840,37 @@ button.toggle-card:not(:disabled):hover {
   text-transform: uppercase;
   color: oklch(0.50 0.008 68);
 }
+
+/* ── Combat block ── */
+/* Skill name beside a weapon, its level in amber */
+.combat-skill {
+  font-size: 0.8125rem;
+  letter-spacing: 0.03em;
+  color: oklch(0.63 0.010 68);
+}
+
+.combat-rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  width: 5.5rem;
+}
+
+.combat-rating .secondary-val {
+  font-size: 1.75rem;
+}
+
+/* Native select for a gear row's stats — 44px tall, dark popup */
+.gear-ref-select {
+  min-height: 2.75rem;
+  max-width: 20rem;
+  color-scheme: dark;
+  cursor: pointer;
+}
+
+.gear-ref-select option {
+  background: oklch(0.14 0.008 68);
+  color: oklch(0.84 0.008 70);
+}

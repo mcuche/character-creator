@@ -6,6 +6,7 @@ import { Encumbrance } from '../../services/character-rules.service';
 import {
   GEAR_TYPES, GEAR_TYPE_LABELS, MAX_AT_HAND, inferGearType, isAtHandType, isEquippable, setEquipped, setGearType,
 } from '../../data/gear.data';
+import { findArmor, findWeapon, refOptions } from '../../data/gear-stats';
 
 const WEIGHTS = [0, 1, 2, 3];
 
@@ -50,6 +51,16 @@ export class GearListComponent {
   /** A 4th weapon/shield can't be put at hand. */
   atHandLocked(item: GearItem): boolean {
     return isAtHandType(item.type) && !item.equipped && this.encumbrance().atHandCount >= MAX_AT_HAND;
+  }
+
+  refOptions(type: GearType): string[] {
+    return refOptions(type);
+  }
+
+  /** The reference row the name alone resolves to, ignoring any explicit ref. */
+  nameMatch(item: GearItem): string | null {
+    const byName = { ...item, ref: undefined };
+    return (findWeapon(byName) ?? findArmor(byName))?.name ?? null;
   }
 
   weightLabel(weight: number): string {
@@ -100,6 +111,16 @@ export class GearListComponent {
 
   setWeight(item: GearItem, weight: number): void {
     this.emit(this.gear().map(i => i.id === item.id ? { ...i, weight } : i));
+  }
+
+  /** An empty choice clears the ref, so the row matches by name again. */
+  setRef(item: GearItem, ref: string): void {
+    this.emit(this.gear().map(i => {
+      if (i.id !== item.id) return i;
+      if (ref) return { ...i, ref };
+      const { ref: _, ...rest } = i;
+      return rest;
+    }));
   }
 
   updateQuantity(item: GearItem, delta: number): void {

@@ -75,8 +75,8 @@
         <div class="secondary-rule" aria-hidden="true"></div>
         <div class="secondary-item">
           <span class="secondary-label">Carry Capacity</span>
-          <span class="secondary-val">{{ carryCapacity() }}<span class="secondary-unit">items</span></span>
-          <span class="secondary-breakdown">STR {{ attrs.STR }} ÷ 2</span>
+          <span class="secondary-val">{{ carry()?.capacity }}<span class="secondary-unit">items</span></span>
+          <span class="secondary-breakdown">STR {{ attrs.STR }} ÷ 2@if (carry()?.hasBackpack) { (+2 backpack)}</span>
         </div>
       </div>
 
