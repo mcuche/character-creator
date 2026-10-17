@@ -232,8 +232,9 @@ Selection counter shown: e.g. `Profession: 4/6 · Free: 2/4`
 Optional — hidden behind an **"Add a Weakness"** toggle button.
 
 When expanded:
-- **Suggested list** of ~12 weaknesses (e.g. Greedy, Cowardly, Reckless, Vengeful, Arrogant, Impulsive, Paranoid, Gullible, Stubborn, Vain, Wrathful, Envious)
-- Clicking a suggestion populates the text field
+- **Suggested list** of 12 example weaknesses as cards, each with a one-line hint (e.g. Greedy: "Can't walk past unguarded treasure."). Data in `data/weaknesses.data.ts`
+- Clicking a card populates the text field with its name (still editable); only the name is stored
+- **Roll D12** button in the step header picks a card at random (and expands the section if collapsed)
 - **Free text field** for custom weakness
 - **Remove** button to collapse and clear
 
@@ -260,6 +261,8 @@ Profession-based suggested loadout pre-populated, freely editable.
 
 Player can add items from the full gear reference list, remove suggested items, or enter custom items as free text.
 
+Each item has a type (item, weapon, shield, armor, helmet, rations, backpack) and a weight. The starting kit is pre-filled worn and at hand; "D6 rations" is rolled once on pre-fill. The same gear list (with encumbrance counter) is used on the character sheet.
+
 ---
 
 ### Step 9 — Memento (`/create/memento`)
@@ -267,6 +270,8 @@ Player can add items from the full gear reference list, remove suggested items, 
 Optional — hidden behind an **"Add a Memento"** toggle button.
 
 When expanded:
+- **Example mementos** — 12 cards (name + significance). Clicking one fills both fields, which stay editable. Data in `data/mementos.data.ts`
+- **Roll D12** button in the step header picks a card at random (and expands the section if collapsed)
 - **Name** field (e.g. "My father's ring")
 - **Significance** field (e.g. "A reminder of home; I carry it to stay grounded")
 - **Remove** button to collapse and clear
@@ -327,7 +332,7 @@ Each section has an **"Edit"** link that navigates back to the relevant wizard s
 #### 4. Gear
 - Weapons table (name, grip, STR req, damage, durability, features)
 - Armor (type, rating, current durability)
-- Inventory list with encumbrance tracking (current items / STR÷2 slots)
+- Inventory list with encumbrance tracking (slots used / ⌈STR÷2⌉, +2 for one backpack). Weapon and shield rows have an **At hand** checkbox (max 3 at hand, free); armor and helmet rows have a **Worn** checkbox (one of each, free — checking another swaps). Rations take 1 slot per 4; every full 100 coins takes 1 slot
 - Gold/silver/copper tracker
 
 ---
@@ -380,10 +385,15 @@ interface DerivedStats {
   skillBaseChances: Record<string, number>;
 }
 
+type GearType = 'item' | 'weapon' | 'shield' | 'armor' | 'helmet' | 'ration' | 'backpack';
+
 interface GearItem {
+  id: string;
   name: string;
+  type: GearType;
   quantity: number;
   weight: number;       // 0 = tiny, 1 = normal, 2+ = heavy
+  equipped?: boolean;   // "at hand" (weapon/shield) or "worn" (armor/helmet)
   notes?: string;
 }
 
