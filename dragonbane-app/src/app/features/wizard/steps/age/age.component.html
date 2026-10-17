@@ -28,32 +28,7 @@
 
         <!-- Age sigil -->
         <div class="card-sigil">
-          @switch (age.name) {
-            @case ('Young') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Young" role="img">
-                <line x1="14" y1="74" x2="86" y2="74" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="30" y1="74" x2="30" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="50" y1="74" x2="50" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="70" y1="74" x2="70" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-              </svg>
-            }
-            @case ('Adult') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Adult" role="img">
-                <circle cx="50" cy="50" r="30" stroke="currentColor" stroke-width="2.5"/>
-                <line x1="18" y1="50" x2="82" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="6" fill="currentColor"/>
-              </svg>
-            }
-            @case ('Old') {
-              <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Old" role="img">
-                <line x1="18" y1="14" x2="82" y2="14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="18" y1="86" x2="82" y2="86" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="18" y1="14" x2="82" y2="86" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <line x1="82" y1="14" x2="18" y2="86" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                <circle cx="50" cy="50" r="4" fill="currentColor"/>
-              </svg>
-            }
-          }
+          <app-icon [name]="'age/' + age.name.toLowerCase()" [size]="44" />
         </div>
 
         <!-- Age info -->

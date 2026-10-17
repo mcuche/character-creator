@@ -5,6 +5,7 @@ import { CharacterDraftService } from '../../../../services/character-draft.serv
 import { Age } from '../../../../models/character.models';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
 import { ConfirmModalComponent } from '../../../../shared/confirm-modal/confirm-modal.component';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 const AGE_OPTIONS: { name: Age; skills: number; modifiers: { attr: string; delta: number }[] }[] = [
   { name: 'Young', skills: 8,  modifiers: [{ attr: 'AGL', delta: 1 }, { attr: 'CON', delta: 1 }] },
@@ -14,7 +15,7 @@ const AGE_OPTIONS: { name: Age; skills: number; modifiers: { attr: string; delta
 
 @Component({
   selector: 'app-age',
-  imports: [CommonModule, StepNavComponent, ConfirmModalComponent],
+  imports: [CommonModule, StepNavComponent, ConfirmModalComponent, IconComponent],
   templateUrl: './age.component.html',
 })
 export class AgeComponent {

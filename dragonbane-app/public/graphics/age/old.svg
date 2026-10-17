@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Old">
+  <title>Old</title>
+  <path d="M42 90 C46 80 45 68 47 58 M58 90 C54 80 55 68 53 58"/>
+  <path d="M47 58 C40 48 30 44 18 30"/>
+  <path d="M53 58 C60 48 70 44 82 26"/>
+  <path d="M50 58 C50 44 47 32 50 12"/>
+  <path d="M29 41 L23 48 M71 42 L78 47 M48 30 L56 24"/>
+  <path d="M28 90 H72"/>
+</svg>

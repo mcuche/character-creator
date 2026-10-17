@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Adult">
+  <title>Adult</title>
+  <path d="M50 10 C70 10 88 24 88 42 C88 58 72 66 50 66 C28 66 12 58 12 42 C12 24 30 10 50 10 Z"/>
+  <path d="M45 90 C47 82 47 74 47 66 M55 90 C53 82 53 74 53 66"/>
+  <path d="M50 66 V36 M50 50 L38 38 M50 54 L62 42"/>
+  <path d="M30 90 H70"/>
+</svg>
