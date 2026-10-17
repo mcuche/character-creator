@@ -1902,6 +1902,92 @@ button.toggle-card:not(:disabled):hover {
   color: oklch(0.50 0.008 68);
 }
 
+/* Add-gear combobox: underline field, chevron toggle, dark suggestion panel */
+.gear-add-field {
+  min-height: 2.75rem;
+  padding-right: 2.75rem;
+}
+
+.gear-add-toggle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: oklch(0.52 0.009 68);
+  transition: color 160ms ease, transform 160ms ease;
+}
+
+.gear-add-toggle:hover {
+  color: oklch(0.80 0.009 70);
+}
+
+.gear-add-toggle.open svg {
+  transform: rotate(180deg);
+}
+
+.gear-suggest {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: min(20rem, 55vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 0.25rem;
+  background: oklch(0.145 0.008 68);
+  border: 1px solid oklch(0.26 0.008 68);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.75rem 2rem oklch(0 0 0 / 0.55);
+}
+
+.gear-suggest-group {
+  padding: 0.75rem 0.875rem 0.25rem;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: oklch(0.50 0.008 68);
+}
+
+.gear-suggest-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+  color: oklch(0.78 0.009 70);
+  cursor: pointer;
+}
+
+.gear-suggest-option:hover,
+.gear-suggest-option[aria-selected="true"] {
+  background: oklch(0.19 0.010 70);
+  color: oklch(0.88 0.008 70);
+}
+
+.gear-suggest-option[aria-selected="true"] {
+  box-shadow: inset 2px 0 0 oklch(0.74 0.13 72);
+}
+
+.gear-suggest-detail {
+  flex-shrink: 0;
+  font-size: 0.8125rem;
+  color: oklch(0.56 0.009 68);
+}
+
+.gear-suggest-custom {
+  margin-top: 0.25rem;
+  border-top: 1px solid oklch(0.22 0.008 68);
+  font-style: italic;
+}
+
 /* ── Combat block ── */
 /* Skill name beside a weapon, its level in amber */
 .combat-skill {

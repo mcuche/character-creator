@@ -7,6 +7,7 @@ import {
   GEAR_TYPES, GEAR_TYPE_LABELS, MAX_AT_HAND, inferGearType, isAtHandType, isEquippable, setEquipped, setGearType,
 } from '../../data/gear.data';
 import { findArmor, findWeapon, refOptions } from '../../data/gear-stats';
+import { CatalogItem, addGear, findCatalogItem, searchCatalog } from '../../data/gear-catalog.data';
 
 const WEIGHTS = [0, 1, 2, 3];
 
@@ -32,6 +33,32 @@ export class GearListComponent {
 
   readonly editingId = signal<string | null>(null);
   readonly newItemName = signal('');
+
+  // ── Add-gear combobox ──
+  readonly listOpen = signal(false);
+  readonly activeIndex = signal(-1);
+  /** Polite announcement after an add, for screen readers. */
+  readonly addedMessage = signal('');
+
+  readonly suggestions = computed(() => searchCatalog(this.newItemName()));
+  /** The typed name, offered as a custom row when it isn't a catalog entry. */
+  readonly customName = computed(() => {
+    const name = this.newItemName().trim();
+    return name && !findCatalogItem(name) ? name : null;
+  });
+  /** Suggestions in catalog order, grouped, each with its flat option index. */
+  readonly suggestionGroups = computed(() => {
+    const groups: { label: string; items: { entry: CatalogItem; index: number }[] }[] = [];
+    this.suggestions().forEach((entry, index) => {
+      const last = groups.at(-1);
+      if (last?.label === entry.group) last.items.push({ entry, index });
+      else groups.push({ label: entry.group, items: [{ entry, index }] });
+    });
+    return groups;
+  });
+  /** Catalog options, then the custom option. */
+  readonly optionCount = computed(() => this.suggestions().length + (this.customName() ? 1 : 0));
+  readonly customIndex = computed(() => this.suggestions().length);
 
   readonly equipped = computed(() => this.gear().filter(i => this.isEquipped(i)));
   readonly pack = computed(() => this.gear().filter(i => !this.isEquipped(i)));
@@ -134,13 +161,79 @@ export class GearListComponent {
     this.emit(this.gear().filter(i => i.id !== item.id));
   }
 
+  // ── Add-gear combobox ──
+
+  optionId(index: number): string {
+    return `gear-add-opt-${index}`;
+  }
+
+  onQuery(value: string): void {
+    this.newItemName.set(value);
+    this.listOpen.set(true);
+    this.activeIndex.set(value.trim() ? 0 : -1);
+  }
+
+  openList(): void {
+    this.listOpen.set(true);
+  }
+
+  closeList(): void {
+    this.listOpen.set(false);
+    this.activeIndex.set(-1);
+  }
+
+  toggleList(input: HTMLInputElement): void {
+    if (this.listOpen()) this.closeList();
+    else this.openList();
+    input.focus();
+  }
+
+  onKeydown(event: KeyboardEvent): void {
+    const count = this.optionCount();
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (!this.listOpen()) this.openList();
+        else if (count) this.moveActive(i => (i + 1) % count);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        if (!this.listOpen()) this.openList();
+        else if (count) this.moveActive(i => (i <= 0 ? count : i) - 1);
+        break;
+      case 'Enter': {
+        event.preventDefault();
+        const i = this.listOpen() ? this.activeIndex() : -1;
+        if (i >= 0 && i < this.suggestions().length) this.pick(this.suggestions()[i]);
+        else this.addItem();
+        break;
+      }
+      case 'Escape':
+        if (this.listOpen()) {
+          event.preventDefault();
+          this.closeList();
+        }
+        break;
+    }
+  }
+
+  /** Add the typed name: the catalog entry it names exactly, else a custom row. */
   addItem(): void {
     const name = this.newItemName().trim();
     if (!name) return;
-    const type = inferGearType(name);
-    const added: GearItem = { id: crypto.randomUUID(), name, type, quantity: 1, weight: 1 };
-    if (isEquippable(type)) added.equipped = false;
-    this.emit([...this.gear(), added]);
+    this.pick(findCatalogItem(name) ?? { name, type: inferGearType(name), weight: 1 });
+  }
+
+  /** Move the highlight and keep it in view in a long list. */
+  private moveActive(step: (i: number) => number): void {
+    this.activeIndex.update(step);
+    document.getElementById(this.optionId(this.activeIndex()))?.scrollIntoView({ block: 'nearest' });
+  }
+
+  pick(entry: Pick<CatalogItem, 'name' | 'type' | 'weight'>): void {
+    this.emit(addGear(this.gear(), entry));
+    this.addedMessage.set(`Added ${entry.name}`);
     this.newItemName.set('');
+    this.closeList();
   }
 }
