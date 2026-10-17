@@ -16,9 +16,9 @@ npm run build       # Production build
 npm test            # Run tests (Vitest)
 ```
 
-Run a single test file:
+Run a single test file (plain `npx vitest` fails — specs need Angular's test builder):
 ```bash
-npx vitest run src/app/app.spec.ts
+npx ng test --watch=false --include src/app/app.spec.ts
 ```
 
 ## Architecture
@@ -61,7 +61,8 @@ When a wizard step changes a foundational value, downstream data is reset. The r
 | Setter | What gets reset |
 |--------|----------------|
 | `setKin` | nothing (innate ability is derived from kin at display time) |
-| `setProfession` | heroic abilities, profession skill picks, mage school/spells/tricks |
+| `setProfession` | heroic abilities, profession skill picks, mage school/spells/tricks (and the school's skill entry) |
+| `setMageSchool` | nothing; if the skills step already added the old school, its skill entry is swapped for the new one |
 | `setAge` | attributes, all skills, `attributeGenerationMethod` |
 | `setAttributes` | derived stats, all skill levels (trained flags preserved) |
 
