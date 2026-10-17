@@ -3,6 +3,7 @@ import { CharacterDraft, Kin, Profession, Age, MagicSchool, Attributes, SkillEnt
 import { deriveStats, computeSkills } from './character-rules.service';
 import { PROFESSION_DATA } from '../data/professions.data';
 import { WIZARD_STEPS } from '../shared/wizard-steps';
+import { normalizeGear } from '../data/gear.data';
 
 function stepIndex(path: string): number {
   return WIZARD_STEPS.findIndex(s => s.path === path);
@@ -19,7 +20,9 @@ export class CharacterDraftService {
   private load(): CharacterDraft {
     try {
       const raw = localStorage.getItem(DRAFT_KEY);
-      return raw ? JSON.parse(raw) : this.empty();
+      if (!raw) return this.empty();
+      const draft: CharacterDraft = JSON.parse(raw);
+      return draft.gear ? { ...draft, gear: normalizeGear(draft.gear) } : draft;
     } catch {
       return this.empty();
     }

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CharacterDraftService } from '../../../../services/character-draft.service';
 import { PROFESSION_DATA } from '../../../../data/professions.data';
+import { inferGearType } from '../../../../data/gear.data';
 import { GearItem } from '../../../../models/character.models';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
 
@@ -28,9 +29,10 @@ export class GearComponent {
       // Load suggested gear from profession
       const prof = PROFESSION_DATA.find(p => p.name === draft.profession);
       if (prof) {
-        this.gear.set(prof.suggestedGear.map((name, i) => ({
+        this.gear.set(prof.suggestedGear.map((seed, i) => ({
           id: `suggested-${i}`,
-          name,
+          name: seed.name,
+          type: seed.type,
           quantity: 1,
           weight: 1,
         })));
@@ -44,6 +46,7 @@ export class GearComponent {
     this.gear.update(g => [...g, {
       id: crypto.randomUUID(),
       name,
+      type: inferGearType(name),
       quantity: 1,
       weight: 1,
     }]);

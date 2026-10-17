@@ -2,6 +2,7 @@ import { Component, computed, input, output, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Character, GearItem } from '../../../../models/character.models';
 import { applyAgeModifiers } from '../../../../services/character-rules.service';
+import { inferGearType } from '../../../../data/gear.data';
 
 type Coin = 'gold' | 'silver' | 'copper';
 
@@ -80,7 +81,7 @@ export class SheetGearComponent {
   addItem(): void {
     const name = this.newItemName().trim();
     if (!name) return;
-    this.setGear([...this.character().gear, { id: crypto.randomUUID(), name, quantity: 1, weight: 1 }]);
+    this.setGear([...this.character().gear, { id: crypto.randomUUID(), name, type: inferGearType(name), quantity: 1, weight: 1 }]);
     this.newItemName.set('');
   }
 

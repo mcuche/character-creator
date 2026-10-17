@@ -62,3 +62,23 @@ describe('CharacterDraftService skills', () => {
     expect(skills()['Acrobatics'].level).toBe(12);
   });
 });
+
+describe('CharacterDraftService gear migration', () => {
+  it('types and auto-equips gear in a legacy draft', () => {
+    localStorage.clear();
+    localStorage.setItem('dragonbane_draft', JSON.stringify({
+      id: 'd1', name: '', skills: {}, heroicAbilities: [], appearance: {},
+      gear: [
+        { id: 'g1', name: 'Longsword', quantity: 1, weight: 1 },
+        { id: 'g2', name: 'Rations', quantity: 3, weight: 1 },
+      ],
+    }));
+    TestBed.configureTestingModule({});
+    const service = TestBed.inject(CharacterDraftService);
+
+    expect(service.draft().gear).toEqual([
+      { id: 'g1', name: 'Longsword', type: 'weapon', quantity: 1, weight: 1, equipped: true },
+      { id: 'g2', name: 'Rations', type: 'ration', quantity: 3, weight: 1 },
+    ]);
+  });
+});

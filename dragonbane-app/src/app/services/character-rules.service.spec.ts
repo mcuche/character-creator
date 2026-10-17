@@ -1,5 +1,6 @@
-import { applyAttributeEdit, computeSkills, deriveStats, getBaseChance, getSkillLevel } from './character-rules.service';
-import { Age, Attributes, Character } from '../models/character.models';
+import { applyAttributeEdit, computeEncumbrance, computeSkills, deriveStats, getBaseChance, getSkillLevel } from './character-rules.service';
+import { Age, Attributes, Character, GearItem, GearType } from '../models/character.models';
+import { autoEquip } from '../data/gear.data';
 
 const ATTRS: Attributes = { STR: 10, CON: 14, AGL: 12, INT: 15, WIL: 17, CHA: 8 };
 
@@ -105,5 +106,83 @@ describe('applyAttributeEdit', () => {
   it('keeps the stored score within 1..18', () => {
     expect(applyAttributeEdit(makeChar('Old'), 'STR', 30).attributes!.STR).toBe(18);
     expect(applyAttributeEdit(makeChar('Young'), 'AGL', 0).attributes!.AGL).toBe(1);
+  });
+});
+
+describe('computeEncumbrance', () => {
+  const item = (id: string, type: GearType, extra: Partial<GearItem> = {}): GearItem =>
+    ({ id, name: id, type, quantity: 1, weight: 1, ...extra });
+  const load = (gear: GearItem[], coins = 0) => computeEncumbrance(gear, 10, coins).load;
+
+  it('carries a knight kit for the cost of its rations', () => {
+    const kit = autoEquip([
+      item('sword', 'weapon'), item('shield', 'shield'), item('plate', 'armor'),
+      item('helm', 'helmet'), item('rations', 'ration', { quantity: 4 }),
+    ]);
+    const enc = computeEncumbrance(kit, 10, 0);
+    expect(enc.load).toBe(1);
+    expect(enc.items['plate']).toEqual({ slots: 0, free: true, reason: 'worn' });
+    expect(enc.items['sword']).toEqual({ slots: 0, free: true, reason: 'at hand' });
+  });
+
+  it('counts weapons that are not at hand', () => {
+    expect(load([item('w', 'weapon', { equipped: false })])).toBe(1);
+  });
+
+  it('frees one unit of an equipped row', () => {
+    expect(load([item('dagger', 'weapon', { equipped: true, quantity: 2 })])).toBe(1);
+  });
+
+  it('frees at most 3 at hand, shields included', () => {
+    const four = ['a', 'b', 'c', 'd'].map(id => item(id, 'weapon', { equipped: true }));
+    const enc = computeEncumbrance(four, 10, 0);
+    expect(enc.load).toBe(1);
+    expect(enc.items['d'].free).toBe(false);
+    expect(enc.atHandCount).toBe(4);
+
+    const withShield = [item('s', 'shield', { equipped: true }), ...four.slice(0, 3)];
+    expect(load(withShield)).toBe(1);
+  });
+
+  it('counts unworn armor at its weight, and only one worn armor is free', () => {
+    expect(load([item('plate', 'armor', { equipped: false, weight: 2 })])).toBe(2);
+    const two = [item('a1', 'armor', { equipped: true }), item('a2', 'armor', { equipped: true })];
+    const enc = computeEncumbrance(two, 10, 0);
+    expect(enc.load).toBe(1);
+    expect(enc.items['a2'].free).toBe(false);
+  });
+
+  it('pools rations at 4 per slot', () => {
+    expect(load([item('r', 'ration', { quantity: 4 })])).toBe(1);
+    expect(load([item('r', 'ration', { quantity: 3 }), item('r2', 'ration', { quantity: 2 })])).toBe(2);
+    expect(load([])).toBe(0);
+    expect(computeEncumbrance([item('r', 'ration', { quantity: 5 })], 10, 0).rationSlots).toBe(2);
+  });
+
+  it('adds 2 for one free backpack; a second backpack counts', () => {
+    const enc = computeEncumbrance([item('bp', 'backpack')], 10, 0);
+    expect(enc).toMatchObject({ capacity: 7, load: 0, hasBackpack: true });
+    expect(computeEncumbrance([item('bp', 'backpack'), item('bp2', 'backpack')], 10, 0)).toMatchObject({ capacity: 7, load: 1 });
+  });
+
+  it('weighs tiny and heavy items', () => {
+    expect(load([item('ring', 'item', { weight: 0, quantity: 3 })])).toBe(0);
+    expect(load([item('anvil', 'item', { weight: 2, quantity: 2 })])).toBe(4);
+  });
+
+  it('charges a slot per full 100 coins', () => {
+    expect(load([], 99)).toBe(0);
+    expect(load([], 100)).toBe(1);
+    expect(load([], 250)).toBe(2);
+  });
+
+  it('has no capacity without STR, and is never over', () => {
+    const enc = computeEncumbrance([item('anvil', 'item', { weight: 3 })], null, 0);
+    expect(enc).toMatchObject({ capacity: null, over: false, full: false, load: 3 });
+  });
+
+  it('flags full and over against ⌈STR / 2⌉', () => {
+    expect(computeEncumbrance([item('a', 'item', { quantity: 6 })], 11, 0)).toMatchObject({ capacity: 6, full: true, over: false });
+    expect(computeEncumbrance([item('a', 'item', { quantity: 7 })], 11, 0)).toMatchObject({ full: false, over: true });
   });
 });

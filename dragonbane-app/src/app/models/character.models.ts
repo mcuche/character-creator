@@ -29,11 +29,16 @@ export interface SkillEntry {
   advancementMarks: number;
 }
 
+export type GearType = 'item' | 'weapon' | 'shield' | 'armor' | 'helmet' | 'ration' | 'backpack';
+
 export interface GearItem {
   id: string;
   name: string;
+  type: GearType;
   quantity: number;
   weight: number; // 0 = tiny, 1 = normal, 2+ = heavy
+  /** "At hand" for weapon/shield, "worn" for armor/helmet; ignored for other types. */
+  equipped?: boolean;
   notes?: string;
 }
 

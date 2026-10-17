@@ -1,6 +1,7 @@
-import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry, MagicSchool, Character } from '../models/character.models';
+import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry, MagicSchool, Character, GearItem } from '../models/character.models';
 import { SKILLS_DATA } from '../data/skills.data';
 import { KIN_DATA } from '../data/kin.data';
+import { MAX_AT_HAND } from '../data/gear.data';
 
 export function getBaseChance(score: number): number {
   if (score <= 5) return 3;
@@ -163,3 +164,89 @@ export const POINT_BUY_BUDGET = 54;
 export const STANDARD_ARRAY = [17, 15, 14, 11, 10, 8] as const;
 export const POINT_BUY_MIN = 6;
 export const POINT_BUY_MAX = 18;
+
+export interface GearSlots {
+  slots: number;
+  free: boolean;
+  /** Why the row (or one unit of it) costs nothing: "at hand", "worn", "backpack", "tiny" — or "rations" (pooled). */
+  reason?: string;
+}
+
+export interface Encumbrance {
+  capacity: number | null;
+  load: number;
+  over: boolean;
+  full: boolean;
+  hasBackpack: boolean;
+  coinSlots: number;
+  rationSlots: number;
+  /** Weapon/shield rows flagged at hand, so the UI can lock a 4th checkbox. */
+  atHandCount: number;
+  items: Record<string, GearSlots>;
+}
+
+// Capacity is ⌈STR / 2⌉ (+2 for one backpack). Up to 3 weapons/shields at hand,
+// one worn armor and one worn helmet are free — one unit each; extra quantity
+// counts. Rations pool at 4 per slot; every full 100 coins takes a slot.
+export function computeEncumbrance(gear: GearItem[], strAdjusted: number | null, coins: number): Encumbrance {
+  const items: Record<string, GearSlots> = {};
+  let atHand = 0;
+  let armorWorn = false;
+  let helmetWorn = false;
+  let backpack = false;
+  let rations = 0;
+  let load = 0;
+
+  for (const item of gear) {
+    const weight = Math.max(0, item.weight);
+    const qty = Math.max(0, item.quantity);
+    if (item.type === 'ration') {
+      rations += qty;
+      items[item.id] = { slots: 0, free: false, reason: 'rations' };
+      continue;
+    }
+
+    let reason: string | undefined;
+    if (item.type === 'backpack' && !backpack) {
+      backpack = true;
+      reason = 'backpack';
+    } else if (item.equipped && (item.type === 'weapon' || item.type === 'shield') && atHand < MAX_AT_HAND) {
+      atHand++;
+      reason = 'at hand';
+    } else if (item.equipped && item.type === 'armor' && !armorWorn) {
+      armorWorn = true;
+      reason = 'worn';
+    } else if (item.equipped && item.type === 'helmet' && !helmetWorn) {
+      helmetWorn = true;
+      reason = 'worn';
+    }
+
+    if (reason) {
+      const slots = weight * Math.max(0, qty - 1);
+      items[item.id] = { slots, free: true, reason };
+      load += slots;
+    } else if (weight === 0) {
+      items[item.id] = { slots: 0, free: true, reason: 'tiny' };
+    } else {
+      items[item.id] = { slots: weight * qty, free: false };
+      load += weight * qty;
+    }
+  }
+
+  const rationSlots = Math.ceil(rations / 4);
+  const coinSlots = Math.floor(Math.max(0, coins) / 100);
+  load += rationSlots + coinSlots;
+
+  const capacity = strAdjusted === null ? null : Math.ceil(strAdjusted / 2) + (backpack ? 2 : 0);
+  return {
+    capacity,
+    load,
+    over: capacity !== null && load > capacity,
+    full: capacity !== null && load === capacity,
+    hasBackpack: backpack,
+    coinSlots,
+    rationSlots,
+    atHandCount: gear.filter(i => i.equipped && (i.type === 'weapon' || i.type === 'shield')).length,
+    items,
+  };
+}

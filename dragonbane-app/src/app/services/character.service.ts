@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Character } from '../models/character.models';
+import { normalizeGear } from '../data/gear.data';
 
 const STORAGE_KEY = 'dragonbane_characters';
 
@@ -13,7 +14,9 @@ export class CharacterService {
   private load(): Character[] {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
+      const list: Character[] = raw ? JSON.parse(raw) : [];
+      // Older saves lack gear types and equipped flags; the next save stores them
+      return list.map(c => ({ ...c, gear: normalizeGear(c.gear ?? []) }));
     } catch {
       return [];
     }
