@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { wizardGuard } from './shared/wizard.guard';
+import { wizardExitGuard } from './shared/wizard-exit.guard';
 
 export const routes: Routes = [
   {
@@ -9,6 +10,7 @@ export const routes: Routes = [
   {
     path: 'create',
     loadComponent: () => import('./features/wizard/wizard.component').then(m => m.WizardComponent),
+    canDeactivate: [wizardExitGuard],
     children: [
       { path: '', redirectTo: 'kin', pathMatch: 'full' },
       { path: 'kin', canActivate: [wizardGuard], loadComponent: () => import('./features/wizard/steps/kin/kin.component').then(m => m.KinComponent) },

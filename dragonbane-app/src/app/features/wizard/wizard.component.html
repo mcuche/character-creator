@@ -1,5 +1,15 @@
 <div class="min-h-screen bg-page">
 
+  @if (exitPromptOpen()) {
+    <app-confirm-modal
+      title="Abandon this hero?"
+      message="Leaving now discards everything you've chosen so far. This cannot be undone."
+      confirmLabel="Leave"
+      cancelLabel="Keep Editing"
+      (confirm)="answerExit(true)"
+      (cancel)="answerExit(false)" />
+  }
+
   <!-- Header -->
   <header class="sticky top-0 z-20 site-header">
     <div class="mx-auto max-w-[960px] px-6 py-3.5 flex items-center gap-4">

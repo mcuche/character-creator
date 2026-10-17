@@ -6,6 +6,7 @@ import { filter } from 'rxjs/operators';
 import { CharacterDraftService } from '../../services/character-draft.service';
 import { WizardNavService } from '../../services/wizard-nav.service';
 import { WIZARD_STEPS } from '../../shared/wizard-steps';
+import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
 
 function wizardStepIndex(path: string): number {
   return WIZARD_STEPS.findIndex(s => s.path === path);
@@ -25,7 +26,7 @@ function readHeroBannerCollapsed(): boolean {
 
 @Component({
   selector: 'app-wizard',
-  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule],
+  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule, ConfirmModalComponent],
   templateUrl: './wizard.component.html',
 })
 export class WizardComponent {
@@ -102,6 +103,25 @@ export class WizardComponent {
     const furthest = this.draft().wizardFurthestStep;
     if (!furthest) return false;
     return wizardStepIndex(path) <= wizardStepIndex(furthest);
+  }
+
+  // Resolver for the exit prompt currently on screen, if any
+  private resolveExit: ((leave: boolean) => void) | null = null;
+  exitPromptOpen = signal(false);
+
+  confirmExit(): boolean | Promise<boolean> {
+    // Nothing chosen yet (or the draft was just saved and reset) — leave freely
+    if (!this.draft().kin) return true;
+    this.exitPromptOpen.set(true);
+    return new Promise(resolve => (this.resolveExit = resolve));
+  }
+
+  answerExit(leave: boolean): void {
+    // Home always starts a fresh draft, so leaving abandons this one for good
+    if (leave) this.draftService.reset();
+    this.exitPromptOpen.set(false);
+    this.resolveExit?.(leave);
+    this.resolveExit = null;
   }
 
   navigateToStep(path: string): void {

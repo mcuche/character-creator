@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
           <button
             (click)="cancel.emit()"
             class="flex-1 rounded-lg border border-stone-700 py-2 text-sm font-medium text-stone-300 transition hover:border-stone-500 hover:text-white">
-            Cancel
+            {{ cancelLabel }}
           </button>
           <button
             (click)="confirm.emit()"
@@ -29,6 +29,7 @@ export class ConfirmModalComponent {
   @Input() title = 'Are you sure?';
   @Input() message = '';
   @Input() confirmLabel = 'Continue';
+  @Input() cancelLabel = 'Cancel';
   @Output() confirm = new EventEmitter<void>();
   @Output() cancel = new EventEmitter<void>();
 }
