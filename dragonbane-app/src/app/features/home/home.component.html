@@ -77,68 +77,22 @@
               <!-- Entry link -->
               <a [routerLink]="['/character', char.id]" class="flex flex-1 items-center gap-5 py-5 min-w-0">
 
-                <!-- Kin sigil -->
-                <div class="kin-sigil kin-sigil-sm flex-shrink-0">
-                  @switch (char.kin) {
-                    @case ('Human') {
-                      <!-- Circle + cardinal marks + center dot: humanity at the crossroads -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Human" role="img">
-                        <circle cx="50" cy="50" r="28" stroke="currentColor" stroke-width="2.5"/>
-                        <line x1="50" y1="18" x2="50" y2="8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="50" y1="82" x2="50" y2="92" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="82" y1="50" x2="92" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="18" y1="50" x2="8" y2="50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <circle cx="50" cy="50" r="4" fill="currentColor"/>
-                      </svg>
-                    }
-                    @case ('Halfling') {
-                      <!-- Concentric rings + center: small within the whole, evasive -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Halfling" role="img">
-                        <circle cx="50" cy="50" r="38" stroke="currentColor" stroke-width="2.5"/>
-                        <circle cx="50" cy="50" r="22" stroke="currentColor" stroke-width="2.5"/>
-                        <circle cx="50" cy="50" r="4" fill="currentColor"/>
-                      </svg>
-                    }
-                    @case ('Dwarf') {
-                      <!-- Tiwaz-style rune: vertical staff, downward wings, crossbar -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Dwarf" role="img">
-                        <line x1="50" y1="14" x2="50" y2="80" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="50" y1="38" x2="22" y2="58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="50" y1="38" x2="78" y2="58" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="33" y1="84" x2="67" y2="84" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                      </svg>
-                    }
-                    @case ('Elf') {
-                      <!-- Triangle with interior vertical and horizontal markers: otherworldly precision -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Elf" role="img">
-                        <polygon points="50,11 85,80 15,80" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
-                        <line x1="50" y1="18" x2="50" y2="72" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="27" y1="59" x2="73" y2="59" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                      </svg>
-                    }
-                    @case ('Mallard') {
-                      <!-- Three wave lines: water-kin, fluid motion -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Mallard" role="img">
-                        <path d="M16,32 C27,24 38,40 50,32 C62,24 73,40 84,32" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <path d="M16,50 C27,42 38,58 50,50 C62,42 73,58 84,50" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <path d="M16,68 C27,60 38,76 50,68 C62,60 73,76 84,68" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                      </svg>
-                    }
-                    @case ('Wolfkin') {
-                      <!-- Three lines from apex diverging downward: claw, hunt, pack -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Wolfkin" role="img">
-                        <line x1="50" y1="12" x2="22" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="50" y1="12" x2="50" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="50" y1="12" x2="78" y2="88" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                      </svg>
-                    }
-                    @default {
-                      <!-- Generic dashed ring for characters with no kin set -->
-                      <svg width="52" height="52" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <circle cx="50" cy="50" r="34" stroke="currentColor" stroke-width="2" stroke-dasharray="5 5"/>
-                        <circle cx="50" cy="50" r="4" fill="currentColor"/>
-                      </svg>
-                    }
+                <!-- Kin sigil, with the profession as a badge on its corner -->
+                <div class="kin-sigil kin-sigil-sm relative flex-shrink-0">
+                  @if (char.kin) {
+                    <app-icon [name]="'kin/' + char.kin.toLowerCase()" [size]="72" [label]="char.kin" />
+                  } @else {
+                    <!-- Generic dashed ring for characters with no kin set -->
+                    <svg width="72" height="72" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                      <circle cx="50" cy="50" r="34" stroke="currentColor" stroke-width="2" stroke-dasharray="5 5"/>
+                      <circle cx="50" cy="50" r="4" fill="currentColor"/>
+                    </svg>
+                  }
+
+                  @if (char.profession) {
+                    <div class="profession-badge">
+                      <app-icon [name]="'professions/' + char.profession.toLowerCase()" [size]="22" />
+                    </div>
                   }
                 </div>
 
@@ -156,9 +110,7 @@
                         &thinsp;·&thinsp;
                       }
                       @if (char.profession) {
-                        <span class="whitespace-nowrap">
-                          <app-icon [name]="'professions/' + char.profession.toLowerCase()" [size]="15" class="mr-1 align-[-0.15em]" />{{ char.profession }}
-                        </span>
+                        <span class="whitespace-nowrap">{{ char.profession }}</span>
                       }
                     } @else {
                       <span class="text-muted-stone">No kin or profession set</span>
