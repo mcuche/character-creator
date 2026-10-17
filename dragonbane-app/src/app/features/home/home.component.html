@@ -12,8 +12,8 @@
         </p>
       </div>
       @if (characters().length > 0) {
-        <button (click)="createNew()" class="new-char-link">
-          New Character
+        <button (click)="createNew()" class="new-char-link" aria-label="New Character">
+          New<span class="hidden sm:inline">Character</span>
         </button>
       }
     </div>
