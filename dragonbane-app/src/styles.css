@@ -1208,20 +1208,20 @@ button:focus {
 
 .prof-watermark {
   position: absolute;
-  right: -0.5rem;
+  right: 0.5rem;
   top: 50%;
-  transform: translateY(-50%);
-  color: oklch(0.215 0.010 68);
+  transform: translateY(-85%);
+  color: oklch(0.36 0.010 68);
   pointer-events: none;
   transition: color 220ms ease;
 }
 
 .prof-card:hover:not(.prof-selected) .prof-watermark {
-  color: oklch(0.23 0.010 68);
+  color: oklch(0.42 0.010 68);
 }
 
 .prof-card.prof-selected .prof-watermark {
-  color: oklch(0.245 0.013 72);
+  color: oklch(0.74 0.13 72 / 0.65);
 }
 
 .prof-name {

@@ -6,10 +6,11 @@ import { PROFESSION_DATA } from '../../../../data/professions.data';
 import { Profession } from '../../../../models/character.models';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
 import { ConfirmModalComponent } from '../../../../shared/confirm-modal/confirm-modal.component';
+import { IconComponent } from '../../../../shared/icon/icon.component';
 
 @Component({
   selector: 'app-profession',
-  imports: [CommonModule, StepNavComponent, ConfirmModalComponent],
+  imports: [CommonModule, StepNavComponent, ConfirmModalComponent, IconComponent],
   templateUrl: './profession.component.html',
 })
 export class ProfessionComponent {
