@@ -330,8 +330,9 @@ Each section has an **"Edit"** link that navigates back to the relevant wizard s
 - Mage only: magic school skill level, prepared spells list, magic tricks list
 
 #### 4. Gear
-- Weapons table (name, grip, STR req, damage, durability, features)
-- Armor (type, rating, current durability)
+- **Weapons at hand** (top of the gear tab): one card per weapon or shield the load counts as at hand. Shows the weapon skill and level (shields use the best STR melee skill), damage plus the damage bonus of the skill's attribute (none for crossbows), grip, STR requirement, durability (range for ranged weapons) and features. Age-adjusted STR below the requirement = bane on attacks; below half = can't use it; one-handed weapons note the −3 requirement when held two-handed. Each card has a display-only **Damaged** checkbox
+- **Armor**: total armor rating (suit + helmet), the worn pieces, their combined banes and the optional damage-type notes. Armor has **no durability** in the rules. A mage wearing metal armor (Chainmail, Plate Armor, either helmet) gets a "can't cast" warning
+- Stats come from `data/weapons.data.ts` and `data/armor.data.ts` (copied from rules.md), matched to a gear row by name and aliases, or by an explicit choice in the row editor's **Stats** select
 - Inventory list with encumbrance tracking (slots used / ⌈STR÷2⌉, +2 for one backpack). Weapon and shield rows have an **At hand** checkbox (max 3 at hand, free); armor and helmet rows have a **Worn** checkbox (one of each, free — checking another swaps). Rations take 1 slot per 4; every full 100 coins takes 1 slot
 - Gold/silver/copper tracker
 
@@ -394,6 +395,8 @@ interface GearItem {
   quantity: number;
   weight: number;       // 0 = tiny, 1 = normal, 2+ = heavy
   equipped?: boolean;   // "at hand" (weapon/shield) or "worn" (armor/helmet)
+  ref?: string;         // exact weapons/armor reference row name; unset = match by name
+  damaged?: boolean;    // weapons/shields only; display flag
   notes?: string;
 }
 

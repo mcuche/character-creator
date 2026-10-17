@@ -17,6 +17,8 @@ _Reviewed 2026-04-16_
 ## Issues & Recommendations
 
 ### 1. Home screen — empty state feels weak
+**Status:** Done (2026-10-17). The empty state shows the `ornaments/dragonbane-seal` SVG instead of the emoji.
+
 **File:** `features/home/home.component.html`
 
 The `🐉` emoji at 30% opacity is a generic placeholder. For an RPG tool the empty state should feel like an invitation.
@@ -26,6 +28,8 @@ The `🐉` emoji at 30% opacity is a generic placeholder. For an RPG tool the em
 ---
 
 ### 2. Character cards lack visual personality
+**Status:** Done (2026-10-17). Roster entries were reworked in `06c9884`: HP/WP on each entry and a profession glyph.
+
 **File:** `features/home/home.component.html`
 
 Cards show name/kin/profession/age as flat `stone-700` pills with no visual accent. HP/WP only render `@if (char.attributes)`, so partially-created characters look especially bare.
@@ -37,6 +41,8 @@ Cards show name/kin/profession/age as flat `stone-700` pills with no visual acce
 ---
 
 ### 3. Wizard header name input has no affordance
+**Status:** Done (2026-10-17). `.hero-name-input` has a bottom border that turns amber on focus.
+
 **File:** `features/wizard/wizard.component.html`
 
 The character name `<input>` sits on a `stone-950/95` bar with no border or visual cue. It looks like static text until clicked — a discoverability problem.
@@ -46,6 +52,8 @@ The character name `<input>` sits on a `stone-950/95` bar with no border or visu
 ---
 
 ### 4. Emoji dice icon is inconsistent with design tone
+**Status:** Done (2026-10-17). No emoji remain in the app templates; the roll buttons read "Roll D12".
+
 **Files:** `features/wizard/steps/kin/`, `profession/`, `age/`, etc.
 
 `🎲 Roll D12` mixes system emoji (which render differently per platform) with an otherwise clean, Cinzel-driven design system.
@@ -68,6 +76,8 @@ The active tab uses a 2px `border-b` in `amber-500`. On a dark background (`ston
 ---
 
 ### 6. Body font defaults to `system-ui` — missed opportunity
+**Status:** Done (2026-10-17). The body font is Vollkorn, which `CLAUDE.md` prefers over Crimson Pro.
+
 **File:** `src/styles.css`
 
 `system-ui` (Segoe UI on Windows, SF Pro on Mac) contrasts with Cinzel but lacks personality. A purpose-chosen serif would give body text a fantasy-adjacent warmth.
@@ -95,9 +105,9 @@ Then set `font-family: 'Crimson Pro', serif` as the base body in `@theme` or `bo
 
 | Priority | Issue | Estimated Effort |
 |----------|-------|-----------------|
-| High | Name input affordance in wizard header | ~5 min |
-| High | Card left-border accent + consistent HP/WP display | ~10 min |
+| High | ~~Name input affordance in wizard header~~ (done) | ~5 min |
+| High | ~~Card left-border accent + consistent HP/WP display~~ (done) | ~10 min |
 | Medium | ~~Tab active state visibility~~ (done) | ~5 min |
-| Medium | Replace emoji dice with SVG icon | ~15 min |
-| Low | Crimson Pro body font | ~10 min |
+| Medium | ~~Replace emoji dice with SVG icon~~ (done) | ~15 min |
+| Low | ~~Crimson Pro body font~~ (done) | ~10 min |
 | Low | ~~HP/WP button size on character sheet~~ (done) | ~5 min |
