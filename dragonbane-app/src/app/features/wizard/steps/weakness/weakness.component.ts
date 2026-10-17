@@ -3,13 +3,8 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CharacterDraftService } from '../../../../services/character-draft.service';
+import { WEAKNESS_EXAMPLES } from '../../../../data/weaknesses.data';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
-
-const SUGGESTED_WEAKNESSES = [
-  'Greedy', 'Cowardly', 'Reckless', 'Vengeful', 'Arrogant',
-  'Impulsive', 'Paranoid', 'Gullible', 'Stubborn', 'Vain',
-  'Wrathful', 'Envious',
-];
 
 @Component({
   selector: 'app-weakness',
@@ -21,9 +16,10 @@ export class WeaknessComponent {
   private router = inject(Router);
 
   readonly draft = this.draftService.draft;
-  readonly suggestions = SUGGESTED_WEAKNESSES;
+  readonly examples = WEAKNESS_EXAMPLES;
   expanded = signal(false);
   weaknessText = signal('');
+  rolledIndex = signal<number | null>(null);
 
   constructor() {
     const w = this.draft().weakness;
@@ -37,13 +33,22 @@ export class WeaknessComponent {
     if (this.expanded()) {
       this.expanded.set(false);
       this.weaknessText.set('');
+      this.rolledIndex.set(null);
     } else {
       this.expanded.set(true);
     }
   }
 
-  selectSuggestion(w: string): void {
-    this.weaknessText.set(w);
+  rollRandom(): void {
+    const i = Math.floor(Math.random() * WEAKNESS_EXAMPLES.length);
+    this.expanded.set(true);
+    this.rolledIndex.set(i);
+    this.weaknessText.set(WEAKNESS_EXAMPLES[i].name);
+  }
+
+  select(name: string): void {
+    this.rolledIndex.set(null);
+    this.weaknessText.set(name);
   }
 
   continue(): void {

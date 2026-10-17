@@ -1,6 +1,9 @@
 <div class="step-animate-in">
 
-  <h2 class="mb-2 font-display font-semibold step-heading">Weakness</h2>
+  <div class="mb-2 flex items-center justify-between gap-4">
+    <h2 class="font-display font-semibold step-heading">Weakness</h2>
+    <button type="button" (click)="rollRandom()" class="btn-roll inline-flex min-h-11 items-center">Roll D12</button>
+  </div>
   <p class="mb-8 step-intro">
     An optional character flaw. Acting against your weakness grants 2 advancement marks, then removes it.
   </p>
@@ -19,16 +22,25 @@
       <button type="button" (click)="toggle()" class="btn-roll inline-flex min-h-11 items-center">Remove</button>
     </div>
 
-    <!-- Suggestions -->
-    <div class="mb-8 flex flex-wrap gap-2">
-      @for (w of suggestions; track w) {
+    <!-- Examples -->
+    <div class="mb-8 grid gap-2 sm:grid-cols-2">
+      @for (w of examples; track w.name; let i = $index) {
+        @let selected = weaknessText() === w.name;
         <button
           type="button"
-          (click)="selectSuggestion(w)"
-          class="choice-chip"
-          [class.selected]="weaknessText() === w"
-          [attr.aria-pressed]="weaknessText() === w">
-          {{ w }}
+          (click)="select(w.name)"
+          class="toggle-card rich"
+          [class.selected]="selected"
+          [attr.aria-pressed]="selected">
+          <span class="min-w-0 flex-1">
+            <span class="flex items-center gap-2">
+              <span class="toggle-card-name">{{ w.name }}</span>
+              @if (selected && rolledIndex() === i) {
+                <span class="rolled-badge">Rolled</span>
+              }
+            </span>
+            <span class="mt-0.5 block card-ability-desc">{{ w.hint }}</span>
+          </span>
         </button>
       }
     </div>

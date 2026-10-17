@@ -1,6 +1,9 @@
 <div class="step-animate-in">
 
-  <h2 class="mb-2 font-display font-semibold step-heading">Memento</h2>
+  <div class="mb-2 flex items-center justify-between gap-4">
+    <h2 class="font-display font-semibold step-heading">Memento</h2>
+    <button type="button" (click)="rollRandom()" class="btn-roll inline-flex min-h-11 items-center">Roll D12</button>
+  </div>
   <p class="mb-8 step-intro">
     An optional meaningful object your character carries. No mechanical effect — purely for roleplay.
   </p>
@@ -17,6 +20,29 @@
     <div class="mb-3 flex items-center justify-between gap-4">
       <h3 class="section-label">Your memento</h3>
       <button type="button" (click)="toggle()" class="btn-roll inline-flex min-h-11 items-center">Remove</button>
+    </div>
+
+    <!-- Examples -->
+    <div class="mb-8 grid gap-2 sm:grid-cols-2">
+      @for (m of examples; track m.name; let i = $index) {
+        @let selected = name() === m.name;
+        <button
+          type="button"
+          (click)="select(m)"
+          class="toggle-card rich"
+          [class.selected]="selected"
+          [attr.aria-pressed]="selected">
+          <span class="min-w-0 flex-1">
+            <span class="flex items-center gap-2">
+              <span class="toggle-card-name">{{ m.name }}</span>
+              @if (selected && rolledIndex() === i) {
+                <span class="rolled-badge">Rolled</span>
+              }
+            </span>
+            <span class="mt-0.5 block card-ability-desc">{{ m.significance }}</span>
+          </span>
+        </button>
+      }
     </div>
 
     <div class="space-y-6">
