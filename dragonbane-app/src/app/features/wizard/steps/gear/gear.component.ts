@@ -1,16 +1,30 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { CharacterDraftService } from '../../../../services/character-draft.service';
+import { applyAgeModifiers, computeEncumbrance } from '../../../../services/character-rules.service';
 import { PROFESSION_DATA } from '../../../../data/professions.data';
-import { inferGearType } from '../../../../data/gear.data';
+import { GearSeed, autoEquip } from '../../../../data/gear.data';
 import { GearItem } from '../../../../models/character.models';
 import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component';
+import { GearListComponent } from '../../../../shared/gear-list/gear-list.component';
+
+/** Turn a starting-kit seed into a pack row, rolling any D6 quantity. */
+function fromSeed(seed: GearSeed, i: number): GearItem {
+  const rolled = seed.quantity === 'D6';
+  const item: GearItem = {
+    id: `suggested-${i}`,
+    name: seed.name,
+    type: seed.type,
+    quantity: seed.quantity === 'D6' ? Math.floor(Math.random() * 6) + 1 : (seed.quantity ?? 1),
+    weight: seed.weight ?? 1,
+  };
+  if (rolled) item.notes = 'rolled D6';
+  return item;
+}
 
 @Component({
   selector: 'app-gear',
-  imports: [CommonModule, FormsModule, StepNavComponent],
+  imports: [StepNavComponent, GearListComponent],
   templateUrl: './gear.component.html',
 })
 export class GearComponent {
@@ -19,48 +33,28 @@ export class GearComponent {
 
   readonly draft = this.draftService.draft;
   gear = signal<GearItem[]>([]);
-  newItemName = signal('');
+
+  /** Age-adjusted STR, or null while attributes are unset. */
+  readonly str = computed(() => {
+    const { attributes, age } = this.draft();
+    if (!attributes) return null;
+    return (age ? applyAgeModifiers(attributes, age) : attributes).STR;
+  });
+
+  readonly encumbrance = computed(() => {
+    const d = this.draft();
+    return computeEncumbrance(this.gear(), this.str(), (d.gold ?? 0) + (d.silver ?? 0) + (d.copper ?? 0));
+  });
 
   constructor() {
     const draft = this.draft();
     if (draft.gear && draft.gear.length > 0) {
       this.gear.set([...draft.gear]);
     } else {
-      // Load suggested gear from profession
+      // Pre-fill the profession's kit, worn and at hand
       const prof = PROFESSION_DATA.find(p => p.name === draft.profession);
-      if (prof) {
-        this.gear.set(prof.suggestedGear.map((seed, i) => ({
-          id: `suggested-${i}`,
-          name: seed.name,
-          type: seed.type,
-          quantity: 1,
-          weight: 1,
-        })));
-      }
+      if (prof) this.gear.set(autoEquip(prof.suggestedGear.map(fromSeed)));
     }
-  }
-
-  addItem(): void {
-    const name = this.newItemName().trim();
-    if (!name) return;
-    this.gear.update(g => [...g, {
-      id: crypto.randomUUID(),
-      name,
-      type: inferGearType(name),
-      quantity: 1,
-      weight: 1,
-    }]);
-    this.newItemName.set('');
-  }
-
-  removeItem(id: string): void {
-    this.gear.update(g => g.filter(i => i.id !== id));
-  }
-
-  updateQuantity(id: string, delta: number): void {
-    this.gear.update(g => g.map(i =>
-      i.id === id ? { ...i, quantity: Math.max(1, i.quantity + delta) } : i
-    ));
   }
 
   continue(): void {

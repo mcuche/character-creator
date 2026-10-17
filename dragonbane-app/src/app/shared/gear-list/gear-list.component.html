@@ -1,0 +1,188 @@
+@let enc = encumbrance();
+
+<!-- ── Worn & at hand ── -->
+@if (equipped().length > 0) {
+  <section class="mb-8" aria-labelledby="gear-worn-heading">
+    <h3 id="gear-worn-heading" class="mb-1 section-label">Worn &amp; at hand</h3>
+    <div>
+      @for (item of equipped(); track item.id) {
+        <ng-container *ngTemplateOutlet="row; context: { $implicit: item }" />
+      }
+    </div>
+  </section>
+}
+
+<!-- ── Pack ── -->
+<section aria-labelledby="gear-pack-heading">
+  <div class="mb-1 flex items-baseline justify-between gap-4">
+    <h3 id="gear-pack-heading" class="section-label">Pack</h3>
+    <span class="pick-counter shrink-0" [class.complete]="enc.full" [class.over]="enc.over" aria-live="polite">
+      @if (enc.capacity !== null) {
+        {{ enc.load }} / {{ enc.capacity }} carried
+      } @else {
+        {{ enc.load }} carried
+      }
+    </span>
+  </div>
+
+  @if (str() !== null || enc.rationSlots > 0 || enc.coinSlots > 0) {
+    <p class="mb-3 derived-enc-note">
+      @if (str() !== null) {
+        STR {{ str() }} ÷ 2@if (enc.hasBackpack) { (+2 backpack)}
+      }
+      @if (enc.rationSlots > 0) {
+        @if (str() !== null) { &ensp;·&ensp; }rations take {{ enc.rationSlots }}
+      }
+      @if (enc.coinSlots > 0) {
+        @if (str() !== null || enc.rationSlots > 0) { &ensp;·&ensp; }coins take {{ enc.coinSlots }}
+      }
+    </p>
+  }
+  @if (note()) {
+    <p class="mb-3 card-meta">{{ note() }}</p>
+  }
+  @if (enc.over) {
+    <p class="mb-3 text-sm"><span class="mod-neg">Over-encumbered: roll STR to move in a combat round or walk a shift.</span></p>
+  }
+
+  @if (pack().length > 0) {
+    <div>
+      @for (item of pack(); track item.id) {
+        <ng-container *ngTemplateOutlet="row; context: { $implicit: item }" />
+      }
+    </div>
+  } @else {
+    <p class="step-empty">Your pack is empty.</p>
+  }
+
+  <!-- Add item -->
+  <div class="mt-4 flex items-end gap-3">
+    <input
+      type="text"
+      [ngModel]="newItemName()"
+      (ngModelChange)="newItemName.set($event)"
+      (keydown.enter)="addItem()"
+      placeholder="Rope, torch, lucky coin…"
+      aria-label="New item name"
+      class="min-w-0 flex-1 text-field"
+    />
+    <button
+      (click)="addItem()"
+      [disabled]="!newItemName().trim()"
+      class="btn-roll-action min-h-11 shrink-0">
+      Add
+    </button>
+  </div>
+</section>
+
+<!-- ── One gear row (both groups) ── -->
+<ng-template #row let-item>
+  @let editing = editingId() === item.id;
+  @let slotText = slotNote(item);
+  <div class="gear-row" [class.equipped]="isEquipped(item)">
+    <div class="attr-row gap-2! py-1! sm:gap-4!">
+      <div class="flex min-w-0 flex-1 flex-col items-start">
+        <span class="max-w-full break-words pt-2 toggle-card-name">{{ item.name }}</span>
+        <div class="flex flex-wrap items-center gap-x-4">
+          <button
+            type="button"
+            (click)="toggleEditor(item.id)"
+            class="attr-action-btn inline-flex min-h-11 items-center"
+            [class.swap-active]="editing"
+            [attr.aria-expanded]="editing"
+            [attr.aria-controls]="'gear-editor-' + item.id"
+            [attr.aria-label]="item.name + ': ' + metaLabel(item) + '. Change type or weight'">
+            {{ metaLabel(item) }}
+          </button>
+
+          @if (canEquip(item)) {
+            @let locked = atHandLocked(item);
+            <label class="equip-toggle" [class.locked]="locked">
+              <input
+                type="checkbox"
+                class="equip-toggle-box"
+                [checked]="item.equipped"
+                [disabled]="locked"
+                (change)="toggleEquipped(item, $any($event.target).checked)"
+                [attr.aria-describedby]="locked ? 'gear-lock-' + item.id : null" />
+              <span>{{ equipLabel(item) }}</span>
+            </label>
+            @if (locked) {
+              <span [id]="'gear-lock-' + item.id" class="card-meta">Max {{ maxAtHand }} at hand</span>
+            }
+          }
+
+          @if (slotText) {
+            <span class="gear-slot-note">{{ slotText }}</span>
+          }
+          @if (item.notes) {
+            <span class="gear-slot-note">{{ item.notes }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="flex shrink-0 items-center" role="group" [attr.aria-label]="'Quantity of ' + item.name">
+        <button
+          type="button"
+          (click)="updateQuantity(item, -1)"
+          [disabled]="item.quantity <= 1"
+          class="flex h-11 w-11 items-center justify-center disabled:cursor-not-allowed"
+          [attr.aria-label]="'Decrease ' + item.name">
+          <span class="pb-btn" [class.opacity-25]="item.quantity <= 1" aria-hidden="true">−</span>
+        </button>
+        <span class="w-7 text-center score-chip-total" aria-live="polite">{{ item.quantity }}</span>
+        <button
+          type="button"
+          (click)="updateQuantity(item, 1)"
+          class="flex h-11 w-11 items-center justify-center"
+          [attr.aria-label]="'Increase ' + item.name">
+          <span class="pb-btn" aria-hidden="true">+</span>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        (click)="removeItem(item)"
+        class="attr-action-btn inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center"
+        [attr.aria-label]="'Remove ' + item.name">
+        <svg width="14" height="14" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <line x1="20" y1="20" x2="80" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+          <line x1="80" y1="20" x2="20" y2="80" stroke="currentColor" stroke-width="9" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    @if (editing) {
+      <div [id]="'gear-editor-' + item.id" class="gear-editor">
+        <p class="gear-editor-label" [id]="'gear-type-label-' + item.id">Type</p>
+        <div class="flex flex-wrap gap-2" role="group" [attr.aria-labelledby]="'gear-type-label-' + item.id">
+          @for (t of types; track t) {
+            <button
+              type="button"
+              (click)="setType(item, t)"
+              class="choice-chip"
+              [class.selected]="item.type === t"
+              [attr.aria-pressed]="item.type === t">
+              {{ typeLabels[t] }}
+            </button>
+          }
+        </div>
+        @if (item.type !== 'ration') {
+          <p class="mt-3 gear-editor-label" [id]="'gear-weight-label-' + item.id">Weight</p>
+          <div class="flex flex-wrap gap-2" role="group" [attr.aria-labelledby]="'gear-weight-label-' + item.id">
+            @for (w of weights; track w) {
+              <button
+                type="button"
+                (click)="setWeight(item, w)"
+                class="choice-chip"
+                [class.selected]="item.weight === w"
+                [attr.aria-pressed]="item.weight === w">
+                {{ weightLabel(w) }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+</ng-template>
