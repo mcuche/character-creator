@@ -1,4 +1,4 @@
-import { applyAttributeEdit, computeEncumbrance, computeSkills, deriveStats, getBaseChance, getSkillLevel } from './character-rules.service';
+import { applyAttributeEdit, armorProfile, computeEncumbrance, computeSkills, deriveStats, getBaseChance, getSkillLevel, strStatus, weaponProfiles } from './character-rules.service';
 import { Age, Attributes, Character, GearItem, GearType } from '../models/character.models';
 import { autoEquip } from '../data/gear.data';
 
@@ -184,5 +184,100 @@ describe('computeEncumbrance', () => {
   it('flags full and over against ⌈STR / 2⌉', () => {
     expect(computeEncumbrance([item('a', 'item', { quantity: 6 })], 11, 0)).toMatchObject({ capacity: 6, full: true, over: false });
     expect(computeEncumbrance([item('a', 'item', { quantity: 7 })], 11, 0)).toMatchObject({ full: false, over: true });
+  });
+});
+
+describe('weapon and armor profiles', () => {
+  const gearItem = (name: string, type: GearType, extra: Partial<GearItem> = {}): GearItem =>
+    ({ id: name, name, type, quantity: 1, weight: 1, equipped: true, ...extra });
+
+  function makeChar(attrs: Partial<Attributes>, gear: GearItem[], age: Age = 'Adult', overrides: Partial<Character> = {}): Character {
+    const attributes = { ...ATTRS, ...attrs };
+    const derivedStats = deriveStats(attributes, 'Human', age);
+    return {
+      id: 'c1', name: 'Test', kin: 'Human', profession: 'Knight', age,
+      attributes, derivedStats,
+      skills: computeSkills(attributes, age, ['Swords']),
+      heroicAbilities: [], gear, appearance: {}, conditions: [],
+      currentHP: derivedStats.hp, currentWP: derivedStats.wp,
+      preparedSpells: [], magicTricks: [],
+      gold: 0, silver: 0, copper: 0, createdAt: '', updatedAt: '',
+      ...overrides,
+    };
+  }
+  const profiles = (char: Character) =>
+    weaponProfiles(char, computeEncumbrance(char.gear, char.attributes!.STR, 0));
+  const armor = (char: Character) =>
+    armorProfile(char, computeEncumbrance(char.gear, char.attributes!.STR, 0));
+  const longsword = (str: number, age: Age = 'Adult') =>
+    profiles(makeChar({ STR: str }, [gearItem('Longsword', 'weapon')], age))[0];
+
+  it('rates STR against the requirement and half of it', () => {
+    expect([13, 12, 7, 6].map(str => strStatus(str, 13))).toEqual(['ok', 'bane', 'bane', 'unusable']);
+    expect(strStatus(3, null)).toBe('ok');
+    expect(longsword(13).strStatus).toBe('ok');
+    expect(longsword(12)).toMatchObject({ strStatus: 'bane', strReq: 13, twoHandHint: true });
+    expect(longsword(6).strStatus).toBe('unusable');
+    expect(profiles(makeChar({ STR: 3 }, [gearItem('Knife', 'weapon')]))[0].strStatus).toBe('ok');
+  });
+
+  it('uses age-adjusted STR', () => {
+    // Old: stored 14 → 12
+    expect(longsword(14, 'Old').strStatus).toBe('bane');
+  });
+
+  it('gives no two-hand hint to two-handed weapons', () => {
+    const [great] = profiles(makeChar({ STR: 12 }, [gearItem('Greatsword', 'weapon')]));
+    expect(great).toMatchObject({ strStatus: 'bane', twoHandHint: false });
+  });
+
+  it('adds the damage bonus of the skill attribute', () => {
+    expect(longsword(17)).toMatchObject({ damage: '2D8', bonus: '+D6', skill: 'Swords', skillLevel: 14 });
+    expect(longsword(12).bonus).toBeNull();
+    const [dagger] = profiles(makeChar({ STR: 18, AGL: 13 }, [gearItem('Dagger', 'weapon')]));
+    expect(dagger).toMatchObject({ skill: 'Knives', bonus: '+D4' });
+    const [staff] = profiles(makeChar({ STR: 18, AGL: 12 }, [gearItem('Staff', 'weapon')]));
+    expect(staff).toMatchObject({ skill: 'Staves', bonus: null });
+    const [crossbow] = profiles(makeChar({ STR: 18, AGL: 18 }, [gearItem('Light Crossbow', 'weapon')]));
+    expect(crossbow.bonus).toBeNull();
+  });
+
+  it('gives a shield the best STR melee skill and the STR bonus', () => {
+    const char = makeChar({ STR: 14 }, [gearItem('Large Shield', 'shield')]);
+    char.skills['Axes'] = { ...char.skills['Axes'], level: 15 };
+    const [shield] = profiles(char);
+    expect(shield).toMatchObject({ skill: 'best STR melee', skillLevel: 15, bonus: '+D4', damage: 'D8' });
+  });
+
+  it('profiles only the rows the load counts as at hand', () => {
+    const gear = [
+      gearItem('Longsword', 'weapon'), gearItem('Dagger', 'weapon', { equipped: false }),
+      gearItem('Large Shield', 'shield'), gearItem('Knife', 'weapon'), gearItem('Staff', 'weapon'),
+    ];
+    expect(profiles(makeChar({}, gear)).map(p => p.item.name)).toEqual(['Longsword', 'Large Shield', 'Knife']);
+  });
+
+  it('keeps unmatched weapons without stats', () => {
+    const [thing] = profiles(makeChar({}, [gearItem('Rusty Thing', 'weapon')]));
+    expect(thing.data).toBeUndefined();
+    expect(thing).toMatchObject({ skillLevel: null, strStatus: 'ok' });
+  });
+
+  it('adds the helmet to the suit and merges banes', () => {
+    const knight = armor(makeChar({}, [gearItem('Plate Armor', 'armor'), gearItem('Great Helm', 'helmet')]));
+    expect(knight.rating).toBe(8);
+    expect(knight.banes).toEqual(['ACROBATICS', 'EVADE', 'SNEAKING', 'AWARENESS', 'ranged attacks']);
+    const scout = armor(makeChar({}, [gearItem('Leather', 'armor'), gearItem('Open Helmet', 'helmet')]));
+    expect(scout).toMatchObject({ rating: 2, banes: ['AWARENESS'] });
+  });
+
+  it('flags metal armor', () => {
+    expect(armor(makeChar({}, [gearItem('Chainmail', 'armor')])).metal).toBe(true);
+    expect(armor(makeChar({}, [gearItem('Leather', 'armor')])).metal).toBe(false);
+  });
+
+  it('ignores unworn armor', () => {
+    const profile = armor(makeChar({}, [gearItem('Plate Armor', 'armor', { equipped: false })]));
+    expect(profile).toMatchObject({ rating: 0, pieces: [], banes: [], metal: false });
   });
 });

@@ -72,6 +72,12 @@ describe('setGearType', () => {
     expect(back[0].type).toBe('item');
     expect('equipped' in back[0]).toBe(false);
   });
+
+  it('drops the stats ref and damaged flag', () => {
+    const gear = setGearType([item('x', 'weapon', { ref: 'Longsword', damaged: true })], 'x', 'shield');
+    expect('ref' in gear[0]).toBe(false);
+    expect('damaged' in gear[0]).toBe(false);
+  });
 });
 
 describe('normalizeGear', () => {

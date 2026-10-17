@@ -2,6 +2,9 @@ import { Attributes, AttributeKey, Age, Kin, DerivedStats, SkillEntry, MagicScho
 import { SKILLS_DATA } from '../data/skills.data';
 import { KIN_DATA } from '../data/kin.data';
 import { MAX_AT_HAND } from '../data/gear.data';
+import { findArmor, findWeapon } from '../data/gear-stats';
+import { WeaponData } from '../data/weapons.data';
+import { ArmorData } from '../data/armor.data';
 
 export function getBaseChance(score: number): number {
   if (score <= 5) return 3;
@@ -248,5 +251,107 @@ export function computeEncumbrance(gear: GearItem[], strAdjusted: number | null,
     rationSlots,
     atHandCount: gear.filter(i => i.equipped && (i.type === 'weapon' || i.type === 'shield')).length,
     items,
+  };
+}
+
+// ── Weapons at hand and armor worn ──
+
+/** STR-governed weapon skills: a shield parries (and hits) with the best of them. */
+export const STR_MELEE_SKILLS = ['Axes', 'Brawling', 'Hammers', 'Spears', 'Swords'];
+
+export type StrStatus = 'ok' | 'bane' | 'unusable';
+
+export interface WeaponProfile {
+  item: GearItem;
+  data?: WeaponData;
+  /** Skill name, or "best STR melee" for shields. */
+  skill?: string;
+  skillLevel: number | null;
+  damage?: string;
+  /** Damage bonus die such as "+D4"; null when there is none. */
+  bonus: string | null;
+  strReq: number | null;
+  strStatus: StrStatus;
+  /** A one-handed weapon held in two hands lowers the requirement by 3. */
+  twoHandHint: boolean;
+}
+
+export interface ArmorProfile {
+  rating: number;
+  pieces: { item: GearItem; data?: ArmorData }[];
+  /** Union of the worn pieces' banes, in order. */
+  banes: string[];
+  metal: boolean;
+}
+
+/** Below the requirement = bane; below half = can't use the weapon. */
+export function strStatus(str: number | null, req: number | null): StrStatus {
+  if (str === null || req === null) return 'ok';
+  if (str < req / 2) return 'unusable';
+  return str < req ? 'bane' : 'ok';
+}
+
+function adjustedAttributes(char: Character): Attributes | null {
+  if (!char.attributes) return null;
+  return char.age ? applyAgeModifiers(char.attributes, char.age) : char.attributes;
+}
+
+/** One profile per weapon/shield the load counts as at hand, in list order. */
+export function weaponProfiles(char: Character, enc: Encumbrance): WeaponProfile[] {
+  const attrs = adjustedAttributes(char);
+  const str = attrs?.STR ?? null;
+  const level = (skill: string): number | null => char.skills?.[skill]?.level ?? null;
+
+  return char.gear
+    .filter(item => enc.items[item.id]?.reason === 'at hand')
+    .map((item): WeaponProfile => {
+      const data = findWeapon(item);
+      if (!data) {
+        return { item, skillLevel: null, bonus: null, strReq: null, strStatus: 'ok', twoHandHint: false };
+      }
+
+      let skill: string;
+      let skillLevel: number | null;
+      let attr: AttributeKey;
+      if (data.skill === 'best-str-melee') {
+        const levels = STR_MELEE_SKILLS.map(level).filter((l): l is number => l !== null);
+        skill = 'best STR melee';
+        skillLevel = levels.length ? Math.max(...levels) : null;
+        attr = 'STR';
+      } else {
+        skill = data.skill;
+        skillLevel = level(skill);
+        attr = (SKILLS_DATA.find(s => s.name === skill)?.attribute ?? 'STR') as AttributeKey;
+      }
+
+      const die = attrs && !data.features.includes('no damage bonus') ? getDamageBonus(attrs[attr]) : '—';
+      const status = strStatus(str, data.str);
+      return {
+        item, data, skill, skillLevel,
+        damage: data.damage,
+        bonus: die === '—' ? null : die,
+        strReq: data.str,
+        strStatus: status,
+        twoHandHint: status !== 'ok' && data.grip === '1H',
+      };
+    });
+}
+
+/** Rating = suit + helmet; banes merged without duplicates. Pieces without stats add nothing. */
+export function armorProfile(char: Character, enc: Encumbrance): ArmorProfile {
+  const pieces = char.gear
+    .filter(item => enc.items[item.id]?.reason === 'worn')
+    .map(item => ({ item, data: findArmor(item) }));
+  const banes: string[] = [];
+  for (const { data } of pieces) {
+    for (const bane of data?.banes ?? []) {
+      if (!banes.includes(bane)) banes.push(bane);
+    }
+  }
+  return {
+    rating: pieces.reduce((sum, p) => sum + (p.data?.rating ?? 0), 0),
+    pieces,
+    banes,
+    metal: pieces.some(p => p.data?.metal),
   };
 }

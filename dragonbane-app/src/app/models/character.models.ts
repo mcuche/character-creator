@@ -39,6 +39,10 @@ export interface GearItem {
   weight: number; // 0 = tiny, 1 = normal, 2+ = heavy
   /** "At hand" for weapon/shield, "worn" for armor/helmet; ignored for other types. */
   equipped?: boolean;
+  /** Exact name of a weapons/armor reference row; unset = match by name. */
+  ref?: string;
+  /** Weapons and shields only: marked damaged after a parry. Display only. */
+  damaged?: boolean;
   notes?: string;
 }
 

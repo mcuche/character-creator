@@ -108,11 +108,14 @@ export function setEquipped(items: GearItem[], id: string, on: boolean): GearIte
   });
 }
 
-/** Change an item's type: becoming equippable starts unchecked; anything else drops the flag. */
+/**
+ * Change an item's type: becoming equippable starts unchecked; anything else drops the flag.
+ * The stats ref and damaged flag belong to the old type, so they go too.
+ */
 export function setGearType(items: GearItem[], id: string, type: GearType): GearItem[] {
   return items.map(i => {
     if (i.id !== id || i.type === type) return i;
-    const { equipped: _, ...rest } = i;
+    const { equipped: _, ref: _ref, damaged: _damaged, ...rest } = i;
     return isEquippable(type) ? { ...rest, type, equipped: false } : { ...rest, type };
   });
 }
