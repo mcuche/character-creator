@@ -52,6 +52,44 @@ describe('CharacterDraftService skills', () => {
     expect(skills()['Animism']).toMatchObject({ level: 10, trained: true });
   });
 
+  it('swaps the trained school when the school changes after the skills step', () => {
+    service.setProfession('Mage');
+    service.setMageSchool('Animism', [], []);
+    service.setAge('Adult');
+    service.setAttributes(ATTRS, 'standard');
+    service.setTrainedSkills(['Awareness']);
+
+    service.setMageSchool('Elementalism', [], []);
+
+    expect(skills()['Animism']).toBeUndefined();
+    expect(skills()['Elementalism']).toMatchObject({ level: 14, trained: true });
+    expect(skills()['Awareness']).toMatchObject({ level: 12, trained: true });
+  });
+
+  it('does not add a school before the skills step', () => {
+    service.setProfession('Mage');
+    service.setMageSchool('Animism', [], []);
+    service.setAge('Adult');
+    service.setAttributes(ATTRS, 'standard');
+
+    service.setMageSchool('Mentalism', [], []);
+
+    expect(skills()['Mentalism']).toBeUndefined();
+  });
+
+  it('drops the school skill when the profession changes', () => {
+    service.setProfession('Mage');
+    service.setMageSchool('Animism', [], []);
+    service.setAge('Adult');
+    service.setAttributes(ATTRS, 'standard');
+    service.setTrainedSkills(['Awareness', 'Bartering']);
+
+    service.setProfession('Fighter');
+
+    expect(skills()['Animism']).toBeUndefined();
+    expect(skills()['Bartering']).toMatchObject({ trained: true });
+  });
+
   it('applies age modifiers to skill levels', () => {
     service.setProfession('Thief');
     service.setAge('Young');

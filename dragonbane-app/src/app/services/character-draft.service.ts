@@ -79,14 +79,15 @@ export class CharacterDraftService {
   setProfession(profession: Profession): void {
     // Changing profession resets heroic ability and profession skill selections
     // We keep free picks by preserving skills not from any profession list
-    const currentSkills = this._draft().skills ?? {};
+    const { skills: currentSkills = {}, magicSchool } = this._draft();
     const profData = PROFESSION_DATA.find(p => p.name === profession);
     const professionSkillNames = profData?.skills ?? [];
 
     // Remove skills that were profession picks (reset them to untrained baseline)
     const resetSkills: Record<string, SkillEntry> = {};
     for (const [name, entry] of Object.entries(currentSkills)) {
-      if (!professionSkillNames.includes(name) && entry.trained) {
+      // The school is reset with the profession, so its skill goes too
+      if (!professionSkillNames.includes(name) && entry.trained && name !== magicSchool) {
         // Keep as a free pick — only remove old profession picks
         resetSkills[name] = entry;
       }
@@ -107,10 +108,21 @@ export class CharacterDraftService {
   }
 
   setMageSchool(school: MagicSchool, spells: string[], tricks: string[]): void {
+    const { magicSchool: previous, skills = {}, attributes, age } = this._draft();
+
+    // Once the skills step has added the old school, swap it for the new one.
+    // Schools aren't in SKILLS_DATA, so recomputing drops the old entry.
+    let nextSkills = skills;
+    if (previous && previous !== school && skills[previous] && attributes) {
+      const trainedNames = Object.values(skills).filter(s => s.trained).map(s => s.name);
+      nextSkills = this.withAdvancementMarks(computeSkills(attributes, age, trainedNames, school));
+    }
+
     this.patch({
       magicSchool: school,
       preparedSpells: spells,
       magicTricks: tricks,
+      skills: nextSkills,
     });
   }
 

@@ -27,8 +27,9 @@ export class SkillsComponent {
     const trainedNames = Object.entries(draft.skills ?? {})
       .filter(([, e]) => e.trained)
       .map(([name]) => name);
-    const profSkills = new Set(this.professionSkills);
-    this.selectedFreeSkills.set(new Set(trainedNames.filter(n => !profSkills.has(n))));
+    // Only real free options count: a mage's school is trained too, but isn't a free pick
+    const freeOptions = new Set(this.freeSkillOptions);
+    this.selectedFreeSkills.set(new Set(trainedNames.filter(n => freeOptions.has(n))));
   }
 
   get profession() {
