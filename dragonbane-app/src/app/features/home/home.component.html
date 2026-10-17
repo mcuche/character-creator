@@ -21,6 +21,12 @@
 
   <main class="mx-auto max-w-2xl px-6">
 
+    <input #importInput type="file" accept=".json,application/json" multiple class="hidden"
+      (change)="importFiles(importInput)" />
+
+    <!-- Inline so the paragraph is :empty (and hidden) until an import runs -->
+    <p role="status" class="import-status" [class.failed]="importMessage()?.failed">{{ importMessage()?.text }}</p>
+
     <!-- ── Empty state ── -->
     @if (characters().length === 0) {
       <div class="flex flex-col items-center py-28 text-center">
@@ -38,6 +44,9 @@
         <button (click)="createNew()" class="btn-amber mt-10 px-8 py-3 rounded font-semibold text-sm tracking-widest uppercase">
           Create a Character
         </button>
+        <button (click)="importInput.click()" class="btn-roll mt-4 min-h-11 px-2">
+          or import a saved character
+        </button>
       </div>
     }
 
@@ -45,9 +54,14 @@
     @if (characters().length > 0) {
       <div class="pt-10 pb-24">
 
-        <p class="mb-6 font-display section-label">
-          Roster
-        </p>
+        <div class="mb-6 flex items-center justify-between gap-4">
+          <p class="font-display section-label">
+            Roster
+          </p>
+          <button (click)="importInput.click()" class="btn-roll min-h-11 px-2" aria-label="Import characters from JSON">
+            Import
+          </button>
+        </div>
 
         <div>
           @for (char of characters(); track char.id) {

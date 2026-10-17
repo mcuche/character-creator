@@ -1,7 +1,7 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CharacterService } from '../../services/character.service';
+import { CharacterService, parseCharacterFile } from '../../services/character.service';
 import { CharacterDraftService } from '../../services/character-draft.service';
 import { Character } from '../../models/character.models';
 import { IconComponent } from '../../shared/icon/icon.component';
@@ -18,6 +18,7 @@ export class HomeComponent {
 
   readonly characters = this.characterService.characters;
   deleteConfirmId: string | null = null;
+  readonly importMessage = signal<{ text: string; failed: boolean } | null>(null);
 
   createNew(): void {
     this.draftService.reset();
@@ -32,6 +33,27 @@ export class HomeComponent {
     a.download = `${character.name || 'character'}.json`;
     a.click();
     URL.revokeObjectURL(url);
+  }
+
+  async importFiles(input: HTMLInputElement): Promise<void> {
+    const files = [...(input.files ?? [])];
+    input.value = ''; // so the same file can be picked again
+    if (!files.length) return;
+
+    const imported: Character[] = [];
+    const rejected: string[] = [];
+    for (const file of files) {
+      const characters = parseCharacterFile(await file.text());
+      if (characters.length) imported.push(...characters);
+      else rejected.push(file.name);
+    }
+    this.characterService.importCharacters(imported);
+
+    const parts: string[] = [];
+    if (imported.length === 1) parts.push(`Imported ${imported[0].name || 'an unnamed hero'}.`);
+    else if (imported.length > 1) parts.push(`Imported ${imported.length} characters.`);
+    if (rejected.length) parts.push(`Couldn't read ${rejected.join(', ')}: not a Dragonbane character file.`);
+    this.importMessage.set({ text: parts.join(' '), failed: rejected.length > 0 });
   }
 
   confirmDelete(id: string): void {

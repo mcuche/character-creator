@@ -556,6 +556,17 @@ button:focus {
   line-height: 1.6;
 }
 
+/* Import result on the home screen; empty until an import runs */
+.import-status {
+  font-size: 0.875rem;
+  color: oklch(0.65 0.010 68);
+  padding-top: 1.5rem;
+}
+
+.import-status:empty { display: none; }
+
+.import-status.failed { color: oklch(0.68 0.12 28); }
+
 /* ── Character list ── */
 .char-list-name {
   font-size: 1.25rem;
