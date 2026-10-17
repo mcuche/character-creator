@@ -6,56 +6,48 @@
   </div>
   <p class="mb-8 step-intro">
     An optional character flaw. Acting against your weakness grants 2 advancement marks, then removes it.
+    Leave it blank to continue without one.
   </p>
 
-  @if (!expanded()) {
-    <button
-      type="button"
-      (click)="toggle()"
-      class="add-slot">
-      <span class="add-slot-label">+ Add a Weakness</span>
-      <span class="card-meta">Or continue without one.</span>
-    </button>
-  } @else {
-    <div class="mb-3 flex items-center justify-between gap-4">
-      <h3 class="section-label">Choose a weakness</h3>
-      <button type="button" (click)="toggle()" class="btn-roll inline-flex min-h-11 items-center">Remove</button>
-    </div>
+  <!-- Free text -->
+  <div class="flex min-h-11 items-center justify-between gap-4">
+    <label for="weakness-text" class="section-label block">Your weakness</label>
+    @if (weaknessText()) {
+      <button type="button" (click)="edit('')" class="btn-roll inline-flex min-h-11 items-center">Clear</button>
+    }
+  </div>
+  <input
+    id="weakness-text"
+    type="text"
+    [ngModel]="weaknessText()"
+    (ngModelChange)="edit($event)"
+    placeholder="A flaw in your own words…"
+    class="text-field mb-8"
+  />
 
-    <!-- Examples -->
-    <div class="mb-8 grid gap-2 sm:grid-cols-2">
-      @for (w of examples; track w.name; let i = $index) {
-        @let selected = weaknessText() === w.name;
-        <button
-          type="button"
-          (click)="select(w.name)"
-          class="toggle-card rich"
-          [class.selected]="selected"
-          [attr.aria-pressed]="selected">
-          <span class="min-w-0 flex-1">
-            <span class="flex items-center gap-2">
-              <span class="toggle-card-name">{{ w.name }}</span>
-              @if (selected && rolledIndex() === i) {
-                <span class="rolled-badge">Rolled</span>
-              }
-            </span>
-            <span class="mt-0.5 block card-ability-desc">{{ w.hint }}</span>
+  <!-- Examples -->
+  <h3 class="mb-3 section-label">Or choose one</h3>
+  <div class="mb-8 grid gap-2 sm:grid-cols-2">
+    @for (w of examples; track w.name; let i = $index) {
+      @let selected = weaknessText() === w.name;
+      <button
+        type="button"
+        (click)="select(w.name)"
+        class="toggle-card rich"
+        [class.selected]="selected"
+        [attr.aria-pressed]="selected">
+        <span class="min-w-0 flex-1">
+          <span class="flex items-center gap-2">
+            <span class="toggle-card-name">{{ w.name }}</span>
+            @if (selected && rolledIndex() === i) {
+              <span class="rolled-badge">Rolled</span>
+            }
           </span>
-        </button>
-      }
-    </div>
-
-    <!-- Free text -->
-    <label for="weakness-text" class="section-label block">Or write your own</label>
-    <input
-      id="weakness-text"
-      type="text"
-      [ngModel]="weaknessText()"
-      (ngModelChange)="weaknessText.set($event)"
-      placeholder="A flaw in your own words…"
-      class="text-field"
-    />
-  }
+          <span class="mt-0.5 block card-ability-desc">{{ w.hint }}</span>
+        </span>
+      </button>
+    }
+  </div>
 
   <app-step-nav
     backPath="skills"

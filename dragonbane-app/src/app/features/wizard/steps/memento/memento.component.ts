@@ -18,41 +18,39 @@ export class MementoComponent {
 
   readonly draft = this.draftService.draft;
   readonly examples = MEMENTO_EXAMPLES;
-  expanded = signal(false);
-  name = signal('');
-  significance = signal('');
+  name = signal(this.draft().memento?.name ?? '');
+  significance = signal(this.draft().memento?.significance ?? '');
   rolledIndex = signal<number | null>(null);
-
-  constructor() {
-    const m = this.draft().memento;
-    if (m) {
-      this.expanded.set(true);
-      this.name.set(m.name);
-      this.significance.set(m.significance);
-    }
-  }
-
-  toggle(): void {
-    if (this.expanded()) {
-      this.expanded.set(false);
-      this.name.set('');
-      this.significance.set('');
-      this.rolledIndex.set(null);
-    } else {
-      this.expanded.set(true);
-    }
-  }
 
   rollRandom(): void {
     const i = Math.floor(Math.random() * MEMENTO_EXAMPLES.length);
-    this.expanded.set(true);
     this.rolledIndex.set(i);
     this.fill(MEMENTO_EXAMPLES[i]);
   }
 
+  editName(text: string): void {
+    this.rolledIndex.set(null);
+    this.name.set(text);
+  }
+
+  editSignificance(text: string): void {
+    this.rolledIndex.set(null);
+    this.significance.set(text);
+  }
+
+  /** Clicking the selected example again clears it. */
   select(m: Memento): void {
+    if (this.name() === m.name) {
+      this.clear();
+      return;
+    }
     this.rolledIndex.set(null);
     this.fill(m);
+  }
+
+  clear(): void {
+    this.rolledIndex.set(null);
+    this.fill({ name: '', significance: '' });
   }
 
   private fill(m: Memento): void {
@@ -61,8 +59,8 @@ export class MementoComponent {
   }
 
   continue(): void {
-    const hasMemento = this.expanded() && this.name().trim();
-    this.draftService.setMemento(hasMemento ? { name: this.name(), significance: this.significance() } : undefined);
+    const name = this.name().trim();
+    this.draftService.setMemento(name ? { name, significance: this.significance().trim() } : undefined);
     this.router.navigate(['/create/appearance']);
   }
 }

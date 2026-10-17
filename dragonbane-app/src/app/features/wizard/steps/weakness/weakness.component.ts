@@ -17,42 +17,28 @@ export class WeaknessComponent {
 
   readonly draft = this.draftService.draft;
   readonly examples = WEAKNESS_EXAMPLES;
-  expanded = signal(false);
-  weaknessText = signal('');
+  weaknessText = signal(this.draft().weakness ?? '');
   rolledIndex = signal<number | null>(null);
-
-  constructor() {
-    const w = this.draft().weakness;
-    if (w) {
-      this.expanded.set(true);
-      this.weaknessText.set(w);
-    }
-  }
-
-  toggle(): void {
-    if (this.expanded()) {
-      this.expanded.set(false);
-      this.weaknessText.set('');
-      this.rolledIndex.set(null);
-    } else {
-      this.expanded.set(true);
-    }
-  }
 
   rollRandom(): void {
     const i = Math.floor(Math.random() * WEAKNESS_EXAMPLES.length);
-    this.expanded.set(true);
     this.rolledIndex.set(i);
     this.weaknessText.set(WEAKNESS_EXAMPLES[i].name);
   }
 
+  edit(text: string): void {
+    this.rolledIndex.set(null);
+    this.weaknessText.set(text);
+  }
+
+  /** Clicking the selected example again clears it. */
   select(name: string): void {
     this.rolledIndex.set(null);
-    this.weaknessText.set(name);
+    this.weaknessText.set(this.weaknessText() === name ? '' : name);
   }
 
   continue(): void {
-    this.draftService.setWeakness(this.expanded() && this.weaknessText() ? this.weaknessText() : undefined);
+    this.draftService.setWeakness(this.weaknessText().trim() || undefined);
     this.router.navigate(['/create/gear']);
   }
 }
