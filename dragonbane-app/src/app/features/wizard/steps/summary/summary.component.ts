@@ -7,6 +7,7 @@ import { StepNavComponent } from '../../../../shared/step-nav/step-nav.component
 import { applyAgeModifiers } from '../../../../services/character-rules.service';
 import { AttributeKey, Attributes } from '../../../../models/character.models';
 import { KIN_DATA } from '../../../../data/kin.data';
+import { GEAR_TYPE_LABELS } from '../../../../data/gear.data';
 
 const ATTR_KEYS: AttributeKey[] = ['STR', 'CON', 'AGL', 'INT', 'WIL', 'CHA'];
 const ATTR_LABELS: Record<AttributeKey, string> = {
@@ -35,6 +36,7 @@ export class SummaryComponent {
   readonly draft = this.draftService.draft;
   readonly attrKeys = ATTR_KEYS;
   readonly attrLabels = ATTR_LABELS;
+  readonly gearTypeLabels = GEAR_TYPE_LABELS;
 
   // ── Presentation helpers ──
 

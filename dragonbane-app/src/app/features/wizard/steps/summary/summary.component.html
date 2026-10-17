@@ -208,7 +208,7 @@
       <div class="flex flex-wrap gap-2">
         @for (item of d.gear; track item.id) {
           <span class="skill-tag">
-            {{ item.name }}@if (item.quantity > 1) { <span class="text-gold">×{{ item.quantity }}</span> }
+            {{ item.name }}@if (item.quantity > 1) { <span class="text-gold">×{{ item.quantity }}</span> }@if (item.type !== 'item') { <span class="gear-slot-note">· {{ gearTypeLabels[item.type] }}</span> }
           </span>
         }
       </div>
