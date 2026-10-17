@@ -13,6 +13,16 @@ function wizardStepIndex(path: string): number {
 
 const STEPS = WIZARD_STEPS.filter(s => s.path !== 'mage-school');
 
+const HERO_BANNER_COLLAPSED_KEY = 'dragonbane_hero_banner_collapsed';
+
+function readHeroBannerCollapsed(): boolean {
+  try {
+    return localStorage.getItem(HERO_BANNER_COLLAPSED_KEY) === 'true';
+  } catch {
+    return false;
+  }
+}
+
 @Component({
   selector: 'app-wizard',
   imports: [RouterOutlet, RouterLink, CommonModule, FormsModule],
@@ -63,6 +73,17 @@ export class WizardComponent {
 
   toggleSidebar(): void { this.sidebarOpen.update(v => !v); }
   closeSidebar(): void { this.sidebarOpen.set(false); }
+
+  heroBannerCollapsed = signal(readHeroBannerCollapsed());
+
+  toggleHeroBanner(): void {
+    this.heroBannerCollapsed.update(v => !v);
+    try {
+      localStorage.setItem(HERO_BANNER_COLLAPSED_KEY, String(this.heroBannerCollapsed()));
+    } catch {
+      // Storage unavailable — the toggle still works for this visit
+    }
+  }
 
   updateName(name: string): void {
     this.draftService.setName(name);

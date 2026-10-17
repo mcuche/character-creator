@@ -51,7 +51,21 @@
   }
 
   <!-- Full-bleed hero name banner -->
-  <div class="hero-name-banner">
+  <div class="hero-name-banner" [class.is-collapsed]="heroBannerCollapsed()">
+  @if (heroBannerCollapsed()) {
+    <!-- Collapsed: slim strip showing the name; click to expand -->
+    <button type="button" class="hero-name-expand" (click)="toggleHeroBanner()"
+      aria-expanded="false" aria-label="Expand hero name">
+      <span class="hero-name-collapsed-label" [class.is-empty]="!draft().name">
+        {{ draft().name || 'Name your hero…' }}
+      </span>
+      <span class="hero-name-toggle" aria-hidden="true">
+        <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M1 1l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+    </button>
+  } @else {
     <div class="hero-name-creature" aria-hidden="true">
       <!-- Dragon, facing right -->
       <svg viewBox="0 0 96 72" width="82" height="65" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -126,6 +140,14 @@
         <polygon points="51,83 57,78 56,87"/>
       </svg>
     </div>
+
+    <button type="button" class="hero-name-toggle" (click)="toggleHeroBanner()"
+      aria-expanded="true" aria-label="Collapse hero name">
+      <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 7l6-6 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  }
   </div>
 
   <div class="mx-auto max-w-[960px] px-6">
