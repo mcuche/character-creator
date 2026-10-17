@@ -130,14 +130,32 @@ button:not(:disabled), a {
 
 /* New character link in header */
 .new-char-link {
-  color: oklch(0.63 0.01 68);
-  transition: color 180ms ease;
-  font-family: var(--font-body);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border: 1px solid oklch(0.74 0.13 72 / 0.7);
+  border-radius: 0.25rem;
+  background: oklch(0.74 0.13 72 / 0.08);
+  color: oklch(0.80 0.12 74);
+  font-family: var(--font-display);
   font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
 }
 
 .new-char-link:hover {
-  color: oklch(0.74 0.13 72);
+  background: oklch(0.74 0.13 72);
+  border-color: oklch(0.74 0.13 72);
+  color: oklch(0.12 0.007 68);
+}
+
+.new-char-link:focus-visible {
+  outline: 2px solid oklch(0.74 0.13 72);
+  outline-offset: 2px;
 }
 
 /* Confirm overlay buttons */
