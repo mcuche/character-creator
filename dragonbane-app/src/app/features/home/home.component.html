@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-page">
+<div class="flex min-h-screen flex-col bg-page">
 
   <!-- Header -->
   <header class="sticky top-0 z-10 px-6 py-4 site-header">
@@ -19,7 +19,8 @@
     </div>
   </header>
 
-  <main class="mx-auto max-w-2xl px-6">
+  <!-- Fills the space below the header so the empty state can center in it -->
+  <main class="mx-auto flex w-full max-w-2xl flex-1 flex-col px-6">
 
     <input #importInput type="file" accept=".json,application/json" multiple class="hidden"
       (change)="importFiles(importInput)" />
@@ -28,11 +29,15 @@
     <p role="status" class="import-status" [class.failed]="importMessage()?.failed">{{ importMessage()?.text }}</p>
 
     <!-- ── Empty state ── -->
+    <!-- The spacers split the free space 2:3, so the group sits a little above
+         center and the gap shrinks with the window. Bottom padding is 16px less
+         than the top because the import link's tap target leaves space under its text. -->
     @if (characters().length === 0) {
-      <div class="flex flex-col items-center py-28 text-center">
+      <div class="flex flex-1 flex-col items-center pt-10 pb-6 text-center">
+        <div class="flex-[2]" aria-hidden="true"></div>
 
         <!-- Dragon eyes, opened by the call to action below -->
-        <app-waking-eyes #eyes class="empty-emblem mt-3" />
+        <app-waking-eyes #eyes class="empty-emblem" />
 
         <p class="mt-7 font-display empty-heading">
           Your roster is empty.
@@ -49,6 +54,8 @@
         <button (click)="importInput.click()" class="btn-roll mt-4 min-h-11 px-2">
           or import a saved character
         </button>
+
+        <div class="flex-[3]" aria-hidden="true"></div>
       </div>
     }
 

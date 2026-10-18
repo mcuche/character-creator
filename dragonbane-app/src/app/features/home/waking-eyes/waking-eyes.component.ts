@@ -31,11 +31,13 @@ export class WakingEyesComponent {
   protected readonly outline = OUTLINE;
   protected readonly iris = IRIS;
   protected readonly brow = HORNED_BROW;
-  // Inner corners dropped 12°; the left eye is mirrored so its horns sweep outward.
-  // The eyes rest on the bottom of the box, so the heading's margin is the whole gap.
+  // Each transform reads right to left: move the eye's centre (50, 46 on its grid)
+  // to the origin, scale, tilt the inner corner down 12°, then place it. The left
+  // eye is mirrored so its horns sweep outward. At y 32 the eyes rest on the bottom
+  // of the 140 × 50 viewBox, so the heading's margin is the whole gap below them.
   protected readonly eyes = [
-    { id: 'left', transform: 'translate(40 82) rotate(12) scale(-0.6 0.6) translate(-50 -46)' },
-    { id: 'right', transform: 'translate(100 82) rotate(-12) scale(0.6 0.6) translate(-50 -46)' },
+    { id: 'left', transform: 'translate(40 32) rotate(12) scale(-0.6 0.6) translate(-50 -46)' },
+    { id: 'right', transform: 'translate(100 32) rotate(-12) scale(0.6 0.6) translate(-50 -46)' },
   ];
 
   wake(open: boolean): void {
