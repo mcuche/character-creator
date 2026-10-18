@@ -26,6 +26,16 @@ export class HomeComponent {
     this.router.navigate(['/create']);
   }
 
+  // From the empty roster, open the dragon's eyes before leaving. A tap on a
+  // phone never hovers the button, so without the pause the eyes go unseen.
+  private wakingBeforeCreate = false;
+  createFirst(eyes: WakingEyesComponent): void {
+    if (this.wakingBeforeCreate) return;
+    this.wakingBeforeCreate = true;
+    eyes.wake(true);
+    setTimeout(() => this.createNew(), 500);
+  }
+
   exportJson(character: Character): void {
     const blob = new Blob([JSON.stringify(character, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
