@@ -17,7 +17,7 @@ _Reviewed 2026-04-16_
 ## Issues & Recommendations
 
 ### 1. Home screen — empty state feels weak
-**Status:** Done (2026-10-17). The empty state shows the `ornaments/dragonbane-seal` SVG instead of the emoji.
+**Status:** Done (2026-10-17). The empty state shows the `ornaments/dragonbane-seal` SVG instead of the emoji. Revisited 2026-10-18: replaced by `WakingEyesComponent` (`features/home/waking-eyes/`), a pair of half-lidded horned dragon eyes that open while "Create a Character" is hovered or focused, in a lighter tone (`.empty-emblem`).
 
 **File:** `features/home/home.component.html`
 

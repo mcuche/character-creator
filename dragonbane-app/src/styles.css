@@ -544,6 +544,9 @@ button:focus {
 .ornament-dim { color: oklch(0.27 0.011 68); }
 
 /* ── Empty state ── */
+.empty-emblem { display: block; color: oklch(0.40 0.012 68); }
+.empty-emblem svg { display: block; }
+
 .empty-heading {
   font-size: 1.0625rem;
   letter-spacing: 0.05em;

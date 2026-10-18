@@ -31,8 +31,8 @@
     @if (characters().length === 0) {
       <div class="flex flex-col items-center py-28 text-center">
 
-        <!-- Dragonbane seal -->
-        <app-icon name="ornaments/dragonbane-seal" [size]="116" class="ornament-dim" />
+        <!-- Dragon eyes, opened by the call to action below -->
+        <app-waking-eyes #eyes class="empty-emblem" />
 
         <p class="mt-10 font-display empty-heading">
           Your roster is empty.
@@ -41,7 +41,9 @@
           Begin with a name.
         </p>
 
-        <button (click)="createNew()" class="btn-amber mt-10 px-8 py-3 rounded font-semibold text-sm tracking-widest uppercase">
+        <button (click)="createNew()"
+          (mouseenter)="eyes.wake(true)" (mouseleave)="eyes.wake(false)" (focus)="eyes.wake(true)" (blur)="eyes.wake(false)"
+          class="btn-amber mt-10 px-8 py-3 rounded font-semibold text-sm tracking-widest uppercase">
           Create a Character
         </button>
         <button (click)="importInput.click()" class="btn-roll mt-4 min-h-11 px-2">

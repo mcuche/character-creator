@@ -5,10 +5,11 @@ import { CharacterService, parseCharacterFile } from '../../services/character.s
 import { CharacterDraftService } from '../../services/character-draft.service';
 import { Character } from '../../models/character.models';
 import { IconComponent } from '../../shared/icon/icon.component';
+import { WakingEyesComponent } from './waking-eyes/waking-eyes.component';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink, IconComponent],
+  imports: [CommonModule, RouterLink, IconComponent, WakingEyesComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent {

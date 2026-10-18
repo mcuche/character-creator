@@ -1,0 +1,19 @@
+<svg viewBox="0 0 140 100" width="162" height="116" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  @for (eye of eyes; track eye.id) {
+    <!-- Stroke 4.17 at scale 0.6 draws as 2.5, like the other emblems -->
+    <g [attr.transform]="eye.transform" stroke-width="4.17">
+      <mask [attr.id]="'waking-eyes-lid-' + eye.id">
+        <path fill="white" stroke="none" [attr.d]="lid.closed">
+          <animate class="open" attributeName="d" [attr.to]="lid.open" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.22 1 0.36 1" />
+          <animate class="close" attributeName="d" [attr.to]="lid.closed" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.22 1 0.36 1" />
+        </path>
+      </mask>
+      <path [attr.d]="iris" fill="currentColor" fill-rule="evenodd" stroke="none" [attr.mask]="'url(#waking-eyes-lid-' + eye.id + ')'" />
+      <path [attr.d]="outline.closed">
+        <animate class="open" attributeName="d" [attr.to]="outline.open" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.22 1 0.36 1" />
+        <animate class="close" attributeName="d" [attr.to]="outline.closed" begin="indefinite" fill="freeze" calcMode="spline" keyTimes="0;1" keySplines="0.22 1 0.36 1" />
+      </path>
+      <path [attr.d]="brow" />
+    </g>
+  }
+</svg>
