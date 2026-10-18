@@ -26,5 +26,6 @@ export class IconComponent {
   /** Accessible name; the icon is decorative (aria-hidden) when omitted. */
   readonly label = input<string>();
 
-  protected readonly maskUrl = computed(() => `url(/graphics/${this.name()}.svg)`);
+  // Relative so it resolves against <base href> (the app is served from a subpath on GitHub Pages).
+  protected readonly maskUrl = computed(() => `url(graphics/${this.name()}.svg)`);
 }
