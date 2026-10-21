@@ -1,4 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Elf">
   <title>Elf</title>
   <path d="M86.7 64.3 A38 38 0 1 1 50.1 12 A32 32 0 1 0 86.7 64.3 Z"/>
+  <path d="M70 26 Q70 36 80 36 Q70 36 70 46 Q70 36 60 36 Q70 36 70 26 Z" fill="currentColor"/>
+  <path d="M86 13 Q86 19 92 19 Q86 19 86 25 Q86 19 80 19 Q86 19 86 13 Z" fill="currentColor"/>
+  <path d="M88 40.5 Q88 45 92.5 45 Q88 45 88 49.5 Q88 45 83.5 45 Q88 45 88 40.5 Z" fill="currentColor"/>
 </svg>
