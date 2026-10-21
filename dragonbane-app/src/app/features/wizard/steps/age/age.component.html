@@ -19,7 +19,7 @@
     Age shapes your attribute modifiers and the number of trained skills you begin with.
   </p>
 
-  <div class="grid gap-3 sm:grid-cols-3">
+  <div class="grid gap-3 lg:grid-cols-3">
     @for (age of ageOptions; track age.name; let i = $index) {
       <button
         (click)="select(age.name)"
@@ -28,7 +28,7 @@
 
         <!-- Age sigil -->
         <div class="card-sigil">
-          <app-icon [name]="'age/' + age.name.toLowerCase()" [size]="44" />
+          <app-icon [name]="'age/' + age.name.toLowerCase()" [size]="64" />
         </div>
 
         <!-- Age info -->

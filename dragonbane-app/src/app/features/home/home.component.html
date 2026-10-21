@@ -135,6 +135,10 @@
                       @if (char.profession) {
                         <span class="whitespace-nowrap">{{ char.profession }}</span>
                       }
+                      @if (char.age) {
+                        &thinsp;·&thinsp;
+                        <span class="whitespace-nowrap">{{ char.age }}</span>
+                      }
                     } @else {
                       <span class="text-muted-stone">No kin or profession set</span>
                     }
