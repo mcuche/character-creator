@@ -209,6 +209,8 @@ button:focus {
 
 @media (prefers-reduced-motion: reduce) {
   .step-animate-in { animation: none; }
+  .sidebar-panel.is-settling,
+  .sidebar-backdrop.is-settling { transition: none; }
 }
 
 .wizard-steps-toggle {
@@ -629,6 +631,7 @@ button:focus {
 .sidebar-backdrop {
   background: oklch(0.08 0.007 68 / 0.7);
   backdrop-filter: blur(2px);
+  touch-action: pan-y pinch-zoom;
 }
 
 .sidebar-panel {
@@ -637,6 +640,17 @@ button:focus {
   border-right: 1px solid oklch(0.21 0.008 68);
   padding: 1.5rem 1.25rem;
   overflow-y: auto;
+  /* Vertical scrolling stays native; horizontal drags reach the swipe-to-close handlers */
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Swipe released: glide to rest. Duration matches SIDEBAR_SETTLE_MS in wizard.component.ts */
+.sidebar-panel.is-settling {
+  transition: translate 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebar-backdrop.is-settling {
+  transition: opacity 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sidebar-header-label {

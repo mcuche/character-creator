@@ -30,35 +30,47 @@
 
   <!-- Mobile sidebar overlay -->
   @if (sidebarOpen()) {
-    <div class="fixed inset-0 z-30 md:hidden sidebar-backdrop" (click)="closeSidebar()">
-    </div>
-    <aside class="fixed top-0 left-0 z-40 h-full md:hidden wizard-sidebar-overlay sidebar-panel">
-      <div class="flex items-center justify-between mb-6">
-        <span class="font-display sidebar-header-label">Steps</span>
-        <button (click)="closeSidebar()" class="sidebar-close-btn">✕</button>
+    <!-- Swipe-to-dismiss handlers sit on this layout-less wrapper so the panel and backdrop share them -->
+    <div class="contents" [class.pointer-events-none]="sidebarDismissing()"
+      (pointerdown)="onSidebarPointerDown($event, panel)"
+      (pointermove)="onSidebarPointerMove($event)"
+      (pointerup)="onSidebarPointerUp($event)"
+      (pointercancel)="onSidebarPointerCancel($event)">
+      <div class="fixed inset-0 z-30 md:hidden sidebar-backdrop"
+        [class.is-settling]="sidebarSettling()"
+        [style.opacity]="1 + sidebarDrag()"
+        (click)="onBackdropClick()">
       </div>
-      <nav>
-        @for (step of visibleSteps; track step.path; let i = $index) {
-          <div class="wizard-step-dot"
-            [style.cursor]="isVisited(step.path) && step.path !== currentPath ? 'pointer' : 'default'"
-            (click)="navigateToStep(step.path)">
-            @if (i < visibleSteps.length - 1) {
-              <div class="absolute step-connector"></div>
-            }
-            <div class="relative z-10 flex shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 step-dot-size"
-              [style.background]="step.path === currentPath ? 'oklch(0.74 0.13 72)' : (isVisited(step.path) ? 'oklch(0.20 0.008 68)' : 'oklch(0.17 0.007 68)')"
-              [style.color]="step.path === currentPath ? 'oklch(0.12 0.007 68)' : (isVisited(step.path) ? 'oklch(0.58 0.09 72)' : 'oklch(0.50 0.009 68)')"
-              [style.border]="step.path === currentPath ? 'none' : (isVisited(step.path) ? '1px solid oklch(0.28 0.010 72)' : '1px solid oklch(0.23 0.007 68)')">
-              @if (isVisited(step.path) && step.path !== currentPath) { ✓ } @else { {{ i + 1 }} }
+      <aside #panel class="fixed top-0 left-0 z-40 h-full md:hidden wizard-sidebar-overlay sidebar-panel"
+        [class.is-settling]="sidebarSettling()"
+        [style.translate.%]="sidebarDrag() * 100">
+        <div class="flex items-center justify-between mb-6">
+          <span class="font-display sidebar-header-label">Steps</span>
+          <button (click)="onSidebarCloseClick()" class="sidebar-close-btn">✕</button>
+        </div>
+        <nav>
+          @for (step of visibleSteps; track step.path; let i = $index) {
+            <div class="wizard-step-dot"
+              [style.cursor]="isVisited(step.path) && step.path !== currentPath ? 'pointer' : 'default'"
+              (click)="navigateToStep(step.path)">
+              @if (i < visibleSteps.length - 1) {
+                <div class="absolute step-connector"></div>
+              }
+              <div class="relative z-10 flex shrink-0 items-center justify-center rounded-full text-xs font-bold transition-all duration-200 step-dot-size"
+                [style.background]="step.path === currentPath ? 'oklch(0.74 0.13 72)' : (isVisited(step.path) ? 'oklch(0.20 0.008 68)' : 'oklch(0.17 0.007 68)')"
+                [style.color]="step.path === currentPath ? 'oklch(0.12 0.007 68)' : (isVisited(step.path) ? 'oklch(0.58 0.09 72)' : 'oklch(0.50 0.009 68)')"
+                [style.border]="step.path === currentPath ? 'none' : (isVisited(step.path) ? '1px solid oklch(0.28 0.010 72)' : '1px solid oklch(0.23 0.007 68)')">
+                @if (isVisited(step.path) && step.path !== currentPath) { ✓ } @else { {{ i + 1 }} }
+              </div>
+              <span class="font-display transition-all duration-200 step-label"
+                [style.color]="step.path === currentPath ? 'oklch(0.84 0.008 70)' : (isVisited(step.path) ? 'oklch(0.60 0.010 72)' : 'oklch(0.50 0.009 68)')">
+                {{ step.label }}
+              </span>
             </div>
-            <span class="font-display transition-all duration-200 step-label"
-              [style.color]="step.path === currentPath ? 'oklch(0.84 0.008 70)' : (isVisited(step.path) ? 'oklch(0.60 0.010 72)' : 'oklch(0.50 0.009 68)')">
-              {{ step.label }}
-            </span>
-          </div>
-        }
-      </nav>
-    </aside>
+          }
+        </nav>
+      </aside>
+    </div>
   }
 
   <!-- Full-bleed hero name banner -->
