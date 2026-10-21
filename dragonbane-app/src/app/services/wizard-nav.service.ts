@@ -5,6 +5,7 @@ import { Subject } from 'rxjs';
 export class WizardNavService {
   readonly backPath = signal<string | undefined>(undefined);
   readonly canContinue = signal(true);
-  readonly nextLabel = signal('Continue →');
+  readonly nextLabel = signal('Continue');
+  readonly nextArrow = signal(true);
   readonly nextTrigger$ = new Subject<void>();
 }

@@ -7,6 +7,7 @@ import { SheetCoreComponent } from './parts/sheet-core/sheet-core.component';
 import { SheetSkillsComponent } from './parts/sheet-skills/sheet-skills.component';
 import { SheetAbilitiesComponent } from './parts/sheet-abilities/sheet-abilities.component';
 import { SheetGearComponent } from './parts/sheet-gear/sheet-gear.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 type SheetTab = 'core' | 'skills' | 'abilities' | 'gear';
 
@@ -26,6 +27,7 @@ const TABS: { id: SheetTab; label: string }[] = [
     SheetSkillsComponent,
     SheetAbilitiesComponent,
     SheetGearComponent,
+    IconComponent,
   ],
   templateUrl: './character-sheet.component.html',
 })

@@ -239,7 +239,7 @@ button:focus {
 .wizard-home-link {
   color: oklch(0.58 0.009 68);
   transition: color 180ms ease;
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -248,6 +248,11 @@ button:focus {
   color: oklch(0.74 0.13 72);
 }
 
+/* Nudge nav arrows up so they sit on the caps' midline, not the line box's */
+.nav-arrow {
+  position: relative;
+  top: -1px;
+}
 .hero-name-banner {
   display: flex;
   align-items: center;
@@ -452,8 +457,11 @@ button:focus {
   color: oklch(0.58 0.009 68);
   background: transparent;
   border: none;
-  font-family: var(--font-body);
-  font-size: 0.875rem;
+  font-family: var(--font-display);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   padding: 0;
   cursor: pointer;
   transition: color 180ms ease;

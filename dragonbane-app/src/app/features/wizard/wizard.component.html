@@ -12,9 +12,10 @@
 
   <!-- Header -->
   <header class="sticky top-0 z-20 site-header">
-    <div class="mx-auto max-w-[960px] px-6 py-3.5 flex items-center gap-4">
-      <a routerLink="/" class="wizard-home-link font-display">
-        ← Dragonbane
+    <div class="mx-auto max-w-[960px] px-6 py-px flex items-center gap-4">
+      <a routerLink="/" class="wizard-home-link font-display inline-flex min-h-11 items-center gap-2">
+        <app-icon class="nav-arrow" name="ui/caret-left" [size]="14" />
+        Dragonbane
       </a>
     </div>
   </header>
@@ -205,13 +206,19 @@
   <footer class="wizard-nav-footer">
     <div class="mx-auto max-w-[960px] px-6 flex items-center justify-between">
       @if (wizardNav.backPath()) {
-        <button (click)="onBack()" class="btn-back-link">← Back</button>
+        <button (click)="onBack()" class="btn-back-link inline-flex min-h-11 -my-1.5 items-center gap-2">
+          <app-icon class="nav-arrow" name="ui/caret-left" [size]="13" />
+          Back
+        </button>
       }
       <button
         (click)="onContinue()"
         [disabled]="!wizardNav.canContinue()"
-        class="btn-continue ml-auto">
+        class="btn-continue ml-auto inline-flex items-center gap-2">
         {{ wizardNav.nextLabel() }}
+        @if (wizardNav.nextArrow()) {
+          <app-icon class="nav-arrow" name="ui/caret-right" [size]="14" />
+        }
       </button>
     </div>
   </footer>

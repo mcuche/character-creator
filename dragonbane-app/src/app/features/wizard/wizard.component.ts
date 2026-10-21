@@ -7,6 +7,7 @@ import { CharacterDraftService } from '../../services/character-draft.service';
 import { WizardNavService } from '../../services/wizard-nav.service';
 import { WIZARD_STEPS } from '../../shared/wizard-steps';
 import { ConfirmModalComponent } from '../../shared/confirm-modal/confirm-modal.component';
+import { IconComponent } from '../../shared/icon/icon.component';
 
 function wizardStepIndex(path: string): number {
   return WIZARD_STEPS.findIndex(s => s.path === path);
@@ -26,7 +27,7 @@ function readHeroBannerCollapsed(): boolean {
 
 @Component({
   selector: 'app-wizard',
-  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule, ConfirmModalComponent],
+  imports: [RouterOutlet, RouterLink, CommonModule, FormsModule, ConfirmModalComponent, IconComponent],
   templateUrl: './wizard.component.html',
 })
 export class WizardComponent {
